@@ -141,12 +141,12 @@ table.cl{width:100%;border-collapse:collapse;font-size:13px}
  #nav button{flex:1;background:none;border:0;color:var(--mut);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font:600 10.5px Inter;cursor:pointer}
  #nav button svg{width:23px;height:23px}
  #nav button.on{color:var(--gold)}
- #panel{position:fixed;left:0;right:0;bottom:66px;height:62vh;border-left:0;border-top:1px solid #3d3220;border-radius:20px 20px 0 0;transform:translateY(calc(100% + 80px));transition:transform .28s cubic-bezier(.2,.8,.2,1);z-index:20;box-shadow:0 -14px 40px rgba(0,0,0,.55)}
+ #panel{position:fixed;left:0;right:0;bottom:66px;height:52vh;border-left:0;border-top:1px solid #3d3220;border-radius:20px 20px 0 0;transform:translateY(calc(100% + 80px));transition:transform .28s cubic-bezier(.2,.8,.2,1);z-index:20;box-shadow:0 -14px 40px rgba(0,0,0,.55)}
  #panel.open{transform:none}
  #panel.half{height:44vh}
  .grab{display:block;width:44px;height:5px;border-radius:3px;background:#3a3a3a;margin:8px auto 0;flex:none}
  .ptabs{padding-top:4px}
- #viewbar{top:auto;bottom:12px;right:10px;left:10px;justify-content:center;flex-wrap:wrap}
+ #viewbar{top:10px;bottom:auto;right:10px;left:auto}
  #viewbar button{padding:7px 9px;font-size:11.5px}
  #hint{bottom:60px}
  .card2{border-radius:20px 20px 0 0;max-height:92%;align-self:flex-end}
@@ -163,15 +163,12 @@ table.cl{width:100%;border-collapse:collapse;font-size:13px}
   <div class="pname" id="pname"></div>
   <div class="tb">
    <button class="ib" id="bUndo" title="Înapoi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
-   <button class="ib" id="bRedo" title="Înainte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
-   <button class="tbtn" id="bRoom" title="Cameră"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18"/></svg><span>Cameră</span></button>
    <button class="tbtn" id="bList" title="Listă piese"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span>Listă</span></button>
    <button class="ib" id="bShot" title="Poză"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
-   <button class="ib" id="bProj" title="Proiecte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.7-.9l-.8-1.2A2 2 0 0 0 7.9 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></button>
   </div>
  </header>
  <main id="view">
-  <div class="fbar" id="viewbar"><button data-cam="3d" class="on">3D</button><button data-cam="top">Plan</button><button data-cam="front">Față</button><button id="bDims">Cote</button><button id="bOpen">Deschide uși</button><button id="bXray">Transparent</button></div>
+  <div class="fbar" id="viewbar"><button data-cam="3d" class="on">3D</button><button data-cam="top">De sus</button><button id="bOpen">Deschide uși</button></div>
   <div id="hint"></div>
  </main>
  <aside id="panel"><div class="grab"></div><div class="ptabs"><button data-ptab="inv" class="on">Inventar</button><button data-ptab="edit">Editează</button><button data-ptab="room">Cameră</button></div><div class="pbody" id="pbody"></div></aside>
@@ -351,7 +348,7 @@ function build(it){
    const n=3,zh=(H-th-10)/n;for(let i=0;i<n;i++){const y0=5+i*zh,a={id:'p'+i,k:'drawer',px:0,py:0,pz:0,dist:(Dd-60)*.6};B('Front sertar',W/2-pw+T18+2,W/2-T18-2,y0+2,y0+zh-2,Dd/2-20,Dd/2-2,'front',{a,role:'dfront'});if(o.handle!=='none')B('Mâner',W/2-pw/2-50,W/2-pw/2+50,y0+zh-40,y0+zh-30,Dd/2-2,Dd/2+18,'metal',{a,role:'handle'});}}
   else B('Lateral birou',W/2-T18,W/2,0,H-th,-Dd/2,Dd/2-20,'body');
   B('Panou spate birou',-W/2+T18,W/2-(t.ped?420:T18),H-th-350,H-th-50,-Dd/2+40,-Dd/2+58,'body');
-  if(t.mirror){B('Oglindă',-W/2+W*.15,W/2-W*.15,H,H+800,-Dd/2,-Dd/2+8,'mirror');B('Ramă oglindă',-W/2+W*.15-30,W/2-W*.15+30,H,H+830,-Dd/2-10,-Dd/2,'front');
+  if(t.mirror){B('Ramă oglindă',-W/2+W*.15-30,W/2-W*.15+30,H,H+830,-Dd/2,-Dd/2+18,'front');B('Oglindă',-W/2+W*.15,W/2-W*.15,H+15,H+815,-Dd/2+18,-Dd/2+22,'mirror');
    const a={id:'v',k:'drawer',px:0,py:0,pz:0,dist:250};B('Front sertar',-W/2+T18+40,W/2-T18-40,H-th-130,H-th-10,Dd/2-40,Dd/2-22,'front',{a,role:'dfront'});}
   return P;}
  if(t.g==='bed'){const mw=W-70,ml=2000,hb=25,y1=380;B('Tăblie pat',-W/2,W/2,0,H,-Dd/2,-Dd/2+hb,'front');B('Tăblie tapițată',-W/2+60,W/2-60,y1+250,H-60,-Dd/2+hb,-Dd/2+hb+50,'fabric');
@@ -539,12 +536,21 @@ function snapMove(it,x,z){
  const sn=(v,h,E)=>{let best=null,bd=40;for(const e of E){if(Math.abs(e-(v-h))<bd){bd=Math.abs(e-(v-h));best=e+h;}if(Math.abs(e-(v+h))<bd){bd=Math.abs(e-(v+h));best=e-h;}}return best!=null?best:s10(v);};
  const r=it.rot%180!==0;if(!r||t.free)it.x=sn(it.x,hx,ex);if(r||t.free)it.z=sn(it.z,hz,ez);
 }
+function clampRoom(it){const Rm=S.room,b=bbox(it),w=b.x1-b.x0,d=b.z1-b.z0;
+ if(w>=Rm.w)it.x=w/2;else{if(b.x0<0)it.x-=b.x0;if(b.x1>Rm.w)it.x-=b.x1-Rm.w;}
+ if(d>=Rm.d)it.z=d/2;else{if(b.z0<0)it.z-=b.z0;if(b.z1>Rm.d)it.z-=b.z1-Rm.d;}
+ const fh=fullH(it);if(it.e+fh>Rm.h)it.e=Math.max(0,Rm.h-fh);}
+function pushOut(it){if(!overlapsOf(it).length)return true;const x0=it.x,z0=it.z,along=it.rot%180===0?'x':'z';let best=null;
+ for(const o of overlapsOf(it)){const a=bbox(it),b=bbox(o);for(const[mx,mz]of[[b.x0-a.x1,0],[b.x1-a.x0,0],[0,b.z0-a.z1],[0,b.z1-a.z0]]){
+  it.x=x0+mx;it.z=z0+mz;clampRoom(it);const cost=Math.abs(it.x-x0)*(along==='x'?1:3)+Math.abs(it.z-z0)*(along==='z'?1:3);if(!overlapsOf(it).length&&(!best||cost<best.c))best={x:it.x,z:it.z,c:cost};}}
+ if(best){it.x=best.x;it.z=best.z;return true;}it.x=x0;it.z=z0;return false;}
+function settle(it){clampRoom(it);return pushOut(it);}
 const ptrs=new Set();let drag=null,down=null;
 view.addEventListener('pointerdown',e=>{if(e.target!==renderer.domElement)return;ptrs.add(e.pointerId);if(ptrs.size>1){drag=null;controls.enabled=true;down=null;return;}
  down={x:e.clientX,y:e.clientY,b:e.button};setNDC(e);const it=getSel();
  if(it&&e.button!==2&&pick()===it.id){controls.enabled=false;const p=hitY(it.e)||hitY(0);if(p)drag={it,ox:p.x-it.x,oz:p.z-it.z,before:ser(),armed:false,x0:e.clientX,y0:e.clientY};}},{capture:true});
 addEventListener('pointermove',e=>{if(!drag||!ptrs.has(e.pointerId))return;if(!drag.armed){if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)<6)return;drag.armed=true;}
- setNDC(e);const it=drag.it,p=hitY(it.e);if(!p)return;snapMove(it,p.x-drag.ox,p.z-drag.oz);const g=groups.get(it.id);g&&place(it,g);overlay();});
+ setNDC(e);const it=drag.it,p=hitY(it.e);if(!p)return;const lv={x:it.x,z:it.z,rot:it.rot};snapMove(it,p.x-drag.ox,p.z-drag.oz);clampRoom(it);if(!pushOut(it)){it.x=lv.x;it.z=lv.z;it.rot=lv.rot;}const g=groups.get(it.id);g&&place(it,g);overlay();});
 addEventListener('pointerup',e=>{const had=ptrs.delete(e.pointerId);
  if(drag&&drag.armed){const d=drag;drag=null;controls.enabled=true;down=null;const a=ser();if(a!==d.before){undoS.push(d.before);redoS=[];save(a);}overlay();if(selId)renderEdit(true);return;}
  drag=null;controls.enabled=true;
@@ -557,8 +563,8 @@ function save(str){LS.set('gm3.current',str||ser());top_();}
 function mutate(fn){const b=ser();fn();const a=ser();if(a!==b){undoS.push(b);if(undoS.length>100)undoS.shift();redoS=[];save(a);}}
 function load(str){S=JSON.parse(str);fix();if(!getSel())selId=null;rebuildAll();save();}
 $('#bUndo').onclick=()=>{if(!undoS.length)return;redoS.push(ser());load(undoS.pop());};
-$('#bRedo').onclick=()=>{if(!redoS.length)return;undoS.push(ser());load(redoS.pop());};
-function top_(){$('#pname').innerHTML=`<b>${esc(S.name)}</b> · ${S.items.length} piese`;$('#bUndo').disabled=!undoS.length;$('#bRedo').disabled=!redoS.length;}
+
+function top_(){$('#pname').innerHTML=`<b>${esc(S.name)}</b> · ${S.items.length} piese`;$('#bUndo').disabled=!undoS.length;}
 let DL=null;(async()=>{try{if(window.claude&&typeof window.claude.use==='function')DL=await window.claude.use('downloads');}catch(e){}})();
 async function saveFile(name,data){if(DL){try{await DL.save({filename:name,data});toast('Salvat: '+name);return;}catch(e){if(e&&e.code==='declined')return;}}
  try{const b=data instanceof Blob?data:new Blob([data]);const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);toast('Descărcat: '+name);}catch(e){toast('Descărcarea nu merge aici');}}
@@ -584,81 +590,78 @@ function icon(k){if(iconC[k])return iconC[k];const it=makeItem(k);it.top.on=!!T[
 function setTab(t){if(tab!==t)$('#pbody').scrollTop=0;tab=t;$$('.ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.ptab===t));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav===t));render();if(isMobile())$('#panel').classList.add('open');}
 $$('.ptabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.ptab));
 $$('#nav button').forEach(b=>b.onclick=()=>{const n=b.dataset.nav;if(n==='list')return openList();if(isMobile()&&tab===n&&$('#panel').classList.contains('open')){$('#panel').classList.remove('open');b.classList.remove('on');return;}setTab(n);});
-$('#bRoom').onclick=()=>setTab('room');$('#bList').onclick=()=>openList();
+$('#bList').onclick=()=>openList();
 function render(){const B=$('#pbody');if(tab==='inv')B.innerHTML=invHTML();else if(tab==='edit')B.innerHTML=editHTML();else B.innerHTML=roomHTML();if(tab==='inv'){const s=$('#invq');if(s){s.oninput=()=>{q=s.value;$('#invg').innerHTML=gridHTML();};}}}
 function gridHTML(){const qq=q.trim().toLowerCase();let h='';for(const[ck,cn]of CATS){if(cat!=='all'&&cat!==ck)continue;const ks=Object.values(T).filter(t=>t.cat===ck&&(!qq||t.nm.toLowerCase().includes(qq)));if(!ks.length)continue;if(cat==='all')h+=`<div class="cath">${cn}</div>`;
  h+=ks.map(t=>`<div class="card" data-add="${t.k}"><div class="ic">${icon(t.k)}</div><b>${t.nm}</b><small>${t.w}×${t.h}×${t.d}</small></div>`).join('');}return h||'<div class="note" style="grid-column:1/-1">Nimic găsit.</div>';}
 function invHTML(){return`<input class="search" id="invq" placeholder="Caută: cuptor, dulap, chiuvetă…" value="${esc(q)}"><div class="chips"><button class="chip ${cat==='all'?'on':''}" data-cat="all">Toate</button>${CATS.map(([k,n])=>`<button class="chip ${cat===k?'on':''}" data-cat="${k}">${n}</button>`).join('')}</div><div class="inv" id="invg">${gridHTML()}</div>`;}
 const num=(k,l,v,u='mm')=>`<label class="fld"><span>${l}</span><input type="number" inputmode="numeric" data-k="${k}" value="${Math.round(v)}"><i>${u}</i></label>`;
 const seg=(k,opts,cur)=>`<div class="seg">${opts.map(([v,l])=>`<button data-k="${k}" data-v="${v}" class="${String(cur)===String(v)?'on':''}">${l}</button>`).join('')}</div>`;
-function eggField(k,cur,label){const e=egg(cur);return`<div class="lab">${label}</div><div class="egg"><div class="sw" style="background:${e?e.h:'#333'}"></div><input list="eggList" data-egg="${k}" value="${esc(cur||'')}" placeholder="Cod Egger, ex: H1145" autocomplete="off" autocapitalize="characters"></div>
- <div class="eggn ${e?'':'bad'}">${e?esc(e.c+' · '+e.n)+(EGG[e.c]?'':' (cod propriu)'):'Cod necunoscut — alege mai jos culoarea pentru el'}</div>
- ${e?'':`<div class="newc"><input type="color" data-newc="${k}" value="#c8a576"><span>Culoarea pentru <b>${esc(normCode(cur))}</b></span><label style="margin-left:auto;font-size:12px"><input type="checkbox" data-neww="${k}"> lemn</label></div>`}
- <div class="quick">${QUICK.map(c=>`<button data-k="${k}" data-v="${c}" title="${c} ${EGG[c].n}" class="${normCode(cur)===c?'on':''}" style="background:${EGG[c].h}"></button>`).join('')}</div>`;}
-function editHTML(){const it=getSel();if(!it)return`<div class="note" style="text-align:center;padding:30px 10px">Atinge o piesă în studio ca s-o editezi,<br>sau adaugă una din <b style="color:var(--gold)">Inventar</b>.</div><button class="btn gold wide" data-act="toinv">${IC.plus} Deschide inventarul</button>`;
+function eggField(k,cur,label){const e=egg(cur);return`<div class="lab">${label}</div><div class="egg"><div class="sw" style="background:${e?e.h:'#333'}"></div><input list="eggList" data-egg="${k}" value="${esc(cur||'')}" placeholder="ex: H1145" autocomplete="off" autocapitalize="characters"></div>
+ <div class="eggn ${e?'':'bad'}">${e?esc(e.n):'Cod nou — alege culoarea lui:'}</div>
+ ${e?'':`<div class="newc"><input type="color" data-newc="${k}" value="#c8a576"><span>Culoare pentru <b>${esc(normCode(cur))}</b></span></div>`}`;}
+function editHTML(){const it=getSel();if(!it)return`<div class="note" style="text-align:center;padding:30px 10px;font-size:14px">Atinge o mobilă în cameră ca s-o modifici,<br>sau adaugă una din <b style="color:var(--gold)">Inventar</b>.</div><button class="btn gold wide" data-act="toinv">${IC.plus} Deschide inventarul</button>`;
  const t=T[it.type],o=it.o,opt=(t.opt||'n sh hinge handle pl').split(' '),isCab=t.g==='cab';
- let h=`<div class="ph"><div class="ic">${icon(it.type)}</div><div><h3>${t.nm}</h3><small>${code(it)} · ${Math.round(it.w)}×${Math.round(fullH(it))}×${Math.round(it.d)} mm</small></div></div>
- <div class="acts"><button class="btn" data-act="rot">${IC.rot} Rotește</button><button class="btn" data-act="dup">${IC.dup} Copie</button><button class="btn red" data-act="del">${IC.del} Șterge</button></div>
- <div class="sec"><h4>Mărime</h4><div class="g3">${num('w','Lățime',it.w)}${num('h','Înălțime',it.h)}${num('d','Adâncime',it.d)}</div><div class="g2" style="margin-top:8px">${num('e','De la podea',it.e)}${isCab&&opt.includes('pl')?num('o.pl','Picioare/soclu',o.pl):''}</div></div>`;
- if(t.g!=='panel'||t.m!=='top')h+=`<div class="sec"><h4>Placă deasupra</h4><div class="tog"><span>Pune placă deasupra (blat)</span><label class="switch"><input type="checkbox" data-top="on" ${it.top.on?'checked':''}><i></i></label></div>
- ${it.top.on?`<div class="g2">${num('top.th','Grosime placă',it.top.th)}${num('top.f','Iese în față',it.top.f)}</div><div style="height:8px"></div>${eggField('top.c',it.top.c||S.def.ct,'Culoare placă')}`:''}</div>`;
- if(isCab||t.g==='desk'||t.g==='table'||t.g==='bed'||t.g==='coat'||(t.g==='panel'&&t.m!=='mirror')){h+=`<div class="sec"><h4>Culori Egger</h4>`;
-  if(t.g==='panel'){const k=t.m==='top'?'top.c':t.m==='front'?'cf':'cb';h+=eggField(k,k==='top.c'?(it.top.c||S.def.ct):k==='cf'?(it.cf||S.def.cf):(it.cb||S.def.cb),'Culoare');}
-  else{h+=eggField('cb',it.cb||S.def.cb,'Corp (interior / lateral)');h+=eggField('cf',it.cf||S.def.cf,t.g==='bed'?'Pat (tăblie, ramă)':'Fronturi (uși, sertare)');}h+='</div>';}
- if(isCab){let x='';
-  if(opt.includes('n'))x+=`<div class="lab">Uși / fronturi pe lățime</div>${seg('o.n',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],o.n)}`;
-  if(opt.includes('dr'))x+=`<div class="lab">Număr sertare</div>${seg('o.dr',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']],o.dr)}`;
-  if(opt.includes('sh'))x+=`<div class="lab">Polițe</div>${seg('o.sh',[[0,'0'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']],o.sh)}`;
-  if(opt.includes('hinge')&&(o.n===1||!opt.includes('n')))x+=`<div class="lab">Ușa se deschide spre</div>${seg('o.hinge',[['L','Stânga'],['R','Dreapta']],o.hinge)}`;
-  if(opt.includes('bside'))x+=`<div class="lab">Partea oarbă</div>${seg('o.bside',[['L','Stânga'],['R','Dreapta']],o.bside)}`;
-  if(opt.includes('handle'))x+=`<div class="lab">Mâner</div>${seg('o.handle',[['bar','Bară'],['knob','Buton'],['none','Fără']],o.handle)}`;
-  if(x)h+=`<div class="sec"><h4>Opțiuni</h4>${x}</div>`;}
- h+=`<div class="sec"><h4>Poziție</h4><div class="g2">${num('x','Stânga → dreapta',it.x-(bbox(it).x1-bbox(it).x0)/2)}${num('z','Față ↔ spate',it.z-(bbox(it).z1-bbox(it).z0)/2)}</div><div class="note" style="margin-top:6px">Sau trage piesa cu degetul în studio — se lipește singură de pereți și de piesele vecine.</div></div>`;
+ let h=`<div class="ph"><div class="ic">${icon(it.type)}</div><div><h3>${t.nm}</h3><small>Trage-o cu degetul ca s-o muți</small></div></div>
+ <div class="sec"><h4>Mărime (mm)</h4><div class="g3">${num('w','Lățime',it.w)}${num('h','Înălțime',it.h)}${num('d','Adâncime',it.d)}</div>
+ ${it.e>0||t.e>0?`<div class="g3" style="margin-top:8px">${num('e','De la podea',it.e)}</div>`:''}</div>`;
+ if(!(t.g==='panel'&&t.m==='top')&&t.g!=='app')h+=`<div class="sec"><div class="tog"><span>Placă deasupra</span><label class="switch"><input type="checkbox" data-top="on" ${it.top.on?'checked':''}><i></i></label></div>
+ ${it.top.on?`<div class="g2">${num('top.th','Grosime',it.top.th)}<div></div></div><div style="height:8px"></div>${eggField('top.c',it.top.c||S.def.ct,'Cod Egger placă')}`:''}</div>`;
+ if(t.g!=='app'&&!(t.g==='panel'&&t.m==='mirror')){h+=`<div class="sec"><h4>Culori</h4>`;
+  if(t.g==='panel'){const k=t.m==='top'?'top.c':t.m==='front'?'cf':'cb';h+=eggField(k,k==='top.c'?(it.top.c||S.def.ct):k==='cf'?(it.cf||S.def.cf):(it.cb||S.def.cb),'Cod Egger');}
+  else{h+=eggField('cb',it.cb||S.def.cb,'Cod Egger corp');h+=eggField('cf',it.cf||S.def.cf,t.g==='bed'?'Cod Egger pat':'Cod Egger uși / sertare');}h+='</div>';}
+ if(isCab&&opt.includes('n'))h+=`<div class="sec"><h4>Câte uși</h4>${seg('o.n',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],o.n)}</div>`;
+ if(isCab&&opt.includes('dr'))h+=`<div class="sec"><h4>Câte sertare</h4>${seg('o.dr',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']],o.dr)}</div>`;
+ h+=`<div class="acts" style="margin-top:14px"><button class="btn" data-act="rot">${IC.rot} Rotește</button><button class="btn" data-act="dup">${IC.dup} Copie</button><button class="btn red" data-act="del">${IC.del} Șterge</button></div>`;
  return h;}
-function roomHTML(){const R=S.room;return`<div class="sec" style="border:0;padding-top:0"><h4>Proiect</h4><label class="fld"><span>Nume proiect / client</span><input data-k="name" value="${esc(S.name)}" style="font-size:15px;padding-right:11px"></label></div>
- <div class="sec"><h4>Camera</h4><div class="g3">${num('room.w','Lățime',R.w)}${num('room.d','Adâncime',R.d)}${num('room.h','Înălțime',R.h)}</div>
- <div class="lab" style="margin-top:8px">Pereți</div>${seg('room.left',[[1,'Stânga ✓'],[0,'Fără stânga']],R.left?1:0)}${seg('room.right',[[1,'Dreapta ✓'],[0,'Fără dreapta']],R.right?1:0)}</div>
- <div class="sec"><h4>Culori implicite (pentru piese noi)</h4>${eggField('def.cb',S.def.cb,'Corp')}${eggField('def.cf',S.def.cf,'Fronturi')}${eggField('def.ct',S.def.ct,'Placă / blat')}</div>
- <div class="sec"><h4>Proiecte</h4><div class="acts2"><button class="btn" data-act="proj">Proiectele mele</button><button class="btn" data-act="new">Proiect nou</button><button class="btn" data-act="demo">Exemplu bucătărie</button><button class="btn red" data-act="clear">Golește camera</button></div></div>`;}
+function roomHTML(){const Rm=S.room,L=projs(),names=Object.keys(L).sort((a,b)=>L[b].t-L[a].t).slice(0,8);return`<div class="sec" style="border:0;padding-top:0"><h4>Mărimea camerei (mm)</h4><div class="g3">${num('room.w','Lățime',Rm.w)}${num('room.d','Lungime',Rm.d)}${num('room.h','Înălțime',Rm.h)}</div></div>
+ <div class="sec"><h4>Proiect</h4><label class="fld"><span>Nume (ex: Bucătărie Popescu)</span><input data-k="name" value="${esc(S.name)}" style="font-size:16px;padding-right:11px"></label>
+ <div class="acts2" style="margin-top:10px"><button class="btn gold" data-act="savep">Salvează</button><button class="btn" data-act="new">Proiect nou</button></div>
+ ${names.length?`<div class="plist">${names.map(n=>`<div class="pitem"><span>${esc(n)}</span><button class="btn" data-open="${esc(n)}">Deschide</button></div>`).join('')}</div>`:''}</div>
+ <div class="sec"><h4>Altele</h4><div class="acts2"><button class="btn" data-act="proj">Mută pe alt telefon</button><button class="btn red" data-act="clear">Golește camera</button></div></div>`;}
 const pb=$('#pbody');
 pb.addEventListener('click',e=>{const c=e.target.closest('[data-cat]');if(c){cat=c.dataset.cat;render();return;}const a=e.target.closest('[data-add]');if(a)return addItem(a.dataset.add);
- const b=e.target.closest('button');if(!b)return;if(b.dataset.act)return act(b.dataset.act);if(b.dataset.k!=null&&b.dataset.v!=null)setKey(b.dataset.k,b.dataset.v);});
+ const b=e.target.closest('button');if(!b)return;if(b.dataset.open){const p=projs()[b.dataset.open];if(p){undoS.push(ser());load(p.d);cam('3d');toast('Deschis: '+S.name);}return;}if(b.dataset.act)return act(b.dataset.act);if(b.dataset.k!=null&&b.dataset.v!=null)setKey(b.dataset.k,b.dataset.v);});
 pb.addEventListener('change',e=>{const i=e.target;if(i.dataset.top){setKey('top.on',i.checked?'1':'0');return;}if(i.dataset.egg)return setKey(i.dataset.egg,normCode(i.value));
  if(i.dataset.newc||i.dataset.neww){const k=i.dataset.newc||i.dataset.neww,box=i.closest('.sec');const inp=box.querySelector(`[data-egg="${k}"]`),col=box.querySelector(`[data-newc="${k}"]`),wd=box.querySelector(`[data-neww="${k}"]`);const c=normCode(inp.value);if(!c)return;
   mutate(()=>{S.custom[c]={h:col.value,k:wd&&wd.checked?1:0};});fillEggList();rebuildAll();toast('Culoare salvată pentru '+c);return;}
  if(i.dataset.k)setKey(i.dataset.k,i.value);});
-function setKey(k,v){let all=false;const it=getSel();
+function setKey(k,v){let all=false;const it=getSel();const before=ser();
  mutate(()=>{if(k==='name'){S.name=v||'Proiect';return;}
   if(k.startsWith('room.')){const b=k.slice(5);S.room[b]=b==='left'||b==='right'?v==='1':Math.max(1000,+v||1000);all=true;return;}
   if(k.startsWith('def.')){S.def[k.slice(4)]=normCode(v);all=true;return;}
   if(!it)return;
   if(k.startsWith('o.')){const kk=k.slice(2);it.o[kk]=isNaN(+v)||v===''?v:+v;return;}
   if(k==='top.on'){it.top.on=v==='1';return;}
-  if(k.startsWith('top.')){const kk=k.slice(4);it.top[kk]=kk==='c'?normCode(v)||null:Math.max(0,+v||0);return;}
-  if(k==='cb'||k==='cf'){it[k]=normCode(v)||null;return;}
+  if(k.startsWith('top.')){const kk=k.slice(4);it.top[kk]=kk==='c'?normCode(v)||null:Math.max(0,+v||0);if(kk==='c'&&it.top.c)S.def.ct=it.top.c;return;}
+  if(k==='cb'||k==='cf'){it[k]=normCode(v)||null;if(it[k])S.def[k]=it[k];return;}
   if(k==='x'){it.x=(+v||0)+(bbox(it).x1-bbox(it).x0)/2;return;}if(k==='z'){it.z=(+v||0)+(bbox(it).z1-bbox(it).z0)/2;return;}
   if(k==='w'||k==='h'||k==='d'){const old=bbox(it);it[k]=Math.max(10,+v||10);if(k!=='h'){const nb=bbox(it);// păstrează lipit de perete / colț stânga
     if(it.rot===0){it.x+= (nb.x1-nb.x0-(old.x1-old.x0))/2;it.z=old.z0+(nb.z1-nb.z0)/2;}else if(it.rot===90){it.z+=(nb.z1-nb.z0-(old.z1-old.z0))/2;it.x=old.x0+(nb.x1-nb.x0)/2;}else if(it.rot===270){it.z+=(nb.z1-nb.z0-(old.z1-old.z0))/2;it.x=old.x1-(nb.x1-nb.x0)/2;}}return;}
   if(k==='e'){it.e=Math.max(0,+v||0);return;}});
+ if(it&&!k.startsWith('room.')&&!k.startsWith('def.')){clampRoom(it);if(it.e+fullH(it)>S.room.h+1){S=JSON.parse(before);fix();if(undoS[undoS.length-1]===before)undoS.pop();rebuildAll();save();toast('Mai înaltă decât camera ('+S.room.h+' mm)');return;}if(overlapsOf(it).length&&!pushOut(it)){S=JSON.parse(before);fix();if(undoS[undoS.length-1]===before)undoS.pop();rebuildAll();save();toast('Nu încape — e altă mobilă în cale. Mut-o întâi.');return;}save();}
+ if(k.startsWith('room.')){S.items.forEach(clampRoom);if(S.items.some(i=>overlapsOf(i).length||i.e+fullH(i)>S.room.h+1||bbox(i).x1-bbox(i).x0>S.room.w+1||bbox(i).z1-bbox(i).z0>S.room.d+1)){S=JSON.parse(before);fix();if(undoS[undoS.length-1]===before)undoS.pop();rebuildAll();save();toast('Mobila nu mai încape în camera mai mică — mut-o sau șterge ceva întâi');return;}save();}
  if(all)rebuildAll();else{if(it)rebuild(it);overlay();render();}}
 function act(a){const it=getSel();
  if(a==='toinv')return setTab('inv');
  if(a==='proj')return openProj();
- if(a==='new'){const b=ser();S=newProject();undoS.push(b);redoS=[];selId=null;rebuildAll();save();cam('3d');setTab('inv');toast('Proiect nou — alege mobila din Inventar');return;}
+ if(a==='savep'){const L=projs();L[S.name]={t:Date.now(),d:ser()};LS.set('gm3.projects',JSON.stringify(L));toast('Salvat: '+S.name);render();return;}
+ if(a==='new'){const b=ser();const dd=S.def;S=newProject();S.def=dd;undoS.push(b);redoS=[];selId=null;rebuildAll();save();cam('3d');setTab('inv');toast('Proiect nou — alege mobila din Inventar');return;}
  if(a==='demo'){const b=ser();S=demo();undoS.push(b);redoS=[];selId=null;rebuildAll();save();cam('3d');return;}
  if(a==='clear'){mutate(()=>{S.items=[];});selId=null;rebuildAll();return;}
  if(!it)return;
- if(a==='rot'){mutate(()=>{it.rot=(it.rot+90)%360;});rebuild(it);overlay();render();}
- else if(a==='dup'){let c;mutate(()=>{c=JSON.parse(JSON.stringify(it,(k,v)=>k[0]==='_'?undefined:v));c.id=nid();const r=it.rot%180!==0;if(r)c.z+=it.w;else c.x+=it.w;S.items.push(c);});rebuild(c);select(c.id);toast('Copie făcută');}
+ if(a==='rot'){let ok=true;mutate(()=>{const o={x:it.x,z:it.z,rot:it.rot};it.rot=(it.rot+90)%360;if(!settle(it)){Object.assign(it,o);ok=false;}});if(!ok)toast('Nu încape rotit aici — mut-o întâi');rebuild(it);overlay();render();}
+ else if(a==='dup'){let c;mutate(()=>{c=JSON.parse(JSON.stringify(it,(k,v)=>k[0]==='_'?undefined:v));c.id=nid();const r=it.rot%180!==0;if(r)c.z+=it.w;else c.x+=it.w;S.items.push(c);if(!settle(c)){c.x-=r?0:2*it.w;c.z-=r?2*it.w:0;if(!settle(c)){S.items.pop();c=null;}}});if(!c){toast('Nu e loc pentru copie lângă ea');return;}rebuild(c);select(c.id);toast('Copie făcută');}
  else if(a==='del'){mutate(()=>{S.items=S.items.filter(i=>i!==it);});removeG(it.id);select(null);toast('Șters');}}
 function addItem(k){const t=T[k],it=makeItem(k);const R=S.room;
  // caută loc liber lângă peretele din spate, apoi stânga/dreapta, altfel centru
- const tryAt=(x,z,rot)=>{it.rot=rot;it.x=x;it.z=z;return overlapsOf(it).length===0&&bbox(it).x0>=-1&&bbox(it).x1<=R.w+1&&bbox(it).z1<=R.d+1;};
+ Object.assign(it,{cb:S.def.cb,cf:S.def.cf});it.top.c=S.def.ct;const tryAt=(x,z,rot)=>{it.rot=rot;it.x=x;it.z=z;return overlapsOf(it).length===0&&bbox(it).x0>=-1&&bbox(it).x1<=R.w+1&&bbox(it).z0>=-1&&bbox(it).z1<=R.d+1;};
  let ok=false;
  if(!t.free){for(let x=t.w/2;x<=R.w-t.w/2+1&&!ok;x+=50)ok=tryAt(x,t.d/2,0);
   if(!ok&&R.left)for(let z=t.w/2;z<=R.d-t.w/2&&!ok;z+=50)ok=tryAt(t.d/2,z,90);if(!ok&&R.right)for(let z=t.w/2;z<=R.d-t.w/2&&!ok;z+=50)ok=tryAt(R.w-t.d/2,z,270);}
- if(!ok){it.rot=0;it.x=R.w/2;it.z=R.d/2;}
- if(t.g==='cab'||t.g==='app'){/* aliniază pe orizontală cu vecinul */}
+ if(t.free)for(let z=R.d/2;z<=R.d-t.d/2&&!ok;z+=100)for(let x=t.w/2;x<=R.w-t.w/2&&!ok;x+=100)ok=tryAt(x,z,0);
+ for(const rot of[0,90])for(let z=0;z<=R.d&&!ok;z+=50)for(let x=0;x<=R.w&&!ok;x+=50){it.rot=rot;const b0=bbox(it);ok=tryAt(x+(b0.x1-b0.x0)/2,z+(b0.z1-b0.z0)/2,rot);}
+ if(!ok){toast('Camera e plină — mărește camera (Cameră) sau mută/șterge ceva');return;}
  mutate(()=>S.items.push(it));rebuild(it);select(it.id,true);toast(`Adăugat: ${t.nm} — trage-l cu degetul ca să-l muți`);}
 function select(id,toEdit){const ch=selId!==(id||null);selId=id||null;overlay();if(selId&&(toEdit||tab==='edit'||isMobile())){if(tab!=='edit'||ch)$('#pbody').scrollTop=0;tab='edit';$$('.ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.ptab==='edit'));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav==='edit'));if(isMobile())$('#panel').classList.add('open');}
  if(!selId&&isMobile()&&tab==='edit')$('#panel').classList.remove('open');render();}
@@ -670,10 +673,10 @@ let camA=null;function cam(k,inst){const R=S.room,W=R.w*MM,Dp=R.d*MM,H=R.h*MM,as
  if(k==='top')p=new THREE.Vector3(W/2,dist*1.05,Dp/2+.001);else if(k==='front')p=new THREE.Vector3(W/2,1.35,Dp/2+dist*.98);else p=tg.clone().add(new THREE.Vector3(.55,.62,.9).normalize().multiplyScalar(dist));
  if(inst){camera.position.copy(p);controls.target.copy(tg);controls.update();return;}camA={p0:camera.position.clone(),t0:controls.target.clone(),p1:p,t1:tg,t:0};}
 $$('#viewbar [data-cam]').forEach(b=>b.onclick=()=>{$$('#viewbar [data-cam]').forEach(x=>x.classList.toggle('on',x===b));cam(b.dataset.cam);});
-$('#bDims').onclick=()=>{showDims=!showDims;$('#bDims').classList.toggle('on',showDims);overlay();};
+
 $('#bOpen').onclick=()=>{openTarget=openTarget?0:1;$('#bOpen').classList.toggle('on',!!openTarget);};
-$('#bXray').onclick=()=>{xray=!xray;$('#bXray').classList.toggle('on',xray);applyX();};
-addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();$(e.shiftKey?'#bRedo':'#bUndo').click();}else if(e.key==='Delete'||e.key==='Backspace'){if(getSel()){e.preventDefault();act('del');}}else if(e.key==='r'||e.key==='R')act('rot');else if(e.key==='Escape'){closeModal();select(null);}});
+
+addEventListener('keydown',e=>{if(e.target.matches('input,textarea'))return;if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();$('#bUndo').click();}else if(e.key==='Delete'||e.key==='Backspace'){if(getSel()){e.preventDefault();act('del');}}else if(e.key==='r'||e.key==='R')act('rot');else if(e.key==='Escape'){closeModal();select(null);}});
 
 /* ================== MODALE ================== */
 let mState=null;function openModal(h,wide){const M=$('#modal');M.innerHTML=`<div class="card2 ${wide?'wide':''}">${h}</div>`;M.hidden=false;}
@@ -700,29 +703,20 @@ function openList(){mState={list:1};const P=pieces();let g='',rows='';const area
  $('#lCsv').onclick=()=>saveFile(`GIMMOB_${S.name.replace(/[^\w-]+/g,'_')}_piese.csv`,csv);
  $('#lCp').onclick=async()=>{try{await navigator.clipboard.writeText(csv);toast('Copiat — lipește în Excel');}catch(e){toast('Nu pot copia aici');}};}
 function projs(){try{return JSON.parse(LS.get('gm3.projects')||'{}')}catch(e){return{}}}
-function openProj(){mState={proj:1};const L=projs(),names=Object.keys(L).sort((a,b)=>L[b].t-L[a].t);
- openModal(`${mh('Proiectele mele','Salvate pe acest telefon / calculator')}
- <button class="btn gold wide" id="pS">Salvează „${esc(S.name)}”</button>
- <div class="plist">${names.map(n=>`<div class="pitem"><span>${esc(n)}</span><button class="btn" data-pl="${esc(n)}">Deschide</button><button class="ib" data-pd="${esc(n)}">${IC.del}</button></div>`).join('')||'<div class="note">Niciun proiect salvat încă.</div>'}</div>
- <div class="sec"><h4>Mută proiectul pe alt dispozitiv</h4><div class="acts2"><button class="btn" id="pE">Descarcă fișier</button><label class="btn" style="position:relative;overflow:hidden">Deschide fișier<input type="file" id="pI" accept=".json,application/json" style="position:absolute;inset:0;opacity:0"></label></div></div>`);
- $('#pS').onclick=()=>{const L=projs();L[S.name]={t:Date.now(),d:ser()};LS.set('gm3.projects',JSON.stringify(L));toast('Salvat');openProj();};
+function openProj(){mState={proj:1};
+ openModal(`${mh('Mută proiectul','Pe alt telefon sau calculator')}<div class="note" style="font-size:14px;margin-bottom:12px">1. Apasă <b>Descarcă</b> aici.<br>2. Trimite fișierul pe celălalt telefon (WhatsApp, email).<br>3. Acolo apasă <b>Deschide fișier</b> și alege-l.</div>
+ <div class="acts2"><button class="btn gold" id="pE">Descarcă</button><label class="btn" style="position:relative;overflow:hidden">Deschide fișier<input type="file" id="pI" accept=".json,application/json" style="position:absolute;inset:0;opacity:0"></label></div>`);
  $('#pE').onclick=()=>saveFile(`GIMMOB_${S.name.replace(/[^\w-]+/g,'_')}.json`,ser());
- $('#pI').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(v=>{try{const o=JSON.parse(v);if(!o.items)throw 0;undoS.push(ser());load(v);cam('3d');closeModal();toast('Proiect deschis');}catch(x){toast('Fișier greșit');}});};
- $$('[data-pl]').forEach(b=>b.onclick=()=>{const p=projs()[b.dataset.pl];if(!p)return;undoS.push(ser());load(p.d);cam('3d');closeModal();toast('Deschis: '+S.name);});
- $$('[data-pd]').forEach(b=>b.onclick=()=>{const L=projs();delete L[b.dataset.pd];LS.set('gm3.projects',JSON.stringify(L));openProj();});}
-$('#bProj').onclick=openProj;
+ $('#pI').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(v=>{try{const o=JSON.parse(v);if(!o.items)throw 0;undoS.push(ser());load(v);cam('3d');closeModal();toast('Proiect deschis');}catch(x){toast('Fișier greșit');}});};}
+
 $('#bShot').onclick=()=>{const s=selId;selId=null;overlay();renderer.render(scene,camera);const url=renderer.domElement.toDataURL('image/jpeg',.92);selId=s;overlay();
  mState={shot:1};openModal(`${mh('Poză pentru client','Ține apăsat pe imagine ca s-o salvezi, sau apasă butonul')}<img class="shot" src="${url}"><div style="height:10px"></div><button class="btn gold wide" id="shD">Descarcă poza</button>`,true);
  $('#shD').onclick=()=>{const bs=atob(url.split(',')[1]),u8=new Uint8Array(bs.length);for(let i=0;i<bs.length;i++)u8[i]=bs.charCodeAt(i);saveFile(`GIMMOB_${S.name.replace(/[^\w-]+/g,'_')}.jpg`,new Blob([u8],{type:'image/jpeg'}));};};
 function welcome(){mState={welcome:1};openModal(`<div style="text-align:center;padding:6px 4px"><img src="${$('.brand img').src}" style="width:120px;border-radius:10px;margin:4px auto 14px;display:block"><h2 style="font-size:26px;margin-bottom:10px">Bun venit în GIM MOB</h2>
  <div style="font-size:17px;line-height:1.5;margin:0 0 18px">Confirmă că <b style="color:var(--gold)">Șerban</b> e cel mai șmecher fiu și că trebuie să îi dai <b style="color:var(--gold)">100 de lei</b> pe aplicație.</div><button class="btn gold wide" id="wOk" style="font-size:16px;padding:14px">Confirm ✓</button></div>`);
  $('#wOk').onclick=()=>{LS.set('gimmob.welcome','1');closeModal(true);toast('Confirmat! Șerban așteaptă cei 100 de lei 😄');setTimeout(howto,900);};}
-function howto(){if(LS.get('gm3.help'))return;LS.set('gm3.help','1');mState={help:1};openModal(`${mh('Cum lucrezi','3 pași simpli')}<div style="font-size:15px;line-height:1.6">
- <p><b style="color:var(--gold)">1. Inventar</b> — alegi mobila (bucătărie, dulap, pat, cuptor, chiuvetă…). Apare în cameră.</p>
- <p><b style="color:var(--gold)">2. Editează</b> — scrii <b>lățimea, înălțimea, adâncimea</b>, pui <b>placă deasupra</b> și scrii <b>codul Egger</b> pentru culoare (ex: H1145).</p>
- <p><b style="color:var(--gold)">3. Mută</b> — atinge piesa, apoi trage-o cu degetul. Se lipește singură de perete.</p>
- <p class="note">Un deget pe gol = rotești camera · două degete = zoom. Butonul <b>Listă</b> îți dă toate piesele de tăiat.</p></div><button class="btn gold wide" data-x="1">Am înțeles</button>`);}
-
+function howto(){if(LS.get('gm3.help2'))return;LS.set('gm3.help2','1');mState={help:1};openModal(`${mh('Cum lucrezi')}<div style="font-size:16px;line-height:1.7">
+ <p><b style="color:var(--gold)">1.</b> Apasă <b>Inventar</b> și alege mobila.</p><p><b style="color:var(--gold)">2.</b> Scrie <b>lățimea, înălțimea, adâncimea</b> și <b>codul Egger</b>.</p><p><b style="color:var(--gold)">3.</b> Trage mobila cu degetul unde vrei.</p></div><button class="btn gold wide" data-x="1">Am înțeles</button>`);}
 /* ================== PORNIRE ================== */
 function resize(){const w=view.clientWidth,h=view.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/Math.max(1,h);camera.updateProjectionMatrix();}
 new ResizeObserver(resize).observe(view);
@@ -732,7 +726,7 @@ function loop(){requestAnimationFrame(loop);if(camA){camA.t=Math.min(1,camA.t+.0
  controls.update();renderer.render(scene,camera);}
 fillEggList();resize();buildRoom();S.items.forEach(rebuild);render();top_();cam('3d',true);loop();
 if(!isMobile())setTab('inv');
-window.__gmobReady=true;window.__g={S:()=>S,T,build,addItem,select,setKey,act,pieces,openList,setTab,snapMove,overlapsOf,egg};
+window.__gmobReady=true;window.__g={S:()=>S,T,build,addItem,select,setKey,act,pieces,openList,setTab,snapMove,overlapsOf,egg,bbox,clampRoom,pushOut,fullH};
 setTimeout(()=>{$('#splash').classList.add('off');if(!LS.get('gimmob.welcome'))setTimeout(welcome,400);else setTimeout(howto,400);},600);
 </script>
 </body>
