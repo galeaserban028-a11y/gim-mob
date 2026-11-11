@@ -45,8 +45,15 @@ button{font-family:inherit;color:inherit}
 #viewbar{top:12px;right:12px}
 #hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);background:rgba(14,14,14,.88);color:#e9e2d4;padding:9px 14px;border-radius:12px;font-size:12.5px;z-index:3;pointer-events:none;max-width:calc(100% - 24px);text-align:center;border:1px solid #3a301c}
 #hint:empty{display:none}
+#selbar{position:absolute;left:8px;right:8px;bottom:10px;z-index:6;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:rgba(14,14,14,.94);border:1px solid #3a301c;border-radius:16px;padding:8px}
+#selbar[hidden]{display:none}
+#selbar span{flex:1 1 100%;font:700 13px Inter;color:var(--gold);padding:0 4px 2px}
+#selbar button{flex:1;border:1px solid #333;background:#1e1e1e;border-radius:11px;padding:11px 4px;font:700 13px Inter;cursor:pointer}
+#selbar button.gold{background:linear-gradient(180deg,#e7c784,#b3873f);color:#171108;border-color:#c59c55;flex:1.4}
+#selbar button.red{color:#ff8b7b;border-color:#4a2620;background:#1f1412}
+#selbar button[data-sb=x]{flex:.5}
 /* inventar */
-.search{width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:12px;color:var(--txt);padding:11px 12px;font:500 15px Inter;outline:none;margin-bottom:10px}
+.search{width:100%;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:12px;color:var(--txt);padding:11px 12px;font:500 16px Inter;outline:none;margin-bottom:10px}
 .search:focus{border-color:var(--gold2)}
 .chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:6px;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
@@ -170,6 +177,7 @@ table.cl{width:100%;border-collapse:collapse;font-size:13px}
  <main id="view">
   <div class="fbar" id="viewbar"><button data-cam="3d" class="on">3D</button><button data-cam="top">De sus</button><button id="bOpen">Deschide uși</button></div>
   <div id="hint"></div>
+  <div id="selbar" hidden><span id="sbName"></span><button data-sb="edit" class="gold">Modifică</button><button data-sb="rot">Rotește</button><button data-sb="dup">Copie</button><button data-sb="del" class="red">Șterge</button><button data-sb="x">✕</button></div>
  </main>
  <aside id="panel"><div class="grab"></div><div class="ptabs"><button data-ptab="inv" class="on">Inventar</button><button data-ptab="edit">Editează</button><button data-ptab="room">Cameră</button></div><div class="pbody" id="pbody"></div></aside>
  <nav id="nav">
@@ -265,9 +273,9 @@ def('el_sbs','el','Frigider side-by-side',910,1780,720,0,'app',{app:'sbs'});
 def('el_range','el','Aragaz',600,850,600,0,'app',{app:'range'});
 def('el_wm','el','Mașină de spălat',600,850,600,0,'app',{app:'washer'});
 def('el_oven','el','Cuptor încorporabil',595,595,550,900,'app',{app:'oven'});
-def('el_mw','el','Cuptor cu microunde',480,280,380,900,'app',{app:'mw'});
-def('el_hob','el','Plită',600,40,520,858,'app',{app:'hob'});
-def('el_sink','el','Chiuvetă (cuvă)',800,30,500,858,'app',{app:'sink'});
+def('el_mw','el','Cuptor cu microunde',480,280,380,900,'app',{app:'mw',free:1});
+def('el_hob','el','Plită',600,40,520,858,'app',{app:'hob',free:1});
+def('el_sink','el','Chiuvetă (cuvă)',800,30,500,858,'app',{app:'sink',free:1});
 def('el_hood','el','Hotă decorativă',900,1000,500,1600,'app',{app:'hood'});
 def('el_tv','el','Televizor',1450,830,60,1000,'app',{app:'tv'});
 // living
@@ -325,11 +333,11 @@ let uidN=1;const nid=()=>'i'+Date.now().toString(36)+(uidN++);
 function defOpts(k){const t=T[k];return{n:t.n||1,dr:t.dr||0,sh:t.sh!=null?t.sh:1,hinge:'L',handle:'bar',pl:t.pl!=null?t.pl:0,bside:'L'};}
 function makeItem(k,p={}){const t=T[k];return Object.assign({id:nid(),type:k,x:0,z:0,rot:0,w:t.w,h:t.h,d:t.d,e:t.e,o:defOpts(k),cb:null,cf:null,top:{on:!!t.top,th:38,f:20,c:null}},p);}
 function newProject(){return{name:'Proiect nou',room:{w:3600,d:3000,h:2600,left:true,right:true},def:{cb:'W1000',cf:'H1145',ct:'F186'},custom:{},items:[]};}
-function demo(){const s=newProject();s.name='Bucătărie demo';const I=s.items;let x=0;
+function demo(){const s=newProject();s.name='Bucătărie demo';s.room.w=4300;const I=s.items;let x=0;
  [['kb_dr3',600],['kb_sink',800],['kb_dw',600],['kb_ovhob',600],['kb_d1',450]].forEach(([k,w])=>{I.push(makeItem(k,{w,x:x+w/2,z:290}));x+=w;});
  I.push(makeItem('kc_fr',{x:x+300,z:290}));I.push(makeItem('kc_ovmw',{x:x+900,z:290}));
- x=0;[['ks_d2',800],['ks_glass',800],['ks_hood',600],['ks_d1',600],['ks_flap',450]].forEach(([k,w])=>{I.push(makeItem(k,{w,x:x+w/2,z:160}));x+=w;});
- I.push(makeItem('ms_tab',{x:1900,z:2100}));return s;}
+ x=0;[['ks_d2',800],['ks_glass',800],['ks_hood',600],['ks_d1',450],['ks_d1',400]].forEach(([k,w])=>{I.push(makeItem(k,{w,x:x+w/2,z:160}));x+=w;});
+ I.push(makeItem('ms_tab',{x:2000,z:2000}));s.items.forEach(i=>{i.cb=s.def.cb;i.cf=s.def.cf;i.top.c=s.def.ct;});return s;}
 let S;const hadLocal=!!LS.get('gm3.current');
 try{S=hadLocal?JSON.parse(LS.get('gm3.current')):demo();}catch(e){S=demo();}
 fix();
@@ -338,10 +346,10 @@ function fix(){const n=newProject();S.room=Object.assign(n.room,S.room||{});S.de
 /* ================== GENERATOR MOBILĂ (mm, local; față spre +z) ================== */
 function build(it){
  const t=T[it.type],o=it.o,W=it.w,H=it.h,Dd=it.d,P=[];
- const B=(name,x0,x1,y0,y1,z0,z1,mat,ex={})=>{if(x1-x0<=.5||y1-y0<=.5||z1-z0<=.5)return;P.push({name,x0,x1,y0,y1,z0,z1,mat,cut:ex.cut!==false&&!/metal|inox|glass|mirror|app|white|black|leg|mattress|fabric|ceramic|burner|hobglass|gdoor|sinkhole/.test(mat),a:ex.a||null,shape:ex.shape||null,role:ex.role||''});};
+ const B=(name,x0,x1,y0,y1,z0,z1,mat,ex={})=>{if(x1-x0<=.5||y1-y0<=.5||z1-z0<=.5)return;P.push({name,x0,x1,y0,y1,z0,z1,mat,cut:ex.cut!==false&&!/metal|inox|glass|mirror|app|white|black|leg|mattress|fabric|ceramic|burner|hobglass|gdoor|sinkhole|screen/.test(mat),a:ex.a||null,shape:ex.shape||null,role:ex.role||''});};
  const T18=18,G=3,FT=18;
  if(t.g==='panel'){B(t.nm,-W/2,W/2,0,H,-Dd/2,Dd/2,t.m,{cut:!t.nocut});return P;}
- if(t.g==='table'){const th=25,lg=60,ins=50;B('Blat masă',-W/2,W/2,H-th,H,-Dd/2,Dd/2,'front');for(const sx of[-1,1])for(const sz of[-1,1])B('Picior masă',sx*(W/2-ins)-(sx>0?lg:0),sx*(W/2-ins)+(sx<0?lg:0),0,H-th,sz*(Dd/2-ins)-(sz>0?lg:0),sz*(Dd/2-ins)+(sz<0?lg:0),'body');
+ if(t.g==='table'){const th=25,lg=60,ins=50;B('Blat masă',-W/2,W/2,H-th,H,-Dd/2,Dd/2,'front');for(const sx of[-1,1])for(const sz of[-1,1])B('Picior masă',sx*(W/2-ins)-(sx>0?lg:0),sx*(W/2-ins)+(sx<0?lg:0),0,H-th,sz*(Dd/2-ins)-(sz>0?lg:0),sz*(Dd/2-ins)+(sz<0?lg:0),'body',{cut:false});
   B('Ramă',-W/2+ins+lg,W/2-ins-lg,H-th-80,H-th,-Dd/2+ins+lg/2-9,-Dd/2+ins+lg/2+9,'body');B('Ramă',-W/2+ins+lg,W/2-ins-lg,H-th-80,H-th,Dd/2-ins-lg/2-9,Dd/2-ins-lg/2+9,'body');return P;}
  if(t.g==='desk'){const th=25;B('Blat birou',-W/2,W/2,H-th,H,-Dd/2,Dd/2,'front');B('Lateral birou',-W/2,-W/2+T18,0,H-th,-Dd/2,Dd/2-20,'body');
   if(t.ped){const pw=420;B('Lateral sertare',W/2-pw,W/2-pw+T18,0,H-th,-Dd/2,Dd/2-20,'body');B('Lateral birou',W/2-T18,W/2,0,H-th,-Dd/2,Dd/2-20,'body');
@@ -359,7 +367,7 @@ function build(it){
   for(const sx of[-1,1])for(const sz of[-1,1])B('Picior',sx*(W/2-60)-25,sx*(W/2-60)+25,0,120,sz*(Dd/2-80)-25,sz*(Dd/2-80)+25,'leg',{shape:'cyl'});return P;}
  if(t.g==='coat'){B('Panou cuier',-W/2,W/2,0,H-25,-Dd/2,-Dd/2+18,'front');B('Oglindă',-W/2+40,-W/2+W*.45,700,H-80,-Dd/2+18,-Dd/2+24,'mirror');
   for(let i=0;i<5;i++){const x=-W/2+W*.52+i*(W*.44/4);B('Cuier',x-8,x+8,1500,1516,-Dd/2+18,-Dd/2+90,'metal');}
-  B('Poliță',-W/2,W/2,H-25,H,-Dd/2+18,Dd/2,'body');if(H>700)B('Bancă',-W/2+W*.5,W/2,0,450,-Dd/2+18,Dd/2,'body');return P;}
+  B('Poliță',-W/2,W/2,H-25,H,-Dd/2+18,Dd/2,'body');if(H>700){const bx=-W/2+W*.5;B('Șezut bancă',bx,W/2,432,450,-Dd/2+18,Dd/2,'body');B('Lateral bancă',bx,bx+18,0,432,-Dd/2+18,Dd/2,'body');B('Lateral bancă',W/2-18,W/2,0,432,-Dd/2+18,Dd/2,'body');}return P;}
  if(t.g==='app'){appliance(t.app,W,H,Dd,B);return topPlate(it,P,B);}
  /* ---- corp (cab) ---- */
  const PL=Math.max(0,Math.min(o.pl||0,H-100)),hasF=!(t.rows(o).every(r=>r[1]==='open')),cd=hasF?Dd-FT-2:Dd,zB=-Dd/2,zF=zB+cd,xi0=-W/2+T18,xi1=W/2-T18,BK=4,zc=zB+BK;
@@ -587,9 +595,9 @@ function icon(k){if(iconC[k])return iconC[k];const it=makeItem(k);it.top.on=!!T[
  P.filter(p=>p.mat!=='back'&&!/^Sertar /.test(p.name)).sort((a,b)=>(ord[a.mat]??1)-(ord[b.mat]??1)).forEach(p=>{const[a,b]=px(p),[c,d]=py(p);const x=ox+a*sc,y=oy-d*sc,w=Math.max(.7,(b-a)*sc),h=Math.max(.7,(d-c)*sc);
   s+=p.shape?`<ellipse cx="${(x+w/2).toFixed(2)}" cy="${(y+h/2).toFixed(2)}" rx="${(w/2).toFixed(2)}" ry="${(h/2).toFixed(2)}" fill="${fill[p.mat]||'#fff'}" stroke="#444" stroke-width=".4"/>`:`<rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${w.toFixed(2)}" height="${h.toFixed(2)}" fill="${fill[p.mat]||'#fff'}" stroke="#4a4a4a" stroke-width=".45"/>`;});
  return iconC[k]=s+'</svg>';}
-function setTab(t){if(tab!==t)$('#pbody').scrollTop=0;tab=t;$$('.ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.ptab===t));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav===t));render();if(isMobile())$('#panel').classList.add('open');}
+function setTab(t){if(tab!==t)$('#pbody').scrollTop=0;tab=t;$$('.ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.ptab===t));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav===t));render();if(isMobile())openP();}
 $$('.ptabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.ptab));
-$$('#nav button').forEach(b=>b.onclick=()=>{const n=b.dataset.nav;if(n==='list')return openList();if(isMobile()&&tab===n&&$('#panel').classList.contains('open')){$('#panel').classList.remove('open');b.classList.remove('on');return;}setTab(n);});
+$$('#nav button').forEach(b=>b.onclick=()=>{const n=b.dataset.nav;if(n==='list')return openList();if(isMobile()&&tab===n&&panelOpen()){closeP();return;}setTab(n);});
 $('#bList').onclick=()=>openList();
 function render(){const B=$('#pbody');if(tab==='inv')B.innerHTML=invHTML();else if(tab==='edit')B.innerHTML=editHTML();else B.innerHTML=roomHTML();if(tab==='inv'){const s=$('#invq');if(s){s.oninput=()=>{q=s.value;$('#invg').innerHTML=gridHTML();};}}}
 function gridHTML(){const qq=q.trim().toLowerCase();let h='';for(const[ck,cn]of CATS){if(cat!=='all'&&cat!==ck)continue;const ks=Object.values(T).filter(t=>t.cat===ck&&(!qq||t.nm.toLowerCase().includes(qq)));if(!ks.length)continue;if(cat==='all')h+=`<div class="cath">${cn}</div>`;
@@ -626,9 +634,9 @@ pb.addEventListener('change',e=>{const i=e.target;if(i.dataset.top){setKey('top.
  if(i.dataset.newc||i.dataset.neww){const k=i.dataset.newc||i.dataset.neww,box=i.closest('.sec');const inp=box.querySelector(`[data-egg="${k}"]`),col=box.querySelector(`[data-newc="${k}"]`),wd=box.querySelector(`[data-neww="${k}"]`);const c=normCode(inp.value);if(!c)return;
   mutate(()=>{S.custom[c]={h:col.value,k:wd&&wd.checked?1:0};});fillEggList();rebuildAll();toast('Culoare salvată pentru '+c);return;}
  if(i.dataset.k)setKey(i.dataset.k,i.value);});
-function setKey(k,v){let all=false;const it=getSel();const before=ser();
+function setKey(k,v){let all=false;const it=getSel();const before=ser();setTimeout(()=>{if(ser()===before&&tab!=='inv')render();},0);
  mutate(()=>{if(k==='name'){S.name=v||'Proiect';return;}
-  if(k.startsWith('room.')){const b=k.slice(5);S.room[b]=b==='left'||b==='right'?v==='1':Math.max(1000,+v||1000);all=true;return;}
+  if(k.startsWith('room.')){const b=k.slice(5);if(b!=='left'&&b!=='right'&&(String(v).trim()===''||!isFinite(+v)))return;S.room[b]=b==='left'||b==='right'?v==='1':Math.max(1000,Math.min(20000,+v));all=true;return;}
   if(k.startsWith('def.')){S.def[k.slice(4)]=normCode(v);all=true;return;}
   if(!it)return;
   if(k.startsWith('o.')){const kk=k.slice(2);it.o[kk]=isNaN(+v)||v===''?v:+v;return;}
@@ -636,7 +644,8 @@ function setKey(k,v){let all=false;const it=getSel();const before=ser();
   if(k.startsWith('top.')){const kk=k.slice(4);it.top[kk]=kk==='c'?normCode(v)||null:Math.max(0,+v||0);if(kk==='c'&&it.top.c)S.def.ct=it.top.c;return;}
   if(k==='cb'||k==='cf'){it[k]=normCode(v)||null;if(it[k])S.def[k]=it[k];return;}
   if(k==='x'){it.x=(+v||0)+(bbox(it).x1-bbox(it).x0)/2;return;}if(k==='z'){it.z=(+v||0)+(bbox(it).z1-bbox(it).z0)/2;return;}
-  if(k==='w'||k==='h'||k==='d'){const old=bbox(it);it[k]=Math.max(10,+v||10);if(k!=='h'){const nb=bbox(it);// păstrează lipit de perete / colț stânga
+  if((k==='w'||k==='h'||k==='d'||k==='e'||k.startsWith('top.')&&k!=='top.c'&&k!=='top.on')&&(String(v).trim()===''||!isFinite(+v)||+v<0))return;
+  if(k==='w'||k==='h'||k==='d'){const old=bbox(it);it[k]=Math.max(5,+v);if(k!=='h'){const nb=bbox(it);// păstrează lipit de perete / colț stânga
     if(it.rot===0){it.x+= (nb.x1-nb.x0-(old.x1-old.x0))/2;it.z=old.z0+(nb.z1-nb.z0)/2;}else if(it.rot===90){it.z+=(nb.z1-nb.z0-(old.z1-old.z0))/2;it.x=old.x0+(nb.x1-nb.x0)/2;}else if(it.rot===270){it.z+=(nb.z1-nb.z0-(old.z1-old.z0))/2;it.x=old.x1-(nb.x1-nb.x0)/2;}}return;}
   if(k==='e'){it.e=Math.max(0,+v||0);return;}});
  if(it&&!k.startsWith('room.')&&!k.startsWith('def.')){clampRoom(it);if(it.e+fullH(it)>S.room.h+1){S=JSON.parse(before);fix();if(undoS[undoS.length-1]===before)undoS.pop();rebuildAll();save();toast('Mai înaltă decât camera ('+S.room.h+' mm)');return;}if(overlapsOf(it).length&&!pushOut(it)){S=JSON.parse(before);fix();if(undoS[undoS.length-1]===before)undoS.pop();rebuildAll();save();toast('Nu încape — e altă mobilă în cale. Mut-o întâi.');return;}save();}
@@ -659,12 +668,22 @@ function addItem(k){const t=T[k],it=makeItem(k);const R=S.room;
  let ok=false;
  if(!t.free){for(let x=t.w/2;x<=R.w-t.w/2+1&&!ok;x+=50)ok=tryAt(x,t.d/2,0);
   if(!ok&&R.left)for(let z=t.w/2;z<=R.d-t.w/2&&!ok;z+=50)ok=tryAt(t.d/2,z,90);if(!ok&&R.right)for(let z=t.w/2;z<=R.d-t.w/2&&!ok;z+=50)ok=tryAt(R.w-t.d/2,z,270);}
+ if(t.free&&t.e>=800&&t.h<400)for(const o of S.items){if(ok)break;if(!(o.top&&o.top.on)||T[o.type].g!=='cab')continue;it.e=o.e+fullH(o);it.rot=o.rot;ok=tryAt(o.x,o.z,o.rot);if(!ok)it.e=t.e;}
  if(t.free)for(let z=R.d/2;z<=R.d-t.d/2&&!ok;z+=100)for(let x=t.w/2;x<=R.w-t.w/2&&!ok;x+=100)ok=tryAt(x,z,0);
  for(const rot of[0,90])for(let z=0;z<=R.d&&!ok;z+=50)for(let x=0;x<=R.w&&!ok;x+=50){it.rot=rot;const b0=bbox(it);ok=tryAt(x+(b0.x1-b0.x0)/2,z+(b0.z1-b0.z0)/2,rot);}
  if(!ok){toast('Camera e plină — mărește camera (Cameră) sau mută/șterge ceva');return;}
  mutate(()=>S.items.push(it));rebuild(it);select(it.id,true);toast(`Adăugat: ${t.nm} — trage-l cu degetul ca să-l muți`);}
-function select(id,toEdit){const ch=selId!==(id||null);selId=id||null;overlay();if(selId&&(toEdit||tab==='edit'||isMobile())){if(tab!=='edit'||ch)$('#pbody').scrollTop=0;tab='edit';$$('.ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.ptab==='edit'));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav==='edit'));if(isMobile())$('#panel').classList.add('open');}
- if(!selId&&isMobile()&&tab==='edit')$('#panel').classList.remove('open');render();}
+function panelOpen(){return $('#panel').classList.contains('open');}
+function openP(){$('#panel').classList.add('open');selbar();}
+function closeP(){$('#panel').classList.remove('open');$$('#nav button').forEach(b=>b.classList.remove('on'));selbar();}
+function selbar(){const sb=$('#selbar');if(!sb)return;const show=isMobile()&&!!selId&&!panelOpen();sb.hidden=!show;if(show){const it=getSel();$('#sbName').textContent=it?T[it.type].nm:'';}}
+function select(id,toEdit){const ch=selId!==(id||null);selId=id||null;overlay();
+ if(isMobile()){
+  if(selId&&toEdit){if(tab!=='edit'||ch)$('#pbody').scrollTop=0;tab='edit';$$('.ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.ptab==='edit'));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.nav==='edit'));openP();}
+  else if(selId){if(panelOpen()&&tab==='edit'){if(ch)$('#pbody').scrollTop=0;}else if(panelOpen())closeP();}
+  else{if(panelOpen()&&tab==='edit')closeP();}
+ } else if(selId){if(tab!=='edit'||ch)$('#pbody').scrollTop=0;tab='edit';$$('.ptabs button').forEach(b=>b.classList.toggle('on',b.dataset.ptab==='edit'));}
+ render();selbar();}
 function renderEdit(){if(tab==='edit')render();}
 function fillEggList(){$('#eggList').innerHTML=[...EGGER.map(([c,n])=>`<option value="${c}">${c} ${n}</option>`),...Object.keys(S.custom||{}).map(c=>`<option value="${c}">${c} (propriu)</option>`)].join('');}
 
@@ -685,7 +704,7 @@ $('#modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.clos
 const mh=(t,s)=>`<div class="mh"><div><h2>${t}</h2>${s?`<div class="sub">${s}</div>`:''}</div><button class="ib" data-x="1">${IC.x}</button></div>`;
 function pieces(){const rows={},hw={bal:0,glis:0,man:0,pic:0},apps={};
  for(const it of S.items){const t=T[it.type];if(t.g==='app'){apps[t.nm]=(apps[t.nm]||0)+1;}
-  for(const p of build(it)){if(p.role==='handle')hw.man++;if(p.mat==='leg')hw.pic++;if(p.role==='door'&&p.a&&p.a.k==='door'){const hh=p.y1-p.y0;hw.bal+=hh<=900?2:hh<=1600?3:4;}if(p.role==='dfront')hw.glis++;
+  for(const p of build(it)){if(p.role==='handle')hw.man++;if(p.mat==='leg'||p.name==='Picior masă')hw.pic++;if(p.role==='door'&&p.a&&p.a.k==='door'){const hh=p.y1-p.y0;hw.bal+=hh<=900?2:hh<=1600?3:4;}if(p.role==='dfront')hw.glis++;
    if(['Cuptor','Microunde','Mașină vase','Frigider (aparat)'].includes(p.name)&&t.g==='cab'){const n=p.name==='Mașină vase'?'Mașină spălat vase (încorporabilă)':p.name==='Frigider (aparat)'?'Frigider încorporabil':p.name==='Cuptor'?'Cuptor încorporabil':'Microunde încorporabil';apps[n]=(apps[n]||0)+1;}
    if(p.name==='Plită'&&t.g==='cab')apps['Plită']=(apps['Plită']||0)+1;if(p.name==='Chiuvetă inox'&&t.g==='cab')apps['Chiuvetă inox + baterie']=(apps['Chiuvetă inox + baterie']||0)+1;if(p.name==='Lavoar')apps['Lavoar ceramic']=(apps['Lavoar ceramic']||0)+1;
    if(!p.cut)continue;const[L,Wd,th]=[p.x1-p.x0,p.y1-p.y0,p.z1-p.z0].map(v=>Math.round(v)).sort((a,b)=>b-a);
@@ -724,7 +743,9 @@ const tv=new THREE.Vector3();
 function loop(){requestAnimationFrame(loop);if(camA){camA.t=Math.min(1,camA.t+.06);const k=1-Math.pow(1-camA.t,3);camera.position.lerpVectors(camA.p0,camA.p1,k);controls.target.lerpVectors(camA.t0,camA.t1,k);if(camA.t>=1)camA=null;}
  if(Math.abs(openT-openTarget)>.001){openT+=(openTarget-openT)*.12;if(Math.abs(openT-openTarget)<.002)openT=openTarget;S.items.forEach(i=>applyOpen(i,openT));}
  controls.update();renderer.render(scene,camera);}
-fillEggList();resize();buildRoom();S.items.forEach(rebuild);render();top_();cam('3d',true);loop();
+$('#selbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.sb;if(a==='edit')return select(selId,true);if(a==='x')return select(null);act(a);});
+$('.grab').onclick=()=>closeP();
+fillEggList();resize();S.items.forEach(clampRoom);buildRoom();S.items.forEach(rebuild);render();top_();cam('3d',true);loop();
 if(!isMobile())setTab('inv');
 window.__gmobReady=true;window.__g={S:()=>S,T,build,addItem,select,setKey,act,pieces,openList,setTab,snapMove,overlapsOf,egg,bbox,clampRoom,pushOut,fullH};
 setTimeout(()=>{$('#splash').classList.add('off');if(!LS.get('gimmob.welcome'))setTimeout(welcome,400);else setTimeout(howto,400);},600);
