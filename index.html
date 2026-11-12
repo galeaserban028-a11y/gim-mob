@@ -86,6 +86,12 @@ input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appear
 .sws{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:8px}
 .sw{width:34px;height:34px;border-radius:50%;border:2px solid #2b2b2b;cursor:pointer;padding:0;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
 .sw.on{border-color:var(--gold);box-shadow:0 0 0 2px #0e0e0e inset,0 0 0 1px var(--gold)}
+.eggrow{display:flex;gap:8px;margin-bottom:5px}
+.eggsw{width:46px;border-radius:10px;border:1px solid #333;flex:none}
+.egginp{flex:1;min-width:0;background:#0e0e0e;border:1px solid #2e2e2e;border-radius:10px;color:var(--txt);padding:11px 10px;font:700 16px Inter;outline:none;text-transform:uppercase}
+.egginp:focus{border-color:var(--gold2)}
+.eggname{font-size:12px;color:#cfc7b8;margin-bottom:7px}.eggname.bad{color:#ffb4a8}
+.eggnew{display:flex;align-items:center;gap:10px;margin:0 0 8px;font-size:12.5px}.eggnew input[type=color]{width:46px;height:34px;border:0;background:none;padding:0}
 .sw.def{background:#0e0e0e;color:var(--mut);font:600 9px Inter;width:auto;border-radius:17px;padding:0 9px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #333;background:#1e1e1e;color:var(--txt);border-radius:12px;padding:11px 14px;font:600 13px Inter;cursor:pointer}
 .btn.gold{background:linear-gradient(180deg,#e7c784,#b3873f);color:#171108;border-color:#c59c55}
@@ -221,6 +227,7 @@ table.cl{width:100%;border-collapse:collapse;font-size:12.5px}
  </main>
  <aside id="panel"></aside>
 </div>
+<datalist id="eggList"></datalist>
 <div id="radial" hidden></div>
 <div id="ctx" hidden></div>
 <div id="modal" hidden></div>
@@ -240,17 +247,26 @@ const LS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k
 const isMobile=()=>innerWidth<=860;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-const DECORS=[
- {id:'alb',n:'Alb',c:'#f3f1ec'},{id:'alblucios',n:'Alb lucios',c:'#fbfbfb',gloss:1},
- {id:'cashmere',n:'Cașmir',c:'#cdbfab'},{id:'gri',n:'Gri piatră',c:'#8d8f90'},
- {id:'antracit',n:'Antracit',c:'#3a3c3f'},{id:'negru',n:'Negru mat',c:'#1f1f1f'},
- {id:'salvie',n:'Verde salvie',c:'#8c9b83'},{id:'bleu',n:'Bleumarin',c:'#2d3b55'},
- {id:'sonoma',n:'Stejar Sonoma',c:'#c8a576',wood:1},{id:'artisan',n:'Stejar Artisan',c:'#b5885a',wood:1},
- {id:'halifax',n:'Stejar Halifax',c:'#97704b',wood:1},{id:'nuc',n:'Nuc',c:'#6b4630',wood:1},
- {id:'wenge',n:'Wenge',c:'#3b2a20',wood:1},{id:'beton',n:'Beton',c:'#9c9893',stone:1},
- {id:'marmura',n:'Marmură albă',c:'#eceae6',marble:1},{id:'granit',n:'Granit negru',c:'#2b2b2d',stone:1},
+const EGGER=[
+ ['W1000','Premium White','#f4f4f1'],['W1100','Alpine White','#f2f3ef'],['W1200','Porcelain White','#ecebe6'],['W980','Platinum White','#ebe9e3'],['W908','Basic White','#f0efea'],['W911','Cream White','#ece5d6'],['W960','Classic White','#efeee9'],
+ ['U104','Alabaster White','#e9e3d6'],['U115','Carat Beige','#d8cab1'],['U156','Sand Beige','#d6c6a6'],['U222','Crema Beige','#e2d5bd'],['U201','Pebble Grey','#bab2a6'],['U232','Apricot Nude','#d8b199'],['U830','Caramel Nude','#c29a7c'],
+ ['U702','Cashmere Grey','#b8ac9f'],['U705','Angora Grey','#c8c3ba'],['U708','Light Grey','#c9c9c6'],['U763','Pearl Grey','#b2b0ab'],['U727','Stone Grey','#8f8a83'],['U732','Dust Grey','#8a867f'],['U750','Taupe Grey','#766c63'],
+ ['U741','Lava Grey','#4f4a45'],['U767','Cubanit Grey','#6e706e'],['U963','Diamond Grey','#6c6d6e'],['U960','Onyx Grey','#5c5e5f'],['U961','Graphite Grey','#494a4b'],['U968','Carbon Grey','#3c3e40'],['U899','Soft Black','#2a2829'],['U999','Black','#1e1e1f'],
+ ['U507','Smoke Blue','#8496a5'],['U540','Denim Blue','#5d7590'],['U560','Deep Sea Blue','#263a52'],['U599','Indigo Blue','#2e3a4f'],['U604','Reed Green','#8e997b'],['U636','Fjord Green','#6e8178'],['U660','Amazon Green','#2f4a3e'],['U311','Burgundy Red','#6a2a2c'],['U323','Chilli Red','#a3302b'],
+ ['H1145','Natural Bardolino Oak','#c69c6d',1],['H1146','Grey Bardolino Oak','#a8957f',1],['H1180','Natural Halifax Oak','#b8895a',1],['H1181','Tobacco Halifax Oak','#7c5a3c',1],['H1176','White Halifax Oak','#d8ccb9',1],['H3180','Brown Halifax Oak','#6d4c33',1],
+ ['H1318','Natural Wild Oak','#c39969',1],['H3157','Vicenza Oak','#b78f67',1],['H3131','Natural Davos Oak','#af8961',1],['H305','Natural Tonsberg Oak','#c09970',1],['H1303','Brown Belmont Oak','#6c4e39',1],['H1714','Lincoln Walnut','#69492f',1],
+ ['H1307','Brown Warmia Walnut','#5c402f',1],['H1242','Natural Sheffield Acacia','#a67951',1],['H1223','Sevilla Ash','#c8b393',1],['H3303','Natural Hamilton Oak','#b3895e',1],['H3309','Sand Gladstone Oak','#b7a083',1],['H3325','Tobacco Gladstone Oak','#795c41',1],
+ ['H3170','Natural Kendal Oak','#b7885a',1],['H1344','Cognac Sherman Oak','#9b6940',1],['H1367','Light Natural Casella Oak','#d1b28c',1],['H3730','Natural Hickory','#b48d62',1],['H1377','Sand Orleans Oak','#c3aa87',1],['H3058','Mali Wenge','#3a2b23',1],['H1399','Truffle Brown Denver Oak','#6a5444',1],
+ ['F186','Chicago Concrete Light Grey','#a5a29c',2],['F187','Chicago Concrete Dark Grey','#5e5d5a',2],['F274','Light Concrete','#c4c1ba',2],['F812','White Levanto Marble','#ebe8e3',3],['F243','Light Grey Candela Marble','#d2d0cb',3],
+ ['F206','Black Pietra Grigia','#2b2b2c',2],['F205','Anthracite Pietra Grigia','#494a4b',2],['F638','Chromix Silver','#9b9b99',2],['F627','Dark Steel','#4c4e50',2],
 ];
-const DEC=Object.fromEntries(DECORS.map(d=>[d.id,d]));
+const EGG=Object.fromEntries(EGGER.map(([c,n,h,k])=>[c,{c,n,h,k:k||0}]));
+const LEGACY={alb:'W1000',alblucios:'W1100',cashmere:'U702',gri:'U727',antracit:'U961',negru:'U999',salvie:'U636',bleu:'U560',sonoma:'H1145',artisan:'H1180',halifax:'H1181',nuc:'H1714',wenge:'H3058',beton:'F186',marmura:'F812',granit:'F206'};
+const QUICK=['W1000','U702','U708','U727','U961','U999','H1145','H1180','H1181','H1714','U636','F186','F812','F206'];
+const normCode=s=>{const k=String(s||'').trim();if(LEGACY[k])return LEGACY[k];return k.toUpperCase().split(/[\s_\-/]+/)[0];};
+function eggDec(code){const k=normCode(code);if(!k)return undefined;let e=EGG[k];if(!e&&S&&S.custom&&S.custom[k])e={c:k,n:'cod propriu',h:S.custom[k].h,k:S.custom[k].k||0};if(!e)return{id:k,code:k,name:'cod necunoscut',n:k,c:'#bdbdbd',unknown:1};return{id:k,code:k,name:e.n,n:k+' '+e.n,c:e.h,wood:e.k===1,stone:e.k===2,marble:e.k===3};}
+const DEC=new Proxy({},{get:(_,k)=>typeof k==='string'?eggDec(k):undefined});
+const DECORS=QUICK.map(eggDec);
 const HDF={id:'hdf',n:'HDF alb'};
 const CATS={base:{n:'Corpuri jos',c:'#d8b46e'},wall:{n:'Corpuri sus',c:'#4f7cff'},tall:{n:'Coloane',c:'#33b37a'},ward:{n:'Dulapuri & rafturi',c:'#b06bff'},panel:{n:'Blat & panouri',c:'#9a948a'},decor:{n:'Decorative',c:'#e07a5f'}};
 const TYPES={
@@ -293,7 +309,7 @@ function makeCab(type,p={}){const t=TYPES[type];return Object.assign({id:nid(),k
 function makeSpace(p){return Object.assign({id:nid(),kind:'space',wall:'back',off:0,s:300,w:600,h:858,d:600,e:0},p)}
 
 function demoProject(){
- const S={v:3,pid:nid(),name:'Bucătărie demo',room:{w:3800,d:3000,h:2600,left:true,right:false},mat:{body:'alb',front:'sonoma',counter:'beton'},rates:{...DEFAULT_RATES},std:{...STD_DEF},items:[]};
+ const S={v:3,pid:nid(),name:'Bucătărie demo',room:{w:3800,d:3000,h:2600,left:true,right:false},mat:{body:'W1000',front:'H1145',counter:'F186'},custom:{},rates:{...DEFAULT_RATES},std:{...STD_DEF},items:[]};
  const I=S.items;let x=0;
  [['base_drawer3',600],['base_sink',800],['base_door1',600],['base_drawer2',600]].forEach(([t,w])=>{I.push(makeCab(t,{w,s:x+w/2}));x+=w;});
  I.push(makeCab('counter',{w:x,s:x/2,e:820}));
@@ -310,9 +326,9 @@ try{const sv=LS.get('gmob.current');S=sv?JSON.parse(sv):demoProject();}catch(e){
 fixState();
 function fixState(){
  S.pid=S.pid||nid();S.rates=Object.assign({...DEFAULT_RATES},S.rates||{});S.std=Object.assign({...STD_DEF},S.std||{});
- S.mat=Object.assign({body:'alb',front:'sonoma',counter:'beton'},S.mat||{});S.room=Object.assign({w:3600,d:3000,h:2600,left:true,right:false},S.room||{});
+ S.custom=S.custom||{};S.mat=Object.assign({body:'W1000',front:'H1145',counter:'F186'},S.mat||{});for(const k of['body','front','counter'])S.mat[k]=normCode(S.mat[k]);S.room=Object.assign({w:3600,d:3000,h:2600,left:true,right:false},S.room||{});
  S.items=(S.items||[]).filter(i=>i.kind==='space'||TYPES[i.type]);
- if(!S.v||S.v<3){S.items.forEach(i=>{if(i.o&&i.o.hinge==='L')i.o.hinge='auto';});S.v=3;}S.items.forEach(i=>{if(i.kind==='cab')i.o=Object.assign(defOpts(i.type),i.o||{});i.off=i.off||0;});
+ if(!S.v||S.v<3){S.items.forEach(i=>{if(i.o&&i.o.hinge==='L')i.o.hinge='auto';});S.v=3;}S.items.forEach(i=>{if(i.kind==='cab')i.o=Object.assign(defOpts(i.type),i.o||{});i.off=i.off||0;if(i.mb)i.mb=normCode(i.mb);if(i.mf)i.mf=normCode(i.mf);});
 }
 
 /* ================== GENERATOR CORPURI (mm, coordonate locale) ================== */
@@ -494,7 +510,7 @@ function decorCanvas(d,size=256){
 }
 const matCache={};
 function decorMat(id){
- const key='d_'+id;if(matCache[key])return matCache[key];const d=DEC[id]||DEC.alb;let m;
+ const key='d_'+id+'_'+(DEC[id]||{}).c;if(matCache[key])return matCache[key];const d=DEC[id]||DEC.alb;let m;
  if(d.wood||d.stone||d.marble){const t=new THREE.CanvasTexture(decorCanvas(d));t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;m=new THREE.MeshStandardMaterial({map:t,roughness:.7,metalness:0});}
  else m=new THREE.MeshStandardMaterial({color:d.c,roughness:d.gloss?.18:.72,metalness:0});
  m.userData.solid=true;return matCache[key]=m;
@@ -791,7 +807,11 @@ const num=(k,l,v,u='mm')=>`<label class="fld"><span>${l}</span><input type="numb
 const seg=(k,opts,cur)=>`<div class="seg">${opts.map(([v,l])=>`<button data-k="${k}" data-v="${v}" class="${String(cur)===String(v)?'on':''}">${l}</button>`).join('')}</div>`;
 const swBg=d=>d.wood?`repeating-linear-gradient(90deg,${d.c} 0 3px,${shade(d.c,-12)} 3px 4px,${d.c} 4px 7px)`:d.marble?`linear-gradient(135deg,${d.c} 40%,#b9b9bd 45%,${d.c} 50%)`:d.c;
 function shade(hex,p){const n=parseInt(hex.slice(1),16);const f=v=>Math.max(0,Math.min(255,v+p*2.55|0));return`rgb(${f(n>>16)},${f(n>>8&255)},${f(n&255)})`;}
-const sws=(k,cur,def,filter)=>`<div class="sws">${def?`<button class="sw def ${!cur?'on':''}" data-k="${k}" data-v="">Implicit</button>`:''}${DECORS.filter(filter||(()=>true)).map(d=>`<button class="sw ${cur===d.id?'on':''}" data-k="${k}" data-v="${d.id}" title="${d.n}" style="background:${swBg(d)}"></button>`).join('')}</div>`;
+const sws=(k,cur,def,filter,label)=>{const d=cur?DEC[cur]:null;return`<div class="eggrow"><div class="eggsw" style="background:${d?swBg(d):'repeating-linear-gradient(45deg,#2a2a2a 0 6px,#1a1a1a 6px 12px)'}"></div><input class="egginp" list="eggList" data-egg="${k}" value="${esc(cur||'')}" placeholder="${def?'Implicit: '+(k==='mb'?S.mat.body:(getSel()&&getSel().type==='counter'?S.mat.counter:S.mat.front)):'Cod Egger, ex: H1145'}" autocomplete="off" autocapitalize="characters"></div>
+ <div class="eggname ${d&&d.unknown?'bad':''}">${d?(d.unknown?'Cod nou — alege culoarea lui:':esc(d.code+' · '+d.name)):'Culoarea implicită a proiectului (din Cameră)'}</div>
+ ${d&&d.unknown?`<div class="eggnew"><input type="color" data-newc="${k}" data-code="${esc(d.code)}" value="#c8a576"><label><input type="checkbox" data-neww="${k}"> are fibră de lemn</label></div>`:''}
+ <div class="sws">${def?`<button class="sw def ${!cur?'on':''}" data-k="${k}" data-v="">Implicit</button>`:''}${DECORS.filter(filter||(()=>true)).map(d=>`<button class="sw ${normCode(cur)===d.id?'on':''}" data-k="${k}" data-v="${d.id}" title="${d.n}" style="background:${swBg(d)}"></button>`).join('')}</div>`;};
+const sws_old=(k,cur,def,filter)=>`<div class="sws">${def?`<button class="sw def ${!cur?'on':''}" data-k="${k}" data-v="">Implicit</button>`:''}${DECORS.filter(filter||(()=>true)).map(d=>`<button class="sw ${cur===d.id?'on':''}" data-k="${k}" data-v="${d.id}" title="${d.n}" style="background:${swBg(d)}"></button>`).join('')}</div>`;
 const I=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const IC={dup:I('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'),del:I('<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>'),swap:I('<circle cx="12" cy="12" r="2"/><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="20" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="20" cy="12" r="1.5"/>'),x:I('<path d="M18 6 6 18M6 6l12 12"/>'),fill:I('<path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>'),split:I('<path d="M12 3v18M3 7v10M21 7v10M3 12h18"/>'),stretch:I('<path d="M2 12h20M6 8l-4 4 4 4M18 8l4 4-4 4"/>'),scan:I('<path d="M3 7V3h4M17 3h4v4M21 17v4h-4M7 21H3v-4M7 12h10"/>'),gear:I('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),eye:I('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),list:I('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),flip:I('<path d="M12 3v18M16 7l4 5-4 5M8 7l-4 5 4 5"/>'),door:I('<path d="M4 3h9v18H4z"/><path d="M13 5l7-2v18l-7-2"/>')};
 const wallSeg=it=>seg('wall',[['back','Spate'],...(S.room.left?[['left','Stânga']]:[]),...(S.room.right?[['right','Dreapta']]:[])],it.wall);
@@ -805,8 +825,8 @@ function renderPanel(){
   <div class="acts"><button class="btn gold" data-act="scan">${IC.scan} Scanează camera</button><button class="btn" data-act="std">${IC.gear} Standarde fabrică</button>${hid?`<button class="btn full" data-act="showall">${IC.eye} Arată ${hid} ascunse</button>`:''}</div>
   <div class="sec"><h4>Dimensiuni cameră</h4><div class="g3">${num('room.w','Lățime',S.room.w)}${num('room.d','Adâncime',S.room.d)}${num('room.h','Înălțime',S.room.h)}</div>
   <div class="lab" style="margin-top:8px">Pereți</div>${seg('room.left',[['1','Stânga ✓'],['0','Fără stânga']],S.room.left?'1':'0')}${seg('room.right',[['1','Dreapta ✓'],['0','Fără dreapta']],S.room.right?'1':'0')}</div>
-  <div class="sec"><h4>Materiale implicite</h4><div class="lab">Corp (PAL interior) — ${DEC[S.mat.body].n}</div>${sws('mat.body',S.mat.body,false,d=>!d.stone&&!d.marble)}
-  <div class="lab">Fronturi — ${DEC[S.mat.front].n}</div>${sws('mat.front',S.mat.front)}<div class="lab">Blat — ${DEC[S.mat.counter].n}</div>${sws('mat.counter',S.mat.counter)}</div>
+  <div class="sec"><h4>Coduri Egger implicite</h4><div class="lab">Corp (PAL interior)</div>${sws('mat.body',S.mat.body,false,d=>!d.stone&&!d.marble)}
+  <div class="lab">Fronturi</div>${sws('mat.front',S.mat.front)}<div class="lab">Blat</div>${sws('mat.counter',S.mat.counter)}</div>
   <div class="sec"><h4>Mânere pe tot proiectul</h4>${seg('all.handle',[['bar','Bară'],['knob','Buton'],['none','Fără (push)']],'')}<div class="lab">Partea mânerului (uși simple)</div>${seg('all.hside',[['auto','Automat'],['R','Toate stânga'],['L','Toate dreapta']],'')}${seg('std.horient',[['auto','Automat'],['h','Orizontal'],['v','Vertical']],S.std.horient)}</div>
   <div class="acts"><button class="btn gold full" data-act="newcab">${IC.swap} Adaugă corp din catalog</button></div>`;
  } else if(it.kind==='space'){
@@ -836,14 +856,19 @@ function renderPanel(){
    h+=`</div><div class="sec"><h4>Avansat (pe piesă)</h4><div class="g2">${num('o.gap','Rost fronturi (gol = standard)',o.gap,'mm')}${t.doors?num('o.hinges','Balamale/ușă (0 = auto)',o.hinges,'buc'):''}</div></div>`;
   }
   h+=`<div class="sec"><h4>Materiale</h4>`;
-  if(isCab||it.type==='shelf'||it.type==='decor_panel')h+=`<div class="lab">Corp — ${DEC[it.mb||S.mat.body].n}</div>${sws('mb',it.mb,true,d=>!d.stone&&!d.marble)}`;
-  if(it.type!=='shelf')h+=`<div class="lab">${it.type==='counter'?'Blat':'Front'} — ${(DEC[it.mf]||DEC[it.type==='counter'?S.mat.counter:S.mat.front]).n}</div>${sws('mf',it.mf,true)}`;
+  if(isCab||it.type==='shelf'||it.type==='decor_panel')h+=`<div class="lab">Corp (cod Egger)</div>${sws('mb',it.mb,true,d=>!d.stone&&!d.marble)}`;
+  if(it.type!=='shelf')h+=`<div class="lab">${it.type==='counter'?'Blat':'Front'} (cod Egger)</div>${sws('mf',it.mf,true)}`;
   h+=`</div><div class="acts"><button class="btn" data-act="hide">${IC.eye} Ascunde</button><button class="btn red" data-act="delete">${IC.del} Șterge</button></div>`;
  }
  P.innerHTML=h;
 }
 $('#panel').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.act)return act(b.dataset.act);if(b.dataset.k!=null&&b.dataset.v!=null)setKey(b.dataset.k,b.dataset.v);});
-$('#panel').addEventListener('change',e=>{const i=e.target;if(i.dataset.k)setKey(i.dataset.k,i.value);});
+$('#panel').addEventListener('change',e=>{const i=e.target;
+ if(i.dataset.egg){setKey(i.dataset.egg,i.value.trim()?normCode(i.value):'');return;}
+ if(i.dataset.newc||i.dataset.neww){const k=i.dataset.newc||i.dataset.neww,box=i.closest('.sec')||document;const col=box.querySelector(`[data-newc="${k}"]`),wd=box.querySelector(`[data-neww="${k}"]`);const c=col&&col.dataset.code;if(!c)return;
+  mutate(()=>{S.custom[c]={h:col.value,k:wd&&wd.checked?1:0};});fillEggList();for(const kk in matCache)if(kk.startsWith('d_'+c+'_'))delete matCache[kk];for(const ic in iconCache)delete iconCache[ic];rebuildAll();toast('Culoare salvată pentru codul '+c);return;}
+ if(i.dataset.k)setKey(i.dataset.k,i.value);});
+function fillEggList(){const dl=$('#eggList');if(dl)dl.innerHTML=[...EGGER.map(([c,n])=>`<option value="${c}">${c} ${n}</option>`),...Object.keys(S.custom||{}).map(c=>`<option value="${c}">${c} (cod propriu)</option>`)].join('');}
 function inRoom(it){const b=bbox(it),Rm=S.room;return b.x0>=-1&&b.x1<=Rm.w+1&&b.z0>=-1&&b.z1<=Rm.d+1&&b.y1<=Rm.h+1;}
 function ovl(it){if(!it||it.kind!=='cab'||it.hidden)return[];const a=bbox(it);return S.items.filter(o=>o!==it&&o.kind==='cab'&&!o.hidden&&(()=>{const b=bbox(o);return a.x0<b.x1-2&&a.x1>b.x0+2&&a.z0<b.z1-2&&a.z1>b.z0+2&&a.y0<b.y1-2&&a.y1>b.y0+2;})());}
 const okPlace=it=>it.kind!=='cab'?inRoom(it):(inRoom(it)&&!ovl(it).length);
@@ -854,7 +879,7 @@ function setKey(k,v){
  mutate(()=>{
   if(k==='all.handle'){S.items.forEach(i=>{if(i.kind==='cab'&&i.o)i.o.handle=v;});full=true;toast('Mânere aplicate pe tot proiectul');}
   else if(k==='all.hside'){S.items.forEach(i=>{if(i.kind==='cab'&&i.o)i.o.hinge=v;});full=true;toast(v==='auto'?'Mânere automate: se pun spre partea opusă colțului':v==='R'?'Toate mânerele pe stânga':'Toate mânerele pe dreapta');}
-  else if(/^(room|mat|rates|std)\./.test(k)){const[a,b]=k.split('.');const cur=S[a][b];S[a][b]=typeof cur==='boolean'?v==='1':typeof cur==='number'?Math.max(a==='room'?500:0,+v||0):v;full=true;
+  else if(/^(room|mat|rates|std)\./.test(k)){const[a,b]=k.split('.');const cur=S[a][b];S[a][b]=typeof cur==='boolean'?v==='1':typeof cur==='number'?Math.max(a==='room'?500:0,+v||0):(a==='mat'?(normCode(v)||cur):v);full=true;
    if(k==='room.left'&&!S.room.left)S.items.forEach(i=>{if(i.wall==='left')i.wall='back';});if(k==='room.right'&&!S.room.right)S.items.forEach(i=>{if(i.wall==='right')i.wall='back';});}
   else if(k==='name')S.name=v||'Proiect';
   else{const it=getSel();if(!it)return;
@@ -862,7 +887,7 @@ function setKey(k,v){
    else if(k==='from')it.s=(+v||0)+it.w/2;
    else if(k==='w'){const l=it.s-it.w/2;it.w=Math.max(10,+v||10);it.s=l+it.w/2;}
    else if(k==='wall'){it.wall=v;it.s=Math.max(it.w/2,Math.min(it.s,wallLen(v)-it.w/2));}
-   else if(k==='mb'||k==='mf')it[k]=v||null;
+   else if(k==='mb'||k==='mf')it[k]=v?normCode(v):null;
    else it[k]=Math.max(k==='e'||k==='off'?0:10,+v||0);
   }
  });
@@ -1426,7 +1451,7 @@ function loop(){
  for(const h of handleVis){h.getWorldPosition(tmpV);h.scale.setScalar(camera.position.distanceTo(tmpV)*.013);}
  controls.update();renderer.render(scene,camera);
 }
-resize();buildRoom();S.items.forEach(rebuildItem);renderPanel();updateTop();setCam('3d',true);applyViewMode();loop();
+fillEggList();resize();buildRoom();S.items.forEach(rebuildItem);renderPanel();updateTop();setCam('3d',true);applyViewMode();loop();
 window.__gmobReady=true;window.__gmob={S:()=>S,inRoom,ovl,okPlace,setKey,production,partsFor,holesFor,select,setTool,openRadial,chooseType,act,fillSpace,runChecks,nesting,allParts,buildCNC,drawingPages,labelPages,openProduction,openChecks,openScan,openStretch,openStd,openCtx};
 function openWelcome(){
  modalState={welcome:1};
