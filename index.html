@@ -55,7 +55,6 @@ button{font-family:inherit;color:inherit}
 .rb.sel{transform:translate(-50%,-50%) scale(1.22);box-shadow:0 0 0 3px #fff,0 6px 20px rgba(0,0,0,.6)}
 .rwrap.mob .rb em{display:none}
 #rgo{margin-top:6px;padding:6px 14px;font-size:12px}
-#rgo[hidden]{display:none}
 .tabs{overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{white-space:nowrap}
@@ -190,6 +189,26 @@ table.cl{width:100%;border-collapse:collapse;font-size:12.5px}
 .inset{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .inset .fld{margin:0}
 .facepick{margin-bottom:10px}
+.sw.more{background:#1d1a14!important;color:var(--gold);font:700 18px Inter;display:grid;place-items:center;border:1px dashed #6f5a2e}
+.pscroll{max-height:46vh;overflow:auto;margin-top:6px;padding-right:4px}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:6px}
+.pcell{display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:#161616;border:1px solid var(--line);border-radius:10px;padding:6px;cursor:pointer;text-align:left;min-width:0}
+.pcell i{display:block;width:100%;height:38px;border-radius:6px;border:1px solid #333}
+.pcell b{font:700 11.5px Inter;color:var(--txt)}
+.pcell small{font:500 10px/1.2 Inter;color:var(--mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pcell.on,.pcell:hover{border-color:var(--gold)}
+.rgrid{width:min(760px,100%);max-height:calc(100% - 20px);overflow:auto;padding:14px 12px 30px;margin:auto}
+.rgh{text-align:center;margin:4px 0 10px}.rgh b{display:block;font:700 22px 'Cormorant Garamond',serif;color:var(--gold)}.rgh span{font-size:12px;color:var(--mut)}
+.rgc{display:flex;align-items:center;gap:8px;font:600 11px Inter;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:14px 2px 8px}.rgc i{width:9px;height:9px;border-radius:50%}
+.rgl{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:18px 6px}
+.rgrid .rb{position:relative;transform:none;left:auto;top:auto;margin:0 auto 22px}
+.rgrid .rb em{display:block!important}
+#rgo[hidden]{display:none}
+.rwrap .rb em{width:110px;font-size:10.5px;top:-24px;display:none;background:rgba(10,10,10,.92);border:1px solid #5a4625;border-radius:7px;padding:3px 5px;text-shadow:none}
+.rwrap .rb:hover em{display:block}
+.rwrap.sm .rb{width:50px;height:50px}
+.rwrap.sm .rb svg{width:34px;height:34px}
+.rwrap .rb:hover{z-index:5;transform:translate(-50%,-50%) scale(1.12)}
 @media (max-width:860px){
  #app{grid-template-columns:1fr;grid-template-rows:56px 1fr 68px;grid-template-areas:"top" "view" "tools"}
  #top{padding:0 10px;gap:8px}
@@ -211,6 +230,7 @@ table.cl{width:100%;border-collapse:collapse;font-size:12.5px}
  #hint{bottom:58px}
  #qbar{bottom:56px}
  #vcb{display:none}
+ .rgrid{width:100%}
  #modeTag{bottom:58px}
  .kpis{grid-template-columns:1fr 1fr}
  .card{border-radius:20px 20px 0 0;max-height:92%;align-self:flex-end}
@@ -245,13 +265,14 @@ table.cl{width:100%;border-collapse:collapse;font-size:12.5px}
   <button id="tCat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2.2"/><circle cx="12" cy="4" r="1.8"/><circle cx="12" cy="20" r="1.8"/><circle cx="4" cy="12" r="1.8"/><circle cx="20" cy="12" r="1.8"/><circle cx="6.3" cy="6.3" r="1.6"/><circle cx="17.7" cy="17.7" r="1.6"/><circle cx="17.7" cy="6.3" r="1.6"/><circle cx="6.3" cy="17.7" r="1.6"/></svg><span>Catalog</span></button>
   <button id="tView"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="tViewL">Realist</span></button>
   <button id="tOpen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h9v18H4z"/><path d="M13 5l7-2v18l-7-2"/><path d="M10 12h.01"/></svg><span>Deschide</span></button>
+  <button id="tCheck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg><span>Verifică</span></button>
   <button id="tProd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M8 13h8M8 17h5"/></svg><span>Producție</span></button>
   <button id="tRoom"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18M9 21v-6h6v6"/></svg><span>Cameră</span></button>
  </nav>
  <main id="view">
   <div class="fbar" id="drawbar" hidden><span class="lbl">Spațiu pentru</span>
    <button data-pre="base" class="on">Corpuri jos</button><button data-pre="wall">Corpuri sus</button><button data-pre="tall">Coloane</button><button data-pre="ward">Dulap</button></div>
-  <div class="fbar" id="viewbar"><button data-cam="3d" class="on">3D</button><button data-cam="top">Plan</button><button data-cam="front">Față</button><button id="bDims">Cote</button></div>
+  <div class="fbar" id="viewbar"><button data-cam="3d" class="on">3D</button><button data-cam="top">Plan</button><button data-cam="front">Față</button><button id="bDims">Cote</button><button id="bHoles">Găuri</button></div>
   <div id="modeTag"></div>
   <div id="qbar" hidden></div>
   <div id="vcb" title="Scrie dimensiuni și apasă Enter (ca în SketchUp)"><span id="vcbL">Dimensiuni</span><input id="vcbI" autocomplete="off" spellcheck="false" placeholder="lățime, adâncime, înălțime"></div>
@@ -291,16 +312,17 @@ const EGGER=[
  ['H3170','Natural Kendal Oak','#b7885a',1],['H1344','Cognac Sherman Oak','#9b6940',1],['H1367','Light Natural Casella Oak','#d1b28c',1],['H3730','Natural Hickory','#b48d62',1],['H1377','Sand Orleans Oak','#c3aa87',1],['H3058','Mali Wenge','#3a2b23',1],['H1399','Truffle Brown Denver Oak','#6a5444',1],
  ['F186','Chicago Concrete Light Grey','#a5a29c',2],['F187','Chicago Concrete Dark Grey','#5e5d5a',2],['F274','Light Concrete','#c4c1ba',2],['F812','White Levanto Marble','#ebe8e3',3],['F243','Light Grey Candela Marble','#d2d0cb',3],
  ['F206','Black Pietra Grigia','#2b2b2c',2],['F205','Anthracite Pietra Grigia','#494a4b',2],['F638','Chromix Silver','#9b9b99',2],['F627','Dark Steel','#4c4e50',2],
+ ['W1001','Premium White ST9','#f4f3ee'],['W1101','Alpine White ST9','#f6f6f3'],['W1300','Polar White','#f2f2ef'],['U113','Cotton Beige','#ddd2bf'],['U200','Beige','#d4c3a3'],['U216','Vanilla','#e9dcbc'],['U775','White Grey','#d9d8d3'],['U788','Arctic Grey','#c4c8c9'],['U390','Indian Red','#8d3a35'],['U321','China Red','#a3302c'],['U399','Garnet Red','#6e2228'],['U325','Antique Pink','#c99a96'],['U330','Lotus Pink','#e2b9b3'],['U363','Flamingo Pink','#e48c97'],['U337','Fuchsia Pink','#c2416f'],['U332','Orange','#e27532'],['U114','Brilliant Yellow','#f3cf3a'],['U131','Citrus Yellow','#d9c033'],['U140','Saffron Yellow','#e3a72f'],['U163','Curry Yellow','#c99a3c'],['U504','Tyrolean Blue','#4f7894'],['U522','Horizon Blue','#9fb8c9'],['U525','Delft Blue','#2f4f7c'],['U606','Forest Green','#3e5a42'],['U630','Lime Green','#93b13d'],['U655','Emerald Green','#1f6a52'],['H1122','Whitewood','#e8e0cf',1],['H1137','Black-Brown Sorano Oak','#3b2d24',1],['H1150','Grey Arizona Oak','#9b8c7a',1],['H1151','Brown Arizona Oak','#7d5d40',1],['H1199','Black-Brown Thermo Oak','#3d2e25',1],['H1250','Navarra Ash','#cbb898',1],['H1251','Natural Branson Robinia','#b5875b',1],['H1330','Vintage Santa Fe Oak','#a07c57',1],['H1331','Grey Santa Fe Oak','#8e8070',1],['H1334','Light Sorano Oak','#cfb089',1],['H1379','Brown Orleans Oak','#7a5a3e',1],['H1401','Pine Cascina','#d8bf94',1],['H1733','Mainau Birch','#e3cda5',1],['H3171','Oiled Kendal Oak','#a1754b',1],['H3176','Pewter Halifax Oak','#6c6560',1],['H3178','Black Glazed Halifax Oak','#3a3633',1],['H3331','Natural Nebraska Oak','#b38d63',1],['H3332','Grey Nebraska Oak','#8f8577',1],['H3335','White Gladstone Oak','#d6cdbd',1],['H3342','Sepia Gladstone Oak','#5f4a3a',1],['H3349','Kaiserberg Oak','#a8855f',1],['H3398','Cognac Kendal Oak','#8f5f36',1],['H3700','Natural Pacific Walnut','#7b5639',1],['H3702','Tobacco Pacific Walnut','#5a3d29',1],['H3710','Natural Carini Walnut','#7e5a3e',1],['H3711','Tobacco Carini Walnut','#5b412f',1],['H3734','Natural Dijon Walnut','#86603f',1],['H3860','Champagne Hard Maple','#e0c49b',1],['F028','Anthracite Vercelli Granite','#4a4847',2],['F121','Anthracite Metal Rock','#4b4b4c',2],['F204','White Carrara Marble','#e9e8e5',3],['F244','Anthracite Candela Marble','#4f4f50',3],['F302','Ferro Bronze','#6b5743',2],['F311','Ceramic Anthracite','#4d4c4a',2],['F416','Beige Textile','#cfc4b2',2],['F433','Anthracite Linen','#55534f',2],['F501','Brushed Aluminium','#b9b9b7',2],['F509','Aluminium','#c4c4c2',2],['F637','White Chromix','#e1e0dc',2],
 ];
 const EGG=Object.fromEntries(EGGER.map(([c,n,h,k])=>[c,{c,n,h,k:k||0}]));
 const LEGACY={alb:'W1000',alblucios:'W1100',cashmere:'U702',gri:'U727',antracit:'U961',negru:'U999',salvie:'U636',bleu:'U560',sonoma:'H1145',artisan:'H1180',halifax:'H1181',nuc:'H1714',wenge:'H3058',beton:'F186',marmura:'F812',granit:'F206'};
 const QUICK=['W1000','U702','U708','U727','U961','U999','H1145','H1180','H1181','H1714','U636','F186','F812','F206'];
 const normCode=s=>{const k=String(s||'').trim();if(LEGACY[k])return LEGACY[k];return k.toUpperCase().split(/[\s_\-/]+/)[0];};
-function eggDec(code){const k=normCode(code);if(!k)return undefined;let e=EGG[k];if(!e&&S&&S.custom&&S.custom[k])e={c:k,n:'cod propriu',h:S.custom[k].h,k:S.custom[k].k||0};if(!e)return{id:k,code:k,name:'cod necunoscut',n:k,c:'#bdbdbd',unknown:1};return{id:k,code:k,name:e.n,n:k+' '+e.n,c:e.h,wood:e.k===1,stone:e.k===2,marble:e.k===3};}
+function eggDec(code){const k=normCode(code);if(!k)return undefined;let e=EGG[k];if(!e&&S&&S.custom&&S.custom[k])e={c:k,n:S.custom[k].n||'cod propriu',h:S.custom[k].h,k:S.custom[k].k||0};if(!e)return{id:k,code:k,name:'cod necunoscut',n:k,c:'#bdbdbd',unknown:1};return{id:k,code:k,name:e.n,n:k+' '+e.n,c:e.h,wood:e.k===1,stone:e.k===2,marble:e.k===3};}
 const DEC=new Proxy({},{get:(_,k)=>typeof k==='string'?eggDec(k):undefined});
 const DECORS=QUICK.map(eggDec);
 const HDF={id:'hdf',n:'HDF alb'};
-const CATS={base:{n:'Corpuri jos',c:'#d8b46e'},wall:{n:'Corpuri sus',c:'#4f7cff'},tall:{n:'Coloane',c:'#33b37a'},ward:{n:'Dulapuri & rafturi',c:'#b06bff'},panel:{n:'Blat & panouri',c:'#9a948a'},decor:{n:'Decorative',c:'#e07a5f'}};
+const CATS={base:{n:'Corpuri jos',c:'#d8b46e'},wall:{n:'Corpuri sus',c:'#4f7cff'},tall:{n:'Coloane',c:'#33b37a'},ward:{n:'Dulapuri, living, dormitor, baie',c:'#b06bff'},panel:{n:'Blat & panouri',c:'#9a948a'},decor:{n:'Decorative',c:'#e07a5f'}};
 const TYPES={
  base_drawer3:{cat:'base',n:'Corp 3 sertare',w:600,h:820,d:580,e:0,drawers:3},
  base_drawer2:{cat:'base',n:'Corp 2 sertare',w:600,h:820,d:580,e:0,drawers:2},
@@ -322,6 +344,30 @@ const TYPES={
  ward2:{cat:'ward',n:'Dulap 2 uși',w:1000,h:2400,d:600,e:0,doors:2,rod:1,shelves:1,plinth:80},
  ward3:{cat:'ward',n:'Dulap 3 uși',w:1500,h:2400,d:600,e:0,doors:3,rod:1,shelves:4,plinth:80},
  shelf_unit:{cat:'ward',n:'Bibliotecă',w:800,h:2000,d:350,e:0,open:1,shelves:4,plinth:60},
+ base_drawer1:{cat:'base',n:'Corp 1 sertar mare',w:600,h:820,d:580,e:0,drawers:1},
+ base_hob:{cat:'base',n:'Corp plită (3 sertare)',w:800,h:820,d:580,e:0,drawers:3},
+ base_oven:{cat:'base',n:'Corp cuptor jos',w:600,h:820,d:580,e:0,oven:1,doors:0,shelves:0},
+ base_dish:{cat:'base',n:'Mașină vase (front)',w:600,h:820,d:580,e:0,dish:1,doors:0,plinth:100},
+ base_bin:{cat:'base',n:'Corp coș gunoi',w:450,h:820,d:580,e:0,drawers:1},
+ base_narrow:{cat:'base',n:'Corp îngust sticle',w:200,h:820,d:580,e:0,doors:1,shelves:3},
+ base_door3:{cat:'base',n:'Corp 3 uși',w:1200,h:820,d:580,e:0,doors:3,shelves:1},
+ wall_glass:{cat:'wall',n:'Corp sus vitrină',w:800,h:720,d:320,e:1450,doors:2,shelves:2,glass:1},
+ wall_hood:{cat:'wall',n:'Corp hotă',w:600,h:360,d:320,e:1810,doors:1,lift:1,shelves:0},
+ wall_tall:{cat:'wall',n:'Corp sus înalt',w:800,h:900,d:320,e:1400,doors:2,shelves:2},
+ wall_drain:{cat:'wall',n:'Corp scurgător vase',w:800,h:720,d:320,e:1450,doors:2,shelves:1},
+ wall_mirror:{cat:'wall',n:'Dulap oglindă baie',w:800,h:700,d:160,e:1150,doors:2,shelves:2,mirror:1,plinth:0},
+ tall_pantry:{cat:'tall',n:'Coloană cămară',w:600,h:2100,d:580,e:0,doors:1,tall:1,shelves:5},
+ tall_open:{cat:'tall',n:'Coloană deschisă',w:400,h:2100,d:580,e:0,open:1,shelves:5},
+ tall_broom:{cat:'tall',n:'Coloană mături',w:400,h:2100,d:580,e:0,doors:1,tall:1,shelves:1},
+ tall_glass:{cat:'tall',n:'Vitrină înaltă',w:800,h:2000,d:400,e:0,doors:2,tall:1,shelves:4,glass:1,plinth:60},
+ ward1:{cat:'ward',n:'Dulap 1 ușă',w:500,h:2400,d:600,e:0,doors:1,rod:1,shelves:1,plinth:80},
+ ward4:{cat:'ward',n:'Dulap 4 uși',w:2000,h:2400,d:600,e:0,doors:4,rod:1,shelves:4,plinth:80},
+ dresser:{cat:'ward',n:'Comodă 4 sertare',w:900,h:900,d:450,e:0,drawers:4,plinth:60},
+ nightstand:{cat:'ward',n:'Noptieră',w:450,h:500,d:400,e:0,drawers:2,plinth:60},
+ tv_unit:{cat:'ward',n:'Comodă TV',w:1600,h:450,d:420,e:0,doors:4,shelves:1,plinth:60},
+ shoe:{cat:'ward',n:'Pantofar hol',w:800,h:1000,d:320,e:0,doors:2,shelves:3,plinth:60},
+ vanity:{cat:'ward',n:'Mască lavoar baie',w:800,h:500,d:460,e:400,drawers:2,plinth:0},
+ hall_open:{cat:'ward',n:'Raft hol deschis',w:1000,h:2000,d:350,e:0,open:1,shelves:3,plinth:60},
  counter:{cat:'panel',n:'Blat',w:1200,h:38,d:600,e:820},
  end_panel:{cat:'panel',n:'Panou lateral',w:18,h:858,d:600,e:0},
  filler:{cat:'panel',n:'Lată completare',w:50,h:720,d:18,e:0},
@@ -336,7 +382,7 @@ const STD_DEF={T:18,BK:4,back:'aplicat',FT:18,gap:3,join:'confirmat',plinthMode:
 const JOINS={confirmat:'Confirmat (Ø7/Ø5)',excentric:'Excentric + bolț (Ø15/Ø8)',dibluri:'Dibluri (Ø8)'};
 
 let uidN=1; const nid=()=>'i'+Date.now().toString(36)+(uidN++);
-function defOpts(type){const t=TYPES[type];return{doors:t.doors||0,drawers:t.drawers||0,shelves:t.shelves||0,hinge:'auto',handle:'bar',plinth:t.plinth!=null?t.plinth:((t.cat==='base'||t.cat==='tall')?100:0),div:0,idraw:0,hinges:0,gap:null,bside:'L',dw:450,horient:null}}
+function defOpts(type){const t=TYPES[type];return{doors:t.doors||0,drawers:t.drawers||0,shelves:t.shelves||0,hinge:'auto',handle:'bar',hpos:'auto',plinth:t.plinth!=null?t.plinth:((t.cat==='base'||t.cat==='tall')?100:0),div:0,idraw:0,hinges:0,gap:null,bside:'L',dw:450,horient:null}}
 function makeCab(type,p={}){const t=TYPES[type];return Object.assign({id:nid(),kind:'cab',type,wall:'back',off:0,s:t.w/2,w:t.w,h:t.h,d:t.d,e:t.e,o:defOpts(type),mb:null,mf:null},p)}
 function makeSpace(p){return Object.assign({id:nid(),kind:'space',wall:'back',off:0,s:300,w:600,h:858,d:600,e:0},p)}
 
@@ -349,6 +395,7 @@ function demoProject(){
  let z=600;[['base_door2',800],['base_drawer3',600]].forEach(([t,w])=>{I.push(makeCab(t,{wall:'left',w,s:z+w/2}));z+=w;});
  I.push(makeCab('counter',{wall:'left',w:z-600,s:600+(z-600)/2,e:820}));
  x=0;[['wall_door2',800],['wall_lift',800],['wall_door1',500],['wall_door1',500]].forEach(([t,w])=>{I.push(makeCab(t,{w,s:x+w/2}));x+=w;});
+ I.push(makeSpace({wall:'left',s:z+400,w:800,h:858,d:600}));
  return S;
 }
 let S;
@@ -357,7 +404,7 @@ try{const sv=LS.get('gmob.current');S=sv?JSON.parse(sv):demoProject();}catch(e){
 fixState();
 function fixState(){
  S.pid=S.pid||nid();S.rates=Object.assign({...DEFAULT_RATES},S.rates||{});S.std=Object.assign({...STD_DEF},S.std||{});
- S.custom=S.custom||{};S.mat=Object.assign({body:'W1000',front:'H1145',counter:'F186'},S.mat||{});for(const k of['body','front','counter'])S.mat[k]=normCode(S.mat[k]);S.room=Object.assign({w:3600,d:3000,h:2600,left:true,right:false},S.room||{});
+ S.custom=S.custom||{};try{const g=JSON.parse(localStorage.getItem('gmob.customEgg')||'{}');for(const c in g)if(!S.custom[c])S.custom[c]=g[c];}catch(e){}S.mat=Object.assign({body:'W1000',front:'H1145',counter:'F186'},S.mat||{});for(const k of['body','front','counter'])S.mat[k]=normCode(S.mat[k]);S.room=Object.assign({w:3600,d:3000,h:2600,left:true,right:false},S.room||{});
  S.items=(S.items||[]).filter(i=>i.kind==='space'||TYPES[i.type]);
  if(!S.v||S.v<3){S.items.forEach(i=>{if(i.o&&i.o.hinge==='L')i.o.hinge='auto';});S.v=3;}S.items.forEach(i=>{if(i.kind==='cab')i.o=Object.assign(defOpts(i.type),i.o||{});i.off=i.off||0;if(i.mb)i.mb=normCode(i.mb);if(i.mf)i.mf=normCode(i.mf);});
 }
@@ -365,7 +412,7 @@ function fixState(){
 /* ================== GENERATOR CORPURI (mm, coordonate locale) ================== */
 // x: -w/2..w/2 privind din față, y: 0..h, z: -d/2 (perete) .. d/2 (față)
 function autoHinge(it){try{if(!it||!it.wall||!S||!S.room)return'L';const Lw=it.wall==='back'?S.room.w:S.room.d,sg=it.wall==='left'?-1:1,le=it.s-sg*it.w/2,re=it.s+sg*it.w/2,d=v=>Math.min(Math.abs(v),Math.abs(Lw-v));return d(le)<=d(re)?'L':'R';}catch(e){return'L';}}
-const hingeOf=it=>it&&it.o&&(it.o.hinge==='L'||it.o.hinge==='R')?it.o.hinge:autoHinge(it);
+const hingeOf=it=>it&&it.o&&it.o.hpos==='L'?'R':it&&it.o&&it.o.hpos==='R'?'L':it&&it.o&&(it.o.hinge==='L'||it.o.hinge==='R')?it.o.hinge:autoHinge(it);
 function partsFor(it){
  const t=TYPES[it.type]||{},o=it.o||{},W=it.w,H=it.h,D=it.d,P=[],std=S.std;
  const B=(name,x0,x1,y0,y1,z0,z1,mat,ex={})=>{if(x1-x0<=0.5||y1-y0<=0.5||z1-z0<=0.5)return null;const p={name,x0,x1,y0,y1,z0,z1,mat,cut:ex.cut!==false,cant:ex.cant||0,cn:ex.cn||'z',a:ex.a||null,shape:ex.shape||null,role:ex.role||''};P.push(p);return p;};
@@ -376,6 +423,7 @@ function partsFor(it){
  if(it.type==='pilaster'){B('Pilastru',-W/2,W/2,0,H,-D/2,D/2,'front',{cant:2*(H+W),role:'front'});const n=W>=60?3:1;for(let i=1;i<=n;i++){const x=-W/2+W*i/(n+1);B('Canelură',x-2.5,x+2.5,40,H-40,D/2,D/2+.8,'groove',{cut:false});}return P;}
  if(it.type==='cornice'){const h1=H*.55;B('Cornișă bază',-W/2,W/2,0,h1,-D/2,-D/2+D*.7,'front',{cant:W,role:'front'});B('Cornișă cap',-W/2,W/2,h1,H,-D/2,D/2,'front',{cant:2*W+2*D,role:'front'});return P;}
  if(it.type==='decor_panel'){B('Panou suport',-W/2,W/2,0,H,-D/2,-D/2+16,'body',{cant:0});const sw=30,gp=20,n=Math.max(1,Math.floor((W+gp)/(sw+gp))),tot=n*sw+(n-1)*gp;let x=-tot/2;for(let i=0;i<n;i++){B('Lamelă',x,x+sw,0,H,-D/2+16,D/2,'front',{cant:2*H,role:'front'});x+=sw+gp;}return P;}
+ if(t.dish){const FT0=S.std.FT,PL0=Math.max(0,Math.min(o.plinth||0,H-100));B('Mașină spălat vase',-W/2+3,W/2-3,PL0,H-3,-D/2,D/2-FT0-4,'oven',{cut:false});const a={id:0,k:'lift',px:0,py:PL0,pz:D/2-FT0-2,inv:1};B('Front MSV',-W/2+1.5,W/2-1.5,PL0+1.5,H-1.5,D/2-FT0-2,D/2-2,'front',{cant:2*(W+H-PL0),a,role:'dish'});if(o.handle!=='none'){const L=Math.min(192,W-80);B('Mâner',-L/2,L/2,H-51,H-39,D/2-2,D/2+18,'metal',{cut:false,a,role:'handle'});}return P;}
  const T=std.T,BK=std.BK,FT=std.FT,G=o.gap!=null&&o.gap!==''?+o.gap:std.gap,PL=Math.max(0,Math.min(o.plinth||0,H-100));
  const hasF=!t.open, cd=hasF?D-FT-2:D, zB=-D/2, zF=zB+cd, xi0=-W/2+T, xi1=W/2-T;
  const canal=std.back==='canal', zc=canal?zB:zB+BK;
@@ -445,19 +493,31 @@ function partsFor(it){
   else if(f.k==='lift'){a={id:fi,k:'lift',px:0,py:y1,pz:fz0};name='Front rabatabil';role='lift';}
   else{a={id:fi,k:'drawer',px:0,py:0,pz:0,dist:cd*.72};name='Front sertar';role='dfront';}
   B(name,x0,x1,y0,y1,fz0,fz1,'front',{cant:2*(dw+fh),a,role});
+  if(f.k==='door'&&(t.glass||t.mirror)&&dw>140&&fh>140)B(t.mirror?'Oglindă':'Sticlă vitrină',x0+55,x1-55,y0+55,y1-55,fz1,fz1+1.5,t.mirror?'mirror':'vitro',{cut:false,a});
   if(o.handle!=='none'){
    const knob=o.handle==='knob',hz0=fz1,hz1=fz1+(knob?24:20);
+   let hp=o.hpos||'auto';
+   /* la uși: Stânga/Dreapta înseamnă mânerul pe partea opusă balamalei (balamaua se pune automat invers) */
+   if(f.k==='door'&&(hp==='L'||hp==='R'))hp=f.hinge==='L'?'R':'L';
    let horiz=f.k!=='door';if(horient==='h')horiz=true;else if(horient==='v')horiz=false;
+   const HB=(a0,a1,b0,b1)=>B('Mâner',a0,a1,b0,b1,hz0,hz1,'metal',{cut:false,a,role:'handle'});
    if(horiz){
-    const L=knob?18:Math.max(20,Math.min(192,dw-40));let yc;
+    let L=knob?18:Math.max(20,Math.min(192,dw-40));let yc;
     if(f.k==='lift'||(f.k==='door'&&t.cat==='wall'))yc=y0+40;else if(f.k==='door')yc=y1-45;else yc=fh>260?y1-55:(y0+y1)/2;
-    const xc=f.k==='door'&&!knob?(x0+x1)/2:(x0+x1)/2;
-    B('Mâner',xc-L/2,xc+L/2,yc-(knob?9:6),yc+(knob?9:6),hz0,hz1,'metal',{cut:false,a,role:'handle'});
+    let xs;
+    if(hp==='LR'){if(!knob)L=Math.max(20,Math.min(L,(dw-100)/2));xs=[x0+40+L/2,x1-40-L/2];if(xs[1]-xs[0]<L+10)xs=[(x0+x1)/2];}
+    else if(hp==='L'){if(!knob)L=Math.max(20,Math.min(L,dw-80));xs=[x0+40+L/2];}
+    else if(hp==='R'){if(!knob)L=Math.max(20,Math.min(L,dw-80));xs=[x1-40-L/2];}
+    else xs=[(x0+x1)/2];
+    xs.forEach(xc=>HB(xc-L/2,xc+L/2,yc-(knob?9:6),yc+(knob?9:6)));
    } else {
-    const L=knob?18:Math.max(20,Math.min(192,fh-100)),hx=Math.max(x0+14,Math.min(x1-14,f.k==='door'?(f.hinge==='L'?x1-38:x0+38):(x0+x1)/2));let yc;
+    const L=knob?18:Math.max(20,Math.min(192,fh-100));let yc;
     if(t.cat==='wall')yc=y0+50+L/2;else if(t.cat==='base')yc=y1-50-L/2;
     else if(f.bot&&!f.top)yc=y1-60-L/2;else if(f.top&&!f.bot)yc=y0+60+L/2;else yc=Math.max(y0+L/2+60,Math.min(y1-L/2-60,1050-it.e));
-    B('Mâner',hx-(knob?9:6),hx+(knob?9:6),yc-L/2,yc+L/2,hz0,hz1,'metal',{cut:false,a,role:'handle'});
+    let hxs;
+    if(hp==='LR')hxs=dw>120?[x0+38,x1-38]:[(x0+x1)/2];else if(hp==='L')hxs=[x0+38];else if(hp==='R')hxs=[x1-38];else if(hp==='C')hxs=[(x0+x1)/2];
+    else hxs=[f.k==='door'?(f.hinge==='L'?x1-38:x0+38):(x0+x1)/2];
+    hxs.forEach(h0=>{const hx=Math.max(x0+14,Math.min(x1-14,h0));HB(hx-(knob?9:6),hx+(knob?9:6),yc-L/2,yc+L/2);});
    }
   }
   if(f.k==='drawer'){const by0=Math.max(y0+15,iy0+6),top=Math.min(y1-12,iy1-6,(f.top?H:y1)-(t.cat==='base'&&f.top?T+6:0));drawerBox(xi0+13,xi1-13,by0,Math.min(top-by0,Math.max(40,fh-60)),zF-2,a);}
@@ -503,7 +563,7 @@ function holesFor(parts){
    for(const[v,sg]of[[vi,1],[vj,-1]]){if(v<0)continue;const q=parts[v];const zs=[p.z1-35];if(p.z1-p.z0>300)zs.push(p.z1-35-224);if(p.z1-p.z0>450)zs.push(p.z1-35-352);for(const z of zs)add(v,sg>0?q.x1:q.x0,p.y0+8,z,'x',sg,5,12,'slide');}
   }
   if(p.role==='handle'&&p.a){
-   const fi=parts.findIndex(q=>q.a&&q.a.id===p.a.id&&/door|dfront|lift/.test(q.role));if(fi<0)return;const f=parts[fi];
+   const fi=parts.findIndex(q=>q.a&&q.a.id===p.a.id&&/door|dfront|lift|dish/.test(q.role));if(fi<0)return;const f=parts[fi];
    const cx=(p.x0+p.x1)/2,cy=(p.y0+p.y1)/2,len=Math.max(p.x1-p.x0,p.y1-p.y0),horiz=(p.x1-p.x0)>(p.y1-p.y0);
    if(len<30)add(fi,cx,cy,f.z1,'z',1,5,f.z1-f.z0,'handle');
    else{const cc=len>=180?160:len>=150?128:96;for(const s of[-1,1])add(fi,horiz?cx+s*cc/2:cx,horiz?cy:cy+s*cc/2,f.z1,'z',1,5,f.z1-f.z0,'handle');}
@@ -548,7 +608,7 @@ function decorMat(id){
 }
 function fixedMat(key){
  if(matCache[key])return matCache[key];
- const defs={back:{color:'#e6e1d8',roughness:.9},metal:{color:'#2b2b2d',roughness:.35,metalness:.7},leg:{color:'#1c1c1c',roughness:.6},oven:{color:'#1e1f22',roughness:.35,metalness:.5},glass:{color:'#0c0c0e',roughness:.05,metalness:.2},groove:{color:'#2a2520',roughness:.9},wall:{color:'#e8e6e1',roughness:1},space:{color:'#2f55ff',roughness:.6,transparent:true,opacity:.5,depthWrite:false},
+ const defs={mirror:{color:'#dfe6ea',roughness:.03,metalness:.95},vitro:{color:'#9fb6bd',roughness:.05,metalness:.1,transparent:true,opacity:.42},back:{color:'#e6e1d8',roughness:.9},metal:{color:'#2b2b2d',roughness:.35,metalness:.7},leg:{color:'#1c1c1c',roughness:.6},oven:{color:'#1e1f22',roughness:.35,metalness:.5},glass:{color:'#0c0c0e',roughness:.05,metalness:.2},groove:{color:'#2a2520',roughness:.9},wall:{color:'#e8e6e1',roughness:1},space:{color:'#2f55ff',roughness:.6,transparent:true,opacity:.5,depthWrite:false},
   r_body:{color:'#f4f1ea',roughness:.8},r_front:{color:'#e2b860',roughness:.6},r_back:{color:'#a8a29a',roughness:.9},r_draw:{color:'#6aa0ff',roughness:.6},r_counter:{color:'#8a8077',roughness:.8},r_div:{color:'#9fd49a',roughness:.7}};
  const m=new THREE.MeshStandardMaterial(defs[key]);m.userData.solid=key!=='space';return matCache[key]=m;
 }
@@ -570,12 +630,11 @@ function decorOf(p,it){
 }
 
 function floorTex(){
- const c=document.createElement('canvas');c.width=c.height=1024;const x=c.getContext('2d');const r=rng('floor2');const rows=6,pw=1024/rows;
- x.fillStyle='#c9a47c';x.fillRect(0,0,1024,1024);
- for(let i=0;i<rows;i++){let y=-(i%2)*512-r()*200;while(y<1024){const len=600+r()*300;const l=62+r()*5,s=30+r()*6;x.fillStyle=`hsl(31,${s}%,${l}%)`;x.fillRect(i*pw,y,pw,len);
-   for(let g=0;g<26;g++){x.strokeStyle=`rgba(90,55,25,${.04+r()*.06})`;x.lineWidth=.5+r()*1.2;x.beginPath();const gx=i*pw+4+r()*(pw-8);x.moveTo(gx,y);x.bezierCurveTo(gx+(r()-.5)*8,y+len*.3,gx+(r()-.5)*8,y+len*.7,gx+(r()-.5)*4,y+len);x.stroke();}
-   x.fillStyle='rgba(70,45,20,.22)';x.fillRect(i*pw,y,pw,2);y+=len;}
-  x.fillStyle='rgba(70,45,20,.2)';x.fillRect(i*pw,0,2,1024);}
+ const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');const r=rng('floor');const pw=512/5;
+ for(let i=0;i<5;i++){let y=-r()*400;while(y<512){const len=180+r()*260;const l=58+r()*14;x.fillStyle=`hsl(30,${34+r()*8}%,${l}%)`;x.fillRect(i*pw,y,pw,len);
+   for(let g=0;g<14;g++){x.strokeStyle=`rgba(70,40,15,${.05+r()*.08})`;x.lineWidth=.6+r()*1.4;x.beginPath();const gx=i*pw+r()*pw;x.moveTo(gx,y);x.lineTo(gx+(r()-.5)*6,y+len);x.stroke();}
+   x.fillStyle='rgba(60,35,15,.35)';x.fillRect(i*pw,y,pw,1.5);y+=len;}
+  x.fillStyle='rgba(60,35,15,.3)';x.fillRect(i*pw,0,1.5,512);}
  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;
 }
 const FLOOR_T=floorTex();const FLOOR_M=new THREE.MeshStandardMaterial({map:FLOOR_T,roughness:.75});
@@ -586,7 +645,7 @@ function addEdges(mesh,mat=EDGE){const e=new THREE.LineSegments(new THREE.EdgesG
 function buildRoom(){
  clearGroup(roomRoot);const R=S.room,W=R.w*MM,D=R.d*MM,H=R.h*MM,t=.1;
  const ground=new THREE.Mesh(new THREE.PlaneGeometry(60,60),GROUND_M);ground.rotation.x=-Math.PI/2;ground.position.set(W/2,-.002,D/2);ground.receiveShadow=true;ground.raycast=()=>{};roomRoot.add(ground);
- FLOOR_T.repeat.set(R.w/1400,R.d/1400);
+ FLOOR_T.repeat.set(R.w/1000,R.d/1000);
  const fl=new THREE.Mesh(new THREE.PlaneGeometry(W,D),FLOOR_M);fl.rotation.x=-Math.PI/2;fl.position.set(W/2,0,D/2);fl.receiveShadow=true;fl.raycast=()=>{};roomRoot.add(fl);
  const wm=fixedMat('wall');
  const wall=(w,h,d,x,y,z)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),wm);m.position.set(x,y,z);m.receiveShadow=true;m.castShadow=true;m.raycast=()=>{};addEdges(m);roomRoot.add(m);};
@@ -636,9 +695,9 @@ function rebuildAll(){for(const g of groups.values()){itemsRoot.remove(g);dispos
 
 let openT=0,openTarget=0;
 function applyOpen(it,t){for(const pv of it._fr||[]){const a=pv.userData.a;
- if(a.k==='door')pv.rotation.y=(a.hinge==='L'?-1:1)*1.75*t;else if(a.k==='lift')pv.rotation.x=-1.2*t;else pv.position.z=pv.userData.bz+a.dist*MM*t;}}
+ if(a.k==='door')pv.rotation.y=(a.hinge==='L'?-1:1)*1.75*t;else if(a.k==='lift')pv.rotation.x=(a.inv?1.4:-1.2)*t;else pv.position.z=pv.userData.bz+a.dist*MM*t;}}
 
-let vmode='real';const VMODES={real:'Realist',xray:'Raze X',wire:'Schelet'};
+let vmode='real';const VMODES={real:'Realist',xray:'Raze X',wire:'Schelet',parts:'Piese'};
 function applyViewMode(){
  for(const m of Object.values(matCache)){if(!m.userData.solid||m===matCache.wall)continue;
   const x=vmode==='xray';m.transparent=x;m.opacity=x?.22:1;m.depthWrite=!x;m.visible=vmode!=='wire';m.needsUpdate=true;}
@@ -820,7 +879,7 @@ addEventListener('keydown',e=>{
   o:()=>$('#tOpen').click(),p:()=>$('#tProd').click(),r:()=>$('#tRoom').click(),h:()=>openHelp(),'?':()=>openHelp(),f1:()=>openHelp(),
   1:()=>camKey('3d'),2:()=>camKey('top'),3:()=>camKey('front'),4:()=>$('#bDims').click(),z:()=>camKey('3d'),
   d:()=>act('dup'),m:()=>it&&act('flip'),f:()=>it&&it.kind==='space'&&act('fill'),s:()=>it&&it.kind==='space'&&act('split'),
-  v:()=>it&&it.kind==='space'&&openVSplit(it),t:()=>it&&act('stretch')};
+  v:()=>it&&it.kind==='space'&&openVSplit(it),t:()=>it&&act('stretch'),k:()=>$('#tCheck').click(),g:()=>$('#bHoles').click()};
  const fn=map[lk];if(fn){e.preventDefault();fn();}
 });
 function camKey(c){const b=document.querySelector(`#viewbar [data-cam="${c}"]`);b?b.click():setCam(c);}
@@ -912,10 +971,10 @@ $('#tView').onclick=()=>{const k=Object.keys(VMODES);const prev=vmode;vmode=k[(k
 $('#tOpen').onclick=()=>{openTarget=openTarget?0:1;S.items.forEach(i=>delete i._open);$('#tOpen').classList.toggle('on',!!openTarget);$('#tOpen span').textContent=openTarget?'Închide':'Deschide';};
 $('#tRoom').onclick=()=>{select(null);openPanel();};
 $('#tCat').onclick=()=>{const it=getSel();openRadial(it?(it.kind==='space'?'space':'change'):'new');};
-
+$('#tCheck').onclick=openChecks;
 $('#tProd').onclick=()=>openProduction();$('#bProj').onclick=openProjects;$('#bHelp').onclick=openHelp;$('#bShot').onclick=shot;
 $('#bDims').onclick=()=>{showDims=!showDims;$('#bDims').classList.toggle('on',showDims);refreshOverlay();};
-
+$('#bHoles').onclick=()=>{showHoles=!showHoles;$('#bHoles').classList.toggle('on',showHoles);S.items.forEach(rebuildItem);if(showHoles)toast('Găuri: verde = îmbinări · albastru = balamale · portocaliu = suporți poliță · mov = glisiere · roșu = mânere');};
 $$('#viewbar [data-cam]').forEach(b=>b.onclick=()=>{$$('#viewbar [data-cam]').forEach(x=>x.classList.toggle('on',x===b));setCam(b.dataset.cam);});
 function select(id){selId=id||null;refreshOverlay();renderPanel();if(isMobile()){if(selId)openPanel();else $('#panel').classList.remove('open');}}
 function openPanel(){renderPanel();$('#panel').classList.add('open');}
@@ -939,7 +998,7 @@ function shade(hex,p){const n=parseInt(hex.slice(1),16);const f=v=>Math.max(0,Ma
 const sws=(k,cur,def,filter,label)=>{const d=cur?DEC[cur]:null;return`<div class="eggrow"><div class="eggsw" style="background:${d?swBg(d):'repeating-linear-gradient(45deg,#2a2a2a 0 6px,#1a1a1a 6px 12px)'}"></div><input class="egginp" list="eggList" data-egg="${k}" value="${esc(cur||'')}" placeholder="${def?'Implicit: '+(k==='mb'?S.mat.body:(getSel()&&getSel().type==='counter'?S.mat.counter:S.mat.front)):'Cod Egger, ex: H1145'}" autocomplete="off" autocapitalize="characters"></div>
  <div class="eggname ${d&&d.unknown?'bad':''}">${d?(d.unknown?'Cod nou — alege culoarea lui:':esc(d.code+' · '+d.name)):'Culoarea implicită a proiectului (din Cameră)'}</div>
  ${d&&d.unknown?`<div class="eggnew"><input type="color" data-newc="${k}" data-code="${esc(d.code)}" value="#c8a576"><label><input type="checkbox" data-neww="${k}"> are fibră de lemn</label></div>`:''}
- <div class="sws">${def?`<button class="sw def ${!cur?'on':''}" data-k="${k}" data-v="">Implicit</button>`:''}${DECORS.filter(filter||(()=>true)).map(d=>`<button class="sw ${normCode(cur)===d.id?'on':''}" data-k="${k}" data-v="${d.id}" title="${d.n}" style="background:${swBg(d)}"></button>`).join('')}</div>`;};
+ <div class="sws">${def?`<button class="sw def ${!cur?'on':''}" data-k="${k}" data-v="">Implicit</button>`:''}${DECORS.filter(filter||(()=>true)).map(d=>`<button class="sw ${normCode(cur)===d.id?'on':''}" data-k="${k}" data-v="${d.id}" title="${d.n}" style="background:${swBg(d)}"></button>`).join('')}<button class="sw more" data-pal="${k}" title="Toate culorile Egger + cod nou">＋</button></div>`;};
 const sws_old=(k,cur,def,filter)=>`<div class="sws">${def?`<button class="sw def ${!cur?'on':''}" data-k="${k}" data-v="">Implicit</button>`:''}${DECORS.filter(filter||(()=>true)).map(d=>`<button class="sw ${cur===d.id?'on':''}" data-k="${k}" data-v="${d.id}" title="${d.n}" style="background:${swBg(d)}"></button>`).join('')}</div>`;
 const I=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
 const IC={dup:I('<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>'),del:I('<path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>'),swap:I('<circle cx="12" cy="12" r="2"/><circle cx="12" cy="4" r="1.5"/><circle cx="12" cy="20" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="20" cy="12" r="1.5"/>'),x:I('<path d="M18 6 6 18M6 6l12 12"/>'),fill:I('<path d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z"/>'),split:I('<path d="M12 3v18M3 7v10M21 7v10M3 12h18"/>'),stretch:I('<path d="M2 12h20M6 8l-4 4 4 4M18 8l4 4-4 4"/>'),scan:I('<path d="M3 7V3h4M17 3h4v4M21 17v4h-4M7 21H3v-4M7 12h10"/>'),gear:I('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),eye:I('<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),list:I('<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'),flip:I('<path d="M12 3v18M16 7l4 5-4 5M8 7l-4 5 4 5"/>'),door:I('<path d="M4 3h9v18H4z"/><path d="M13 5l7-2v18l-7-2"/>')};
@@ -956,12 +1015,12 @@ function renderPanel(){if(pDown){pend.add(renderPanel);return;}try{renderQbar();
   const hid=S.items.filter(i=>i.hidden).length;
   h+=`<div class="ph"><div class="ic" style="background:#1d1a14;color:var(--gold)">${I('<path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18"/>').replace('<svg','<svg style="width:28px;height:28px"')}</div><div><h3>Cameră & proiect</h3><small>Atinge un corp pentru a-l edita · ține apăsat pentru meniu</small></div>${isMobile()?`<button class="ib x" data-act="closep">${IC.x}</button>`:''}</div>
   <div class="sec"><h4>Proiect</h4><label class="fld"><span>Nume proiect / client</span><input class="inp" data-k="name" value="${esc(S.name)}"></label></div>
-  ${hid?`<div class="acts"><button class="btn full" data-act="showall">${IC.eye} Arată ${hid} ascunse</button></div>`:''}
+  <div class="acts"><button class="btn gold" data-act="scan">${IC.scan} Scanează camera</button><button class="btn" data-act="std">${IC.gear} Standarde fabrică</button>${hid?`<button class="btn full" data-act="showall">${IC.eye} Arată ${hid} ascunse</button>`:''}</div>
   <div class="sec"><h4>Dimensiuni cameră</h4><div class="g3">${num('room.w','Lățime',S.room.w)}${num('room.d','Adâncime',S.room.d)}${num('room.h','Înălțime',S.room.h)}</div>
   <div class="lab" style="margin-top:8px">Pereți</div>${seg('room.left',[['1','Stânga ✓'],['0','Fără stânga']],S.room.left?'1':'0')}${seg('room.right',[['1','Dreapta ✓'],['0','Fără dreapta']],S.room.right?'1':'0')}</div>
   <div class="sec"><h4>Coduri Egger implicite</h4><div class="lab">Corp (PAL interior)</div>${sws('mat.body',S.mat.body,false,d=>!d.stone&&!d.marble)}
   <div class="lab">Fronturi</div>${sws('mat.front',S.mat.front)}<div class="lab">Blat</div>${sws('mat.counter',S.mat.counter)}</div>
-  <div class="sec"><h4>Mânere pe tot proiectul</h4>${seg('all.handle',[['bar','Bară'],['knob','Buton'],['none','Fără (push)']],'')}<div class="lab">Partea mânerului (uși simple)</div>${seg('all.hside',[['auto','Automat'],['R','Toate stânga'],['L','Toate dreapta']],'')}</div>
+  <div class="sec"><h4>Mânere pe tot proiectul</h4>${seg('all.handle',[['bar','Bară'],['knob','Buton'],['none','Fără (push)']],'')}<div class="lab">Poziția mânerelor (stânga / dreapta / ambele)</div>${seg('all.hpos',[['auto','Automat'],['L','Stânga'],['R','Dreapta'],['LR','Ambele'],['C','Centru']],'')}${seg('std.horient',[['auto','Automat'],['h','Orizontal'],['v','Vertical']],S.std.horient)}</div>
   <div class="acts"><button class="btn gold full" data-act="newcab">${IC.swap} Adaugă corp din catalog</button></div>`;
  } else if(it.kind==='space'){
   h+=`<div class="ph"><div class="ic" style="background:#1a2350">${I('<path d="M3 8l9-5 9 5v8l-9 5-9-5z"/>').replace('<svg','<svg style="width:30px;height:30px;color:#8fa6ff"')}</div><div><h3>Spațiu de proiectare</h3><small>${Math.round(it.w)} × ${Math.round(it.h)} × ${Math.round(it.d)} mm</small></div><button class="ib x" data-act="desel">${IC.x}</button></div>
@@ -973,7 +1032,7 @@ function renderPanel(){if(pDown){pend.add(renderPanel);return;}try{renderQbar();
   const t=TYPES[it.type],o=it.o,isCab=t.cat!=='panel'&&t.cat!=='decor';
   const canDiv=isCab&&!t.rod&&!t.oven&&!t.fridge&&!t.lift&&!t.combo&&!(t.drawers&&!t.doors);
   h+=`<div class="ph"><div class="ic">${typeIcon(it.type)}</div><div><h3>${cabCode(it)} · ${t.n}</h3><small><span class="chip" style="color:${CATS[t.cat].c}">${CATS[t.cat].n}</span></small></div><button class="ib x" data-act="desel">${IC.x}</button></div>
-  <div class="acts"><button class="btn" data-act="change">${IC.swap} Schimbă tipul</button><button class="btn" data-act="dup">${IC.dup} Duplică</button></div>
+  <div class="acts"><button class="btn" data-act="change">${IC.swap} Schimbă tipul</button><button class="btn" data-act="dup">${IC.dup} Duplică</button><button class="btn" data-act="stretch">${IC.stretch} Întinde rândul</button><button class="btn" data-act="prodone">${IC.list} Piese corp</button></div>
   <div class="sec"><h4>Dimensiuni</h4><div class="g3">${num('w','Lățime',it.w)}${num('h','Înălțime',it.h)}${num('d','Adâncime',it.d)}</div><div class="g2" style="margin-top:8px">${num('from','De la colț',it.s-it.w/2)}${num('e','De la podea',it.e)}</div></div>
   <div class="sec"><h4>Perete</h4>${wallSeg(it)}${num('off','Distanță de perete (insulă)',it.off||0)}</div>`;
   if(isCab){
@@ -982,11 +1041,12 @@ function renderPanel(){if(pDown){pend.add(renderPanel);return;}try{renderQbar();
    if(t.doors&&!t.lift&&!t.fridge&&!t.blind)h+=`<div class="lab">Uși pe rând</div>${seg('o.doors',[[1,'1'],[2,'2'],[3,'3'],[4,'4']],o.doors)}`;
    if(t.doors&&!t.lift&&!t.blind&&(o.doors===1||o.doors===3||t.tall||t.fridge||t.oven))h+=`<div class="lab">Mânerul pe partea${o.hinge==='auto'?' (acum: '+(hingeOf(it)==='L'?'dreapta':'stânga')+')':''}</div>${seg('o.hinge',[['auto','Automat'],['R','Stânga'],['L','Dreapta']],o.hinge)}`;
    if(t.blind)h+=`<div class="lab">Panou orb pe partea</div>${seg('o.bside',[['L','Stânga'],['R','Dreapta']],o.bside)}${num('o.dw','Lățime ușă',o.dw)}`;
+   if(canDiv)h+=`<div class="lab">Diviziuni verticale</div>${seg('o.div',[[0,'0'],[1,'1'],[2,'2'],[3,'3']],o.div)}`;
    if(!t.fridge&&!t.sink&&!t.lift&&!(t.drawers&&!t.doors))h+=`<div class="lab">Polițe${canDiv&&o.div?' (pe secțiune)':''}</div>${seg('o.shelves',[[0,'0'],[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']],o.shelves)}`;
    if(t.rod)h+=`<div class="lab">Sertare interioare</div>${seg('o.idraw',[[0,'0'],[1,'1'],[2,'2'],[3,'3']],o.idraw)}`;
-   if(!t.open)h+=`<div class="lab">Mâner</div>${seg('o.handle',[['bar','Bară'],['knob','Buton'],['none','Fără (push)']],o.handle)}`;
+   if(!t.open)h+=`<div class="lab">Mâner</div>${seg('o.handle',[['bar','Bară'],['knob','Buton'],['none','Fără (push)']],o.handle)}${seg('o.horient',[['','Ca proiectul'],['h','Orizontal'],['v','Vertical']],o.horient||'')}${o.handle!=='none'?`<div class="lab">Poziție mâner</div>${seg('o.hpos',[['auto','Auto'],['L','Stânga'],['R','Dreapta'],['LR','Ambele'],['C','Centru']],o.hpos||'auto')}`:''}`;
    if(t.cat!=='wall')h+=num('o.plinth','Soclu / picioare',o.plinth);
-   h+=`</div>`;
+   h+=`</div><div class="sec"><h4>Avansat (pe piesă)</h4><div class="g2">${num('o.gap','Rost fronturi (gol = standard)',o.gap,'mm')}${t.doors?num('o.hinges','Balamale/ușă (0 = auto)',o.hinges,'buc'):''}</div></div>`;
   }
   h+=`<div class="sec"><h4>Materiale</h4>`;
   if(isCab||it.type==='shelf'||it.type==='decor_panel')h+=`<div class="lab">Corp (cod Egger)</div>${sws('mb',it.mb,true,d=>!d.stone&&!d.marble)}`;
@@ -995,12 +1055,39 @@ function renderPanel(){if(pDown){pend.add(renderPanel);return;}try{renderQbar();
  }
  P.innerHTML=h;
 }
-$('#panel').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.act)return act(b.dataset.act);if(b.dataset.k!=null&&b.dataset.v!=null)setKey(b.dataset.k,b.dataset.v);});
+$('#panel').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.pal)return openPalette(b.dataset.pal);if(b.dataset.act)return act(b.dataset.act);if(b.dataset.k!=null&&b.dataset.v!=null)setKey(b.dataset.k,b.dataset.v);});
 $('#panel').addEventListener('change',e=>{const i=e.target;
  if(i.dataset.egg){setKey(i.dataset.egg,i.value.trim()?normCode(i.value):'');return;}
  if(i.dataset.newc||i.dataset.neww){const k=i.dataset.newc||i.dataset.neww,box=i.closest('.sec')||document;const col=box.querySelector(`[data-newc="${k}"]`),wd=box.querySelector(`[data-neww="${k}"]`);const c=col&&col.dataset.code;if(!c)return;
-  mutate(()=>{S.custom[c]={h:col.value,k:wd&&wd.checked?1:0};});fillEggList();for(const kk in matCache)if(kk.startsWith('d_'+c+'_'))delete matCache[kk];for(const ic in iconCache)delete iconCache[ic];rebuildAll();toast('Culoare salvată pentru codul '+c);return;}
+  mutate(()=>{S.custom[c]={h:col.value,k:wd&&wd.checked?1:0};});saveCustomGlobal(c,S.custom[c]);fillEggList();for(const kk in matCache)if(kk.startsWith('d_'+c+'_'))delete matCache[kk];for(const ic in iconCache)delete iconCache[ic];rebuildAll();toast('Culoare salvată pentru codul '+c);return;}
  if(i.dataset.k)setKey(i.dataset.k,i.value);});
+/* ---- Toate culorile Egger + coduri proprii (salvate pe acest dispozitiv pentru toate proiectele) ---- */
+function saveCustomGlobal(c,v){try{const g=JSON.parse(localStorage.getItem('gmob.customEgg')||'{}');g[c]=v;localStorage.setItem('gmob.customEgg',JSON.stringify(g));}catch(e){}}
+let palQ='';
+function openPalette(k){modalState={pal:k};palQ='';drawPalette();}
+function drawPalette(){
+ const k=modalState.pal,q=palQ.trim().toUpperCase();
+ const cur=(()=>{const it=getSel();if(/^mat\./.test(k))return S.mat[k.slice(4)];return it&&it[k];})();
+ const all=[...EGGER.map(([c,n,h,kk])=>({c,n,h,k:kk||0})),...Object.entries(S.custom||{}).filter(([c])=>!EGG[c]).map(([c,v])=>({c,n:v.n||'cod propriu',h:v.h,k:v.k||0,own:1}))];
+ const hit=d=>!q||d.c.includes(q)||d.n.toUpperCase().includes(q);
+ const groups=[['Coduri proprii',d=>d.own],['Unicolor',d=>!d.own&&!d.k],['Lemn',d=>!d.own&&d.k===1],['Piatră, beton, metal',d=>!d.own&&d.k>=2]];
+ const sw=d=>{const dd={c:d.h,wood:d.k===1,stone:d.k===2,marble:d.k===3};return`<button class="pcell ${normCode(cur)===d.c?'on':''}" data-pcode="${esc(d.c)}"><i style="background:${swBg(dd)}"></i><b>${esc(d.c)}</b><small>${esc(d.n)}</small></button>`;};
+ let body='';for(const[t,f]of groups){const list=all.filter(d=>f(d)&&hit(d));if(list.length)body+=`<div class="lab" style="margin:12px 0 6px">${t} · ${list.length}</div><div class="pgrid">${list.map(sw).join('')}</div>`;}
+ const known=q&&(EGG[q]||(S.custom||{})[q]);
+ if(!body)body=`<div class="note" style="margin-top:10px">Niciun decor găsit pentru „${esc(palQ)}”.</div>`;
+ openModal(`${mhead('Culori Egger',`${EGGER.length} decoruri + codurile tale · alege sau adaugă un cod nou`)}
+ <input class="inp" id="palQ" placeholder="Caută cod sau nume (ex. H1145, stejar, gri)" value="${esc(palQ)}" autocomplete="off">
+ <div class="pscroll">${body}</div>
+ <div class="sec"><h4>Adaugă cod Egger care lipsește</h4><div class="g2"><label class="fld"><span>Cod</span><input class="inp" id="ncCode" value="${q&&!known&&/^[A-Z]{1,2}\d{2,5}/.test(q)?esc(q):''}" placeholder="ex. H3349" autocapitalize="characters"></label><label class="fld"><span>Nume (opțional)</span><input class="inp" id="ncName" placeholder="ex. Kaiserberg Oak"></label></div>
+ <div class="eggnew" style="margin-top:8px"><input type="color" id="ncCol" value="#c8a576"><label><input type="checkbox" id="ncWood"> are fibră de lemn</label><button class="btn gold" id="ncGo" style="margin-left:auto">Adaugă și folosește</button></div></div>`,true);
+ const Q=$('#palQ');Q.oninput=()=>{palQ=Q.value;const pos=Q.selectionStart;drawPalette();const N=$('#palQ');N.focus();N.setSelectionRange(pos,pos);};
+ $('#ncGo').onclick=()=>{const c=normCode($('#ncCode').value);if(!c||!/^[A-Z]{1,2}\d{2,5}/.test(c)){toast('Scrie codul, ex. H3349');return;}
+  const v={h:$('#ncCol').value,k:$('#ncWood').checked?1:0,n:$('#ncName').value.trim()||'cod propriu'};
+  mutate(()=>{S.custom[c]=v;});saveCustomGlobal(c,v);fillEggList();for(const kk in matCache)if(kk.startsWith('d_'+c+'_'))delete matCache[kk];for(const ic in iconCache)delete iconCache[ic];
+  const key=modalState.pal;closeModal();setKey(key,c);toast('Cod '+c+' adăugat și salvat');};
+}
+$('#modal').addEventListener('click',e=>{if(!modalState||!modalState.pal)return;const b=e.target.closest('[data-pcode]');if(!b)return;const key=modalState.pal;closeModal();setKey(key,b.dataset.pcode);toast('Culoare: '+b.dataset.pcode);});
+
 function fillEggList(){const dl=$('#eggList');if(dl)dl.innerHTML=[...EGGER.map(([c,n])=>`<option value="${c}">${c} ${n}</option>`),...Object.keys(S.custom||{}).map(c=>`<option value="${c}">${c} (cod propriu)</option>`)].join('');}
 function inRoom(it){const b=bbox(it),Rm=S.room;return b.x0>=-1&&b.x1<=Rm.w+1&&b.z0>=-1&&b.z1<=Rm.d+1&&b.y1<=Rm.h+1;}
 function ovl(it){if(!it||it.kind!=='cab'||it.hidden)return[];const a=bbox(it);return S.items.filter(o=>o!==it&&o.kind==='cab'&&!o.hidden&&(()=>{const b=bbox(o);return a.x0<b.x1-2&&a.x1>b.x0+2&&a.z0<b.z1-2&&a.z1>b.z0+2&&a.y0<b.y1-2&&a.y1>b.y0+2;})());}
@@ -1011,6 +1098,7 @@ function setKey(k,v){
  if(selBefore&&/^(w|h|d|e|off|from)$/.test(k)&&(String(v).trim()===''||!isFinite(+v)||+v<0)){renderPanel();return;}
  mutate(()=>{
   if(k==='all.handle'){S.items.forEach(i=>{if(i.kind==='cab'&&i.o)i.o.handle=v;});full=true;toast('Mânere aplicate pe tot proiectul');}
+  else if(k==='all.hpos'){S.items.forEach(i=>{if(i.kind==='cab'&&i.o){i.o.hpos=v;i.o.hinge='auto';}});full=true;toast({auto:'Mânere automate',L:'Toate mânerele pe stânga',R:'Toate mânerele pe dreapta',LR:'Mânere pe ambele părți',C:'Mânere pe centru'}[v]);}
   else if(k==='all.hside'){S.items.forEach(i=>{if(i.kind==='cab'&&i.o)i.o.hinge=v;});full=true;toast(v==='auto'?'Mânere automate: se pun spre partea opusă colțului':v==='R'?'Toate mânerele pe stânga':'Toate mânerele pe dreapta');}
   else if(/^(room|mat|rates|std)\./.test(k)){const[a,b]=k.split('.');const cur=S[a][b];S[a][b]=typeof cur==='boolean'?v==='1':typeof cur==='number'?Math.max(a==='room'?500:0,+v||0):(a==='mat'?(normCode(v)||cur):v);full=true;
    if(k==='room.left'&&!S.room.left)S.items.forEach(i=>{if(i.wall==='left')i.wall='back';});if(k==='room.right'&&!S.room.right)S.items.forEach(i=>{if(i.wall==='right')i.wall='back';});}
@@ -1044,7 +1132,7 @@ function act(a){
  else if(a==='fill')fillSpace(it);
  else if(a==='split')openSplit(it);
  else if(a==='hide'){mutate(()=>{it.hidden=true;});rebuildItem(it);select(null);toast('Ascuns · îl găsești în Cameră → Arată ascunse');}
- else if(a==='flip'){if(it.o){mutate(()=>{it.o.hinge=hingeOf(it)==='L'?'R':'L';it.o.bside=it.o.bside==='L'?'R':'L';});rebuildItem(it);renderPanel();}}
+ else if(a==='flip'){if(it.o){mutate(()=>{if(it.o.hpos==='L'||it.o.hpos==='R')it.o.hpos=it.o.hpos==='L'?'R':'L';it.o.hinge=hingeOf(it)==='L'?'R':'L';it.o.bside=it.o.bside==='L'?'R':'L';});rebuildItem(it);renderPanel();}}
  else if(a==='openone'){it._open=it._open?0:1;applyOpen(it,it._open);}
  else if(a==='stretch')openStretch(it);
  else if(a==='prodone')openProduction(it.id);
@@ -1053,7 +1141,7 @@ function act(a){
 /* ================== MENIU CONTEXTUAL ================== */
 function openCtx(x,y){
  const it=getSel();if(!it)return;const C=$('#ctx');const isCab=it.kind==='cab';const t=TYPES[it.type]||{};
- const items=isCab?[['change','Schimbă tipul',IC.swap],['dup','Duplică',IC.dup],...(t.doors?[['flip','Oglindește balamalele',IC.flip],['openone','Deschide / închide fronturi',IC.door]]:[]),['hide','Ascunde',IC.eye],['delete','Șterge',IC.del]]
+ const items=isCab?[['change','Schimbă tipul',IC.swap],['dup','Duplică',IC.dup],...(t.doors?[['flip','Oglindește balamalele',IC.flip],['openone','Deschide / închide fronturi',IC.door]]:[]),['stretch','Întinde rândul',IC.stretch],['prodone','Piese & găuri corp',IC.list],['hide','Ascunde',IC.eye],['delete','Șterge',IC.del]]
   :[['convert','Transformă în corp',IC.swap],['fill','Umple automat',IC.fill],['split','Împarte',IC.split],['delete','Șterge',IC.del]];
  C.innerHTML=`<div class="ctxh">${esc(isCab?cabCode(it)+' · '+t.n:'Spațiu')}</div>`+items.map(([a,l,ic])=>`<button data-cact="${a}" class="${a==='delete'?'red':''}">${ic}<span>${l}</span></button>`).join('');
  C.hidden=false;const r=C.getBoundingClientRect();C.style.left=Math.max(6,Math.min(x,innerWidth-r.width-6))+'px';C.style.top=Math.max(6,Math.min(y,innerHeight-r.height-6))+'px';
@@ -1077,20 +1165,33 @@ function typeIcon(type){
 }
 let radialCtx=null,radialPick=null;
 function openRadial(ctx){
- radialCtx=ctx;radialPick=null;const R=$('#radial'),mob=isMobile();const Sz=Math.max(300,Math.min(innerWidth-12,innerHeight-170,660));
- const keys=Object.keys(TYPES),r1=keys.filter(k=>TYPES[k].cat==='base'),r2=keys.filter(k=>/wall|tall/.test(TYPES[k].cat)),r3=keys.filter(k=>/ward|panel|decor/.test(TYPES[k].cat));
+ radialCtx=ctx;radialPick=null;const R=$('#radial'),mob=isMobile();
+ const keys=Object.keys(TYPES).filter(k=>TYPES[k]);
  const sub={new:'Alege un corp nou',space:'Alege corpul pentru spațiul albastru',change:'Schimbă tipul corpului'}[ctx];
- let h=`<button class="ib rclose" data-close="1">${IC.x}</button><div class="rwrap ${mob?'mob':''}" style="width:${Sz}px;height:${Sz}px"><div class="rcenter"><b>Box Tool</b><span id="rlab">${sub}</span><button class="btn gold" id="rgo" hidden>Alege</button></div>`;
- const place=(arr,r,off)=>arr.forEach((k,i)=>{const a=-Math.PI/2+off+i*2*Math.PI/arr.length,x=Sz/2+Math.cos(a)*r,y=Sz/2+Math.sin(a)*r;h+=`<button class="rb" data-type="${k}" style="left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;--c:${CATS[TYPES[k].cat].c}">${typeIcon(k)}<em>${TYPES[k].n}</em></button>`;});
- const k3=mob?.425:.455,k2=mob?.31:.33,k1=mob?.19:.2;place(r1,Sz*k1,Math.PI/r1.length);place(r2,Sz*k2,0);place(r3,Sz*k3,Math.PI/r3.length);
- h+=`</div><div class="rleg">${Object.values(CATS).map(c=>`<span><i style="background:${c.c}"></i>${c.n}</span>`).join('')}</div>`;
+ const btn=(k,st='')=>`<button class="rb" data-type="${k}" style="${st}--c:${CATS[TYPES[k].cat].c}">${typeIcon(k)}<em>${esc(TYPES[k].n)}</em></button>`;
+ const Sz=Math.max(300,Math.min(innerWidth-40,innerHeight-150,760));
+ let h;
+ if(mob||Sz<560){
+  /* telefon / ecran mic: grilă pe categorii, un singur tap alege */
+  h=`<button class="ib rclose" data-close="1">${IC.x}</button><div class="rgrid"><div class="rgh"><b>Box Tool</b><span>${sub}</span></div>`;
+  for(const c in CATS){const ks=keys.filter(k=>TYPES[k].cat===c);if(!ks.length)continue;
+   h+=`<div class="rgc"><i style="background:${CATS[c].c}"></i>${CATS[c].n}</div><div class="rgl">${ks.map(k=>btn(k)).join('')}</div>`;}
+  h+='</div>';
+ } else {
+  /* laptop: Box Tool rotund ca în ArchiWood — 4 inele */
+  const rings=[keys.filter(k=>/panel|decor/.test(TYPES[k].cat)),keys.filter(k=>TYPES[k].cat==='base'),keys.filter(k=>/wall|tall/.test(TYPES[k].cat)),keys.filter(k=>TYPES[k].cat==='ward')];
+  const rad=[.16,.28,.375,.455];
+  h=`<button class="ib rclose" data-close="1">${IC.x}</button><div class="rwrap ${Sz<700?"sm":""}" style="width:${Sz}px;height:${Sz}px"><div class="rcenter"><b>Box Tool</b><span id="rlab">${sub}</span><button class="btn gold" id="rgo" hidden>Alege</button></div>`;
+  rings.forEach((arr,ri)=>arr.forEach((k,i)=>{const a=-Math.PI/2+(ri%2?Math.PI/arr.length:0)+i*2*Math.PI/arr.length,x=Sz/2+Math.cos(a)*Sz*rad[ri],y=Sz/2+Math.sin(a)*Sz*rad[ri];h+=btn(k,`left:${x.toFixed(1)}px;top:${y.toFixed(1)}px;`);}));
+  h+=`</div><div class="rleg">${Object.values(CATS).map(c=>`<span><i style="background:${c.c}"></i>${c.n}</span>`).join('')}</div>`;
+ }
  R.innerHTML=h;R.hidden=false;
 }
 function closeRadial(){$('#radial').hidden=true;}
 $('#radial').addEventListener('click',e=>{
  if(e.target.closest('#rgo')){if(radialPick){closeRadial();chooseType(radialPick);}return;}
  const b=e.target.closest('.rb');
- if(b){const k=b.dataset.type;if(isMobile()&&radialPick!==k){radialPick=k;$$('.rb').forEach(x=>x.classList.toggle('sel',x===b));$('#rlab').textContent=TYPES[k].n;$('#rgo').hidden=false;return;}closeRadial();chooseType(k);return;}
+ if(b){const k=b.dataset.type;if(b.closest('.rgrid')){closeRadial();chooseType(k);return;}if(isMobile()&&radialPick!==k){radialPick=k;$$('.rb').forEach(x=>x.classList.toggle('sel',x===b));$('#rlab').textContent=TYPES[k].n;$('#rgo').hidden=false;return;}closeRadial();chooseType(k);return;}
  if(e.target.closest('[data-close]')||e.target.id==='radial')closeRadial();});
 $('#radial').addEventListener('pointerover',e=>{const b=e.target.closest('.rb');if(b&&!isMobile())$('#rlab').textContent=TYPES[b.dataset.type].n;});
 function chooseType(type){
@@ -1148,7 +1249,7 @@ function drawReplace(){if(!modalState||!modalState.sp)return;if(pDown){pend.add(
    if(t.drawers&&!t.combo)body+=`<div class="lab">Sertare</div>${sg('drawers',[[1,'1'],[2,'2'],[3,'3'],[4,'4'],[5,'5']])}`;
    if(t.doors&&!t.lift&&!t.fridge&&!t.blind)body+=`<div class="lab">Uși pe rând</div>${sg('doors',[[1,'1'],[2,'2'],[3,'3']])}`;
    if(!/panel|decor/.test(t.cat)&&!t.fridge&&!t.sink&&!t.lift&&!(t.drawers&&!t.doors))body+=`<div class="lab">Polițe</div>${sg('shelves',[[0,'0'],[1,'1'],[2,'2'],[3,'3'],[4,'4']])}`;
-   if(!/panel|decor/.test(t.cat)&&!t.open)body+=`<div class="lab">Mâner</div>${sg('handle',[['bar','Bară'],['knob','Buton'],['none','Fără']])}`;
+   if(!/panel|decor/.test(t.cat)&&!t.open)body+=`<div class="lab">Mâner</div>${sg('handle',[['bar','Bară'],['knob','Buton'],['none','Fără']])}<div class="lab">Poziție mâner</div>${sg('hpos',[['auto','Auto'],['L','Stânga'],['R','Dreapta'],['LR','Ambele'],['C','Centru']])}`;
    if(/panel|decor/.test(t.cat))body+='<div class="note">Acest element nu are parametri suplimentari.</div>';}
   body+='</div>';}
  const desc=pl.widths.length>1?`${pl.widths.length} module × ~${pl.widths[0]} mm`:`1 corp × ${Math.round(pl.widths[0])} mm`;
@@ -1501,7 +1602,7 @@ let prodTab='cut',prodFilter=null,prodCache=null;
 function openProduction(filterId){prodFilter=filterId||null;prodTab='cut';modalState={prod:1};prodCache=null;drawProd();}
 function drawProd(){
  const P=prodCache||(prodCache=production(prodFilter));const one=prodFilter&&S.items.find(i=>i.id===prodFilter);let body='';
- const tabs=one?[['cut','Piese'],['holes','Găuri']]:[['cut','Debitare'],['acc','Accesorii'],['price','Preț']];
+ const tabs=one?[['cut','Piese'],['holes','Găuri']]:[['cut','Debitare'],['nest','Optimizare'],['labels','Etichete'],['draw','Desene'],['cnc','CNC'],['acc','Accesorii'],['price','Preț']];
  if(prodTab==='cut'){
   let g='';body=`<div class="tscroll"><table class="cl"><thead><tr><th>Piesă</th><th class="n">Lung.</th><th class="n">Lăț.</th><th class="n">Gr.</th><th class="n">Buc</th><th>Cant</th><th class="n">Găuri</th></tr></thead><tbody>`;
   for(const r of P.list){const gn=`${r.dec.n} · ${r.th} mm`;if(gn!==g){g=gn;body+=`<tr class="grp"><td colspan="7">${esc(gn)}</td></tr>`;}
@@ -1541,7 +1642,7 @@ function drawProd(){
   <button class="btn wide" id="cpOffer">Copiază oferta (text)</button>`;
  }
  openModal(`${mhead(one?`${cabCode(one)} · ${TYPES[one.type].n}`:'Producție',one?`${P.pieces} piese · ${P.holes} găuri`:`${esc(S.name)} · ${S.items.filter(i=>i.kind==='cab').length} corpuri`)}
- ${one?'':`<div class="kpis"><div class="kpi"><small>Piese</small><b>${P.pieces}</b></div><div class="kpi"><small>PAL total</small><b>${m2(P.area.pal+P.area.front)}</b></div><div class="kpi"><small>Cant</small><b>${(P.cant/1000).toFixed(1)} ml</b></div><div class="kpi g"><small>Preț estimat</small><b>${lei(P.total)}</b></div></div>`}
+ ${one?'':`<div class="kpis"><div class="kpi"><small>Piese</small><b>${P.pieces}</b></div><div class="kpi"><small>Foi PAL/HDF/blat</small><b>${P.nest?P.nest.total:'–'}</b></div><div class="kpi"><small>Găuri CNC</small><b>${P.holes}</b></div><div class="kpi g"><small>Preț estimat</small><b>${lei(P.total)}</b></div></div>`}
  <div class="tabs">${tabs.map(([k,l])=>`<button data-ptab="${k}" class="${prodTab===k?'on':''}">${l}</button>`).join('')}</div>${body}`,true);
  $$('[data-ptab]').forEach(b=>b.onclick=()=>{prodTab=b.dataset.ptab;drawProd();});
  $$('[data-rate]').forEach(i=>i.onchange=()=>{mutate(()=>{S.rates[i.dataset.rate]=Math.max(0,+i.value||0);});prodCache=null;drawProd();});
@@ -1585,20 +1686,22 @@ function openProjects(){
 function openHelp(){
  modalState={help:1};const mob=isMobile();
  openModal(`${mhead('Bun venit în GIMMOB Studio','Proiectare mobilier la comandă — de la schiță la CNC')}
- <div class="steps"><div><span><b>Spațiu (Box Tool)</b> — alege tipul (jos, sus, coloane, dulap) și trage pe podea lângă perete. Apare zona albastră.</span></div>
- <div><span><b>Catalog</b> — selectează zona albastră → <b>Box Tool</b> → alege corpul → fereastra <b>Înlocuire</b> → <b>Confirmă</b>. Zona devine mobilier, exact pe mărimea ei.</span></div>
- <div><span><b>Modifică</b> — atinge corpul: scrii mărimile și <b>codul Egger</b>. Bulinele verzi = lățime, portocalie = înălțime, trage corpul ca să-l muți.</span></div>
- <div><span><b>Producție</b> — debitare, optimizare plăci, etichete, desene, CNC și preț.</span></div></div>
- ${mob?`<div class="note">Un deget = rotești · două degete = zoom / mutare. Ține apăsat pe un corp = meniu rapid.</div>`:
+ <div class="steps"><div><span><b>Spațiu (Box Tool)</b> — alege tipul și trage pe podea lângă perete (zona albastră). Sau <b>Cameră → Scanează camera</b> și golurile se umplu singure.</span></div>
+ <div><span><b>Catalog</b> — selectează zona albastră → <b>Box Tool</b> → alege corpul → fereastra <b>Înlocuire</b> → Confirmă. Bulinele verzi = lățime, portocalie = înălțime, trage corpul ca să-l muți.</span></div>
+ <div><span><b>Culori Egger</b> — scrii codul (ex. H1145) sau apeși <b>＋</b> lângă culori ca să vezi toate decorurile. Un cod care lipsește îl adaugi o dată și rămâne salvat.</span></div>
+ <div><span><b>Mânere</b> — pe fiecare corp alegi: stânga, dreapta, ambele părți sau centru.</span></div>
+ <div><span><b>Verifică</b> — găsește suprapuneri, uși prea late, polițe care se curbează, lipsă blat.</span></div>
+ <div><span><b>Producție</b> — debitare, optimizare pe foi, etichete cu QR, desene tehnice PDF și pachet <b>CNC</b> (DXF + G-code).</span></div></div>
+ ${mob?`<div class="note">Un deget = rotești · două degete = zoom / mutare. Ține apăsat pe un corp = meniu rapid. <b>Găuri</b> (sus) arată găurile de feronerie.</div>`:
  `<div class="sec"><h4>Scurtături tastatură (laptop)</h4><div class="keys">
  <b>B</b><span>Box Tool — desenează spațiu</span><b>C</b><span>Catalog / schimbă tipul</span>
  <b>Enter</b><span>Spațiu selectat → catalog · în fereastră → Confirmă</span>
- <b>F</b><span>Umple automat spațiul</span><b>S</b> <span>Împarte spațiul stânga-dreapta</span><b>V</b><span>Împarte spațiul sus-jos</span>
+ <b>F</b><span>Umple automat spațiul</span><b>S</b><span>Împarte spațiul stânga-dreapta</span><b>V</b><span>Împarte spațiul sus-jos</span>
  <b>0–9</b><span>Scrie dimensiuni direct (lățime, adâncime, înălțime) + Enter</span>
  <b>← →</b><span>Mută corpul 10 mm (Shift = 100 mm)</span><b>↑ ↓</b><span>Ridică / coboară 10 mm</span>
  <b>D</b><span>Duplică</span><b>M</b><span>Oglindește balamalele</span><b>T</b><span>Întinde rândul</span><b>Del</b><span>Șterge</span>
- <b>1 2 3</b><span>Vedere 3D · Plan · Față</span><b>4</b><span>Cote on/off</span><b>X</b><span>Realist / Raze X / Schelet</span>
- <b>O</b><span>Deschide / închide fronturile</span><b>P</b><span>Producție</span><b>R</b><span>Cameră & proiect</span>
+ <b>1 2 3</b><span>Vedere 3D · Plan · Față</span><b>4</b><span>Cote on/off</span><b>G</b><span>Găuri on/off</span><b>X</b><span>Realist / Raze X / Schelet / Piese</span>
+ <b>O</b><span>Deschide / închide fronturile</span><b>K</b><span>Verifică proiectul</span><b>P</b><span>Producție</span><b>R</b><span>Cameră & proiect</span>
  <b>Ctrl+Z / Ctrl+Y</b><span>Anulează / Refă</span><b>Ctrl+S</b><span>Salvează</span><b>Esc</b><span>Renunță / deselectează</span><b>H</b><span>Acest ajutor</span>
  </div></div>
  <div class="note">Mouse: click stânga + trage = rotești · click dreapta + trage = muți vederea · rotița = zoom · click dreapta pe corp = meniu rapid.</div>`}
