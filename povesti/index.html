@@ -215,6 +215,8 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
     <label class="toggle"><input type="checkbox" id="optMuzica" checked> Muzică de fundal (generată, fără drepturi de autor)</label>
     <label class="toggle"><input type="checkbox" id="optSfx" checked> Efecte sonore (tranziții, lovituri, mașină de scris)</label>
     <label class="toggle"><input type="checkbox" id="optVerif" checked> Verificare de fapte (a doua trecere AI peste scenariu)</label>
+    <div class="btns"><button class="btn" id="btnExportSet">📤 Copiază setările</button><button class="btn" id="btnImportSet">📥 Lipește setările</button></div>
+    <p class="mut">Folosește-le ca să muți cheia și setările din Safari în aplicația instalată pe ecran (iPhone-ul le ține separat).</p>
     <div class="btns"><button class="btn y" id="btnSalveaza">💾 Salvează</button><button class="btn" id="btnTestServicii">🩺 Testează serviciile</button><button class="btn" id="btnDemo">🧪 Clip demo offline</button></div>
     <pre id="testOut" class="hide"></pre>
   </div>
@@ -368,12 +370,26 @@ const log = (...a)=>console.log('[povesti]',...a);
 function diacritice(t){ return String(t||'').replace(/ş/g,'ș').replace(/Ş/g,'Ș').replace(/ţ/g,'ț').replace(/Ţ/g,'Ț'); }
 function curataTTS(t){ return diacritice(t).replace(/[„”“"«»]/g,'').replace(/[–—]/g,', ').replace(/\s+/g,' ').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'').trim(); }
 function propozitii(t){ return (t.match(/[^.!?…]+[.!?…]*/g)||[t]).map(s=>s.trim()).filter(Boolean); }
+function reparaJSON(t){ // închide ce a rămas deschis într-un JSON tăiat la jumătate
+  t=t.replace(/,\s*([}\]])/g,'$1');
+  let stiva=[], inStr=false, esc=false, ultimBun=-1;
+  for(let i=0;i<t.length;i++){ const c=t[i];
+    if(inStr){ if(esc) esc=false; else if(c==='\\') esc=true; else if(c==='"') inStr=false; continue; }
+    if(c==='"') inStr=true; else if(c==='{'||c==='[') stiva.push(c); else if(c==='}'||c===']'){ stiva.pop(); ultimBun=i; } }
+  if(!inStr&&!stiva.length) return t;
+  // tai până la ultimul obiect/listă închis complet, apoi închid parantezele rămase
+  let u=t.slice(0,ultimBun+1); stiva=[]; inStr=false; esc=false;
+  for(let i=0;i<u.length;i++){ const c=u[i]; if(inStr){ if(esc) esc=false; else if(c==='\\') esc=true; else if(c==='"') inStr=false; continue; }
+    if(c==='"') inStr=true; else if(c==='{'||c==='[') stiva.push(c); else if(c==='}'||c===']') stiva.pop(); }
+  u=u.replace(/,\s*$/,''); while(stiva.length) u+= stiva.pop()==='{'?'}':']'; return u.replace(/,\s*([}\]])/g,'$1');
+}
 function extrageJSON(txt){
   if(typeof txt!=='string') return txt;
   txt = txt.replace(/^```(?:json)?/i,'').replace(/```\s*$/,'').trim();
-  const a=txt.indexOf('{'), b=txt.lastIndexOf('}');
-  if(a<0||b<0) throw new Error('Răspunsul AI nu conține JSON');
-  return JSON.parse(txt.slice(a,b+1));
+  const a=txt.indexOf('{'); if(a<0) throw new Error('Răspunsul AI nu conține JSON');
+  const b=txt.lastIndexOf('}');
+  try{ return JSON.parse(txt.slice(a,b+1)); }catch(e){}
+  try{ return JSON.parse(reparaJSON(txt.slice(a))); }catch(e){ throw new Error('Răspunsul AI a venit incomplet ('+e.message+')'); }
 }
 
 /* ---------------- Limitare de ritm (servicii publice) ---------------- */
@@ -589,7 +605,36 @@ PLATFORMĂ: ${s.platforma==='yt_lung'?'YouTube clip lung (orizontal)':s.platform
 SURSE:
 ${txtSurse}`;
 }
+async function scrieScenariuLung(subiect, s, surse){
+  const sec=+s.durata, cuv=Math.round(sec*2.45), nrCap=Math.max(4,Math.min(7,Math.round(sec/80)));
+  const baza=sistemScenariu(s), surseTxt=promptScenariu(subiect,s,surse).split('SURSE:\n')[1]||'';
+  progresPas('scenariu',0.05,'planul pe capitole…');
+  const plan=await textAI(baza, `SUBIECT: ${subiect}\nSTIL: ${TIPURI[s.tip]||TIPURI.auto}\nClipul are ~${sec} secunde (~${cuv} cuvinte), împărțit în ${nrCap} capitole.
+ACUM scrie DOAR PLANUL (fără scene): toate câmpurile JSON de sus EXCEPT "scene", plus "capitole": [{"titlu": "titlu scurt și curios", "rezumat": "ce se întâmplă, cu fapte concrete din surse", "carlig": "cu ce cârlig se termină"}].
+Primul capitol începe cu cold open-ul. Ultimul se încheie cu întrebarea pentru comentarii și semnătura.
+
+SURSE:\n${surseTxt}`);
+  const cap=(Array.isArray(plan.capitole)?plan.capitole:[]).filter(c=>c&&c.titlu).slice(0,8); if(cap.length<2) throw new Error('Planul nu are capitole');
+  const scene=[]; const perCap=Math.round(cuv/cap.length);
+  for(let k=0;k<cap.length;k++){
+    progresPas('scenariu',0.1+0.85*k/cap.length,`capitolul ${k+1}/${cap.length}: ${cap[k].titlu}`);
+    const ultime=scene.slice(-2).map(x=>x.text).join(' ');
+    const pr=`SUBIECT: ${subiect}\nPLANUL CLIPULUI: ${cap.map((c,i)=>`${i+1}. ${c.titlu} — ${c.rezumat}`).join(' | ')}
+SCRIE ACUM DOAR CAPITOLUL ${k+1}: „${cap[k].titlu}” — ${cap[k].rezumat}. Se termină cu: ${cap[k].carlig||'un cârlig spre capitolul următor'}.
+${k===0?'Începe cu COLD OPEN-ul (regula A).':'Continuă natural de la: „'+ultime+'”'}
+${k===cap.length-1?'E ultimul capitol: încheie cu ce s-a ales de oameni, întrebarea pentru comentarii și semnătura.':''}
+Lungime: ~${perCap} cuvinte, în ${Math.max(3,Math.round(perCap/22))}–${Math.max(4,Math.round(perCap/18))} scene. Prima scenă are "capitol": "${cap[k].titlu}", celelalte "capitol": null.
+Răspunde DOAR cu JSON: {"scene": [{"capitol": ..., "text": "...", "foto": "...", "imagine": "...", "eticheta": {...} sau null}]}
+
+SURSE:\n${surseTxt}`;
+    let r; try{ r=await textAI(baza,pr); }catch(e){ r=await textAI(baza,pr+'\n\nRăspunde STRICT cu JSON valid, scurt și complet.'); }
+    const sc=(r.scene||[]).filter(x=>x&&x.text); if(!sc.length) throw new Error('Capitolul '+(k+1)+' a ieșit gol');
+    if(!sc[0].capitol) sc[0].capitol=cap[k].titlu; sc.slice(1).forEach(x=>{ if(x.capitol===cap[k].titlu) x.capitol=null; }); scene.push(...sc);
+  }
+  return normalizeazaScenariu({...plan, scene}, s);
+}
 async function scrieScenariu(subiect, s, surse){
+  if(+s.durata>=200){ try{ return await scrieScenariuLung(subiect,s,surse); }catch(e){ log('scenariu lung pe capitole eșuat, încerc dintr-o bucată', e.message); } }
   let sc; try{ sc = normalizeazaScenariu(await textAI(sistemScenariu(s), promptScenariu(subiect,s,surse)), s); }
   catch(e){ log('scenariu reîncercare', e.message); sc = normalizeazaScenariu(await textAI(sistemScenariu(s), promptScenariu(subiect,s,surse)+'\n\nRăspunde STRICT cu JSON valid, complet.'), s); }
   const probleme = verificaStructura(sc, s);
@@ -645,6 +690,9 @@ function verificaStructura(sc, s){
 }
 async function verificaFapte(sc, surse, s){
   if(!surse.length) return {sc, note:'fără surse — verificare sărită'};
+  if(sc.scene.length>18){ let tot=[]; for(let a=0;a<sc.scene.length;a+=14){ const bucata={scene:sc.scene.slice(a,a+14)};
+      try{ const r=await verificaFapte(bucata,surse,s); r.sc.scene.forEach((x,k)=>sc.scene[a+k]=x); if(/corecturi/.test(r.note)) tot.push(r.note); }catch(e){} progresPas('verificare',Math.min(1,(a+14)/sc.scene.length)); }
+    return {sc, note: tot.length? tot.join(' · ').slice(0,200) : 'nicio problemă găsită'}; }
   const sistem=`Ești un verificator de fapte strict. Primești un scenariu și sursele. Pentru fiecare afirmație factuală (ani, nume, cifre, locuri, cauze),
 verifică dacă e susținută de surse. Corectează sau scoate ce nu e susținut, păstrând stilul, lungimea și numărul de scene.
 Răspunde DOAR cu JSON: {"probleme": ["..."], "scene": [{"text": "..."}]}  (același număr de scene, în aceeași ordine)`;
@@ -1965,6 +2013,9 @@ $('#btnMostra').onclick=async()=>{ const b=$('#btnMostra'), inf=$('#mostraInfo')
   try{ const d=await geminiTTS(instructiuneMos()+'Ei, nepoților, știți de unde vine cuvântul „ceau”? Stați așa, că o să vă mire. Hai să vă povestesc.');
     const ctx=AC||new AudioContext({sampleRate:SR}); try{ await ctx.resume(); }catch(e){} const buf=ctx.createBuffer(1,d.length,SR); buf.copyToChannel(d,0); const src=ctx.createBufferSource(); src.buffer=buf; src.connect(ctx.destination); src.start(); inf.textContent='🔊 Ascultă…'; src.onended=()=>inf.textContent='Îți place? Apasă 💾 Salvează.'; }
   catch(e){ inf.textContent='❌ '+e.message; } b.disabled=false; };
+$('#btnExportSet').onclick=async()=>{ const cod='POVESTI:'+btoa(unescape(encodeURIComponent(JSON.stringify(salveazaSetari())))); try{ await navigator.clipboard.writeText(cod); $('#btnExportSet').textContent='✅ Copiat — lipește-l în aplicație'; }catch(e){ $('#testOut').classList.remove('hide'); $('#testOut').textContent=cod; } };
+$('#btnImportSet').onclick=async()=>{ let cod=''; try{ cod=await navigator.clipboard.readText(); }catch(e){} if(!cod||!cod.startsWith('POVESTI:')){ $('#testOut').classList.remove('hide'); $('#testOut').textContent='Lipește aici codul și apasă din nou:'; const i=document.createElement('textarea'); i.id='codSet'; $('#testOut').appendChild(i); const v=document.getElementById('codSet'); if(v&&v.value) cod=v.value; }
+  if(cod&&cod.startsWith('POVESTI:')){ try{ const o=JSON.parse(decodeURIComponent(escape(atob(cod.slice(8))))); localStorage.setItem('povesti_setari',JSON.stringify(o)); incarcaSetari(); statusServicii(); $('#btnImportSet').textContent='✅ Setări importate'; }catch(e){ $('#btnImportSet').textContent='❌ Cod greșit'; } } };
 $('#btnDemo').onclick=()=>{ location.href=location.pathname+'?test=1'; };
 $('#btnTestServicii').onclick=async()=>{ const o=$('#testOut'); o.classList.remove('hide'); o.textContent='Testez…\n'; salveazaSetari(); const s=S();
   const t=async(n,f)=>{ const a=Date.now(); try{ const r=await f(); o.textContent+=`✅ ${n}: ${r} (${((Date.now()-a)/1000).toFixed(1)}s)\n`; }catch(e){ o.textContent+=`❌ ${n}: ${e.message}\n`; } };
@@ -1977,7 +2028,7 @@ $('#btnTestServicii').onclick=async()=>{ const o=$('#testOut'); o.classList.remo
   await t('Encoder video', async()=>{ const c=await alegeCodecVideo(1080,1920); return c? c.codec : 'lipsă (merge pe rezervă, mai lent)'; });
   await t('Encoder audio', async()=>{ const c=await alegeCodecAudio(); return c? c.nume : 'lipsă'; });
 };
-function statusServicii(){ const s=S(); const p=[]; p.push(s.geminiKey?'scenariu: Gemini ✅':'scenariu: Pollinations (pune o cheie Gemini gratuită pentru calitate mai bună)'); p.push(s.workerUrl?'imagini: Worker ⚡':'imagini: Pollinations (~45s/imagine)'); $('#statusServicii').textContent=p.join(' · '); }
+function statusServicii(){ const s=S(); const p=[]; p.push(s.geminiKey?'scenariu și voce: Gemini ✅':'⚠️ Lipsește cheia Gemini (Setări) — fără ea vocea nu merge pe iPhone și scenariile ies mai slabe'); p.push(s.workerUrl?'imagini: Worker ⚡':'imagini: Pollinations (~45s/imagine)'); $('#statusServicii').textContent=p.join(' · '); }
 
 /* ---------------- Worker Cloudflare ---------------- */
 const WORKER=`// Worker Cloudflare pentru Mașina de Povești (gratuit: 10.000 neuroni/zi)
@@ -2031,7 +2082,9 @@ const TEST_SCENARIU={titlu:'De Ce Zicem „Trage Apa” Când Apăsăm pe un But
    {capitol:'Ce a rămas',text:'Rezervoarele au coborât, lanțul a dispărut, dar vorba a rămas.',imagine:'modern',eticheta:null},
    {text:'Voi cum îi ziceți acasă? Scrieți-mi în comentarii.',imagine:'grandpa',eticheta:{text:'SCRIE ÎN COMENTARII',accent:'COMENTARII',stil:'alb'}},
    {text:'Hai că v-am lăsat. Pe data viitoare, nepoților!',imagine:'bye',eticheta:null}]};
-async function TEST_AI(sistem,prompt){ await sleep(50); if(/termen de căutare/.test(prompt)) return {ro:'Toaletă',en:'Flush toilet'}; if(/verificator/.test(sistem)) return {probleme:[],scene:JSON.parse(JSON.stringify(TEST_SCENARIU.scene))}; if(/idei/.test(prompt)) return {idei:ideiCurente()}; return JSON.parse(JSON.stringify(TEST_SCENARIU)); }
+async function TEST_AI(sistem,prompt){ await sleep(50);
+  if(/DOAR PLANUL/.test(prompt)){ const pl=JSON.parse(JSON.stringify(TEST_SCENARIU)); delete pl.scene; pl.capitole=[{titlu:'Misterul',rezumat:'a',carlig:'b'},{titlu:'Lanțul',rezumat:'c',carlig:'d'},{titlu:'Finalul',rezumat:'e',carlig:'f'}]; return pl; }
+  if(/SCRIE ACUM DOAR CAPITOLUL (\d)/.test(prompt)){ const k=+prompt.match(/CAPITOLUL (\d)/)[1]; return {scene:JSON.parse(JSON.stringify(TEST_SCENARIU.scene.slice((k-1)*3,(k-1)*3+3))).map(x=>({...x,capitol:null}))}; } if(/termen de căutare/.test(prompt)) return {ro:'Toaletă',en:'Flush toilet'}; if(/verificator/.test(sistem)) return {probleme:[],scene:JSON.parse(JSON.stringify(TEST_SCENARIU.scene))}; if(/idei/.test(prompt)) return {idei:ideiCurente()}; return JSON.parse(JSON.stringify(TEST_SCENARIU)); }
 async function TEST_VOCE(text){ // „vorbire” sintetică: silabe cu formanți, ca să testăm sincronizarea
   const sil=Math.max(2,Math.round(text.replace(/[^a-zăâîșț]/gi,'').length/2.6)); const d=sil*0.19+0.15; const n=Math.round(d*SR); const ctx=new OfflineAudioContext(1,n,SR); const b=ctx.createBuffer(1,n,SR); const a=b.getChannelData(0);
   for(let i=0;i<n;i++){ const t=i/SR; const s=Math.floor(t/0.19); const ph=(t%0.19)/0.19; const env=(t>0.05&&t<d-0.08)?Math.sin(Math.PI*ph)**2:0; a[i]=env*(0.5*Math.sin(2*Math.PI*(120+(s%3)*12)*t)+0.25*Math.sin(2*Math.PI*(700+(s%5)*90)*t)+0.15*Math.sin(2*Math.PI*1200*t))*0.6; }
@@ -2051,6 +2104,7 @@ function mediu(){ return {url:location.href.split('?')[0], protocol:location.pro
 const SFATURI=[
   [/Failed to fetch|NetworkError|Load failed|rețea|CORS/i,'Un serviciu de pe internet n-a răspuns. Verifică netul și încearcă din nou. Dacă ai deschis fișierul direct din Descărcări, pune-l întâi online (tab-ul Ajutor).'],
   [/Gemini/i,'Problema e la Gemini: verifică cheia în Setări (fără spații), sau ai depășit limita gratuită pe azi — aplicația trece singură pe Pollinations dacă pui „Automat”.'],
+  [/incomplet|JSON Parse|JSON/i,'Serviciul gratuit de rezervă a trimis un răspuns tăiat. Apasă din nou Creează. Cel mai sigur: pune cheia Gemini în Setări (dacă folosești aplicația instalată pe ecran, trebuie pusă și acolo — iPhone-ul ține setările separat).'],
   [/Pollinations/i,'Serviciul gratuit Pollinations e aglomerat. Așteaptă un minut și apasă din nou, sau pune o cheie Gemini gratuită în Setări.'],
   [/vits|onnx|wasm|piper|import/i,'Vocea nu s-a putut încărca. Folosește Chrome sau Edge actualizat și ține pagina deschisă până se descarcă vocea (~63 MB, o singură dată).'],
   [/Encoder|codec|VideoFrame/i,'Browserul nu poate face video. Folosește Chrome sau Edge pe laptop, sau Chrome pe Android.'],
