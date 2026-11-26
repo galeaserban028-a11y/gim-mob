@@ -79,6 +79,8 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
     </div>
     <label>Calitate video</label>
     <select id="rezolutie"><option value="auto">Automat (1080p; 720p pe iPhone, ca să nu se închidă pagina)</option><option value="1080">1080p — cea mai bună</option><option value="720">720p — mai ușor pentru telefon</option></select>
+    <label>Imagini</label>
+    <select id="vitezaImg"><option value="rapid">Rapid — fotografii reale + câteva desene (recomandat)</option><option value="calitate">Toate scenele cu imagine nouă (mai lent fără Worker)</option></select>
     <label>Stil scenariu</label>
     <select id="tip">
       <option value="auto">Automat (alege AI-ul ce se potrivește)</option>
@@ -260,7 +262,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const TEST = new URLSearchParams(location.search).has('test');
 
 /* ---------------- Setări ---------------- */
-const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip','rezolutie'];
+const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip','rezolutie','vitezaImg'];
 function incarcaSetari(){
   try{ const s = JSON.parse(localStorage.getItem('povesti_setari')||'{}');
     for(const k of CAMPURI){ const el=$('#'+k); if(!el||s[k]===undefined) continue; if(el.type==='checkbox') el.checked=!!s[k]; else el.value=s[k]; }
@@ -767,7 +769,7 @@ async function fotoScena(P, i){
   for(const q of [...new Set(cautari)]){
     let rez=[]; try{ rez=await commonsCauta(q); }catch(e){}
     const c=rez.find(x=>fotoBuna(x,P._folosite));
-    if(c){ try{ const img=await incarcaFoto(c,P.L); P._folosite.add(c.url); return img; }catch(e){ log('foto fail',e.message); } }
+    if(c){ P._folosite.add(c.url); try{ return await incarcaFoto(c,P.L); }catch(e){ log('foto fail',e.message); } }
   }
   // rezervă: poza principală a unui articol-sursă, nefolosită încă
   for(const s of (P.surse||[])){ const k='art:'+s.lang+s.titlu; if(P._folosite.has(k)) continue; P._folosite.add(k);
@@ -781,6 +783,33 @@ async function imagineScena(P, i){
   if(s.provImg==='foto'){ const f=await fotoScena(P,i).catch(()=>null); if(f) return f; try{ return await genereazaImagine(promptImagine(sc.imagine,s), s.format, P.seed+i); }catch(e){} }
   return imagineRezerva(sc.text, s.format, i);
 }
+
+
+/* ---------- Imagini mai rapide: fotografiile în paralel, desenele AI doar unde trebuie ---------- */
+async function inParalel(lista, n, f){ let i=0; await Promise.all(Array.from({length:Math.min(n,lista.length)},async()=>{ while(i<lista.length){ const k=lista[i++]; await f(k); } })); }
+async function imaginiRapide(P, cb){
+  const s=P.setari, N=P.scene.length; let gata=0; const tick=t=>{ cb(gata, `${gata}/${N} · ${P.scene.filter(x=>x.img?.foto).length} fotografii reale`+(t?' · '+t:'')); };
+  // 1) fotografiile reale: 4 deodată (durează câteva secunde)
+  if(s.provImg!=='ai'){ urma('imagini','fotografii');
+    await inParalel([...Array(N).keys()].filter(i=>P.scene[i].foto), 4, async i=>{ const f=await fotoScena(P,i).catch(()=>null); if(f){ P.scene[i].img=f; gata++; tick(); } }); }
+  // 2) desene AI pentru restul
+  const lipsa=[...Array(N).keys()].filter(i=>!P.scene[i].img);
+  const rapid = TEST || furnizoriImg()[0]!=='pollinations';
+  const maxAI = s.provImg==='ai'||s.vitezaImg==='calitate' ? lipsa.length : rapid ? lipsa.length : Math.min(lipsa.length, P.scene.some(x=>x.img)? 3 : 5);
+  const deDesenat=alegeUniform(lipsa, maxAI);
+  urma('imagini', `desene AI: ${deDesenat.length}`);
+  const desen=async i=>{ try{ P.scene[i].img=await genereazaImagine(promptImagine(P.scene[i].imagine,s), s.format, P.seed+i); }catch(e){ log('AI fail',i,e.message); } gata++; tick(rapid?'':`desene gratuite: ~45s fiecare`); };
+  if(rapid) await inParalel(deDesenat, 3, desen); else for(const i of deDesenat) await desen(i);
+  if(s.provImg==='foto') for(const i of [...Array(N).keys()].filter(i=>!P.scene[i].img)){ const f=await fotoScena(P,i).catch(()=>null); if(f) P.scene[i].img=f; }
+  // 3) scenele rămase refolosesc o imagine apropiată, cu alt cadraj (detaliu), ca să nu aștepți
+  const surse=P.scene.map((x,i)=>x.img&&!x.img.rezerva?i:-1).filter(i=>i>=0);
+  for(let i=0;i<N;i++){ if(P.scene[i].img) continue;
+    if(surse.length){ const j=surse.reduce((a,b)=>Math.abs(b-i)<Math.abs(a-i)?b:a); const src=P.scene[j].img;
+      P.scene[i].img={...src, detaliu:{z:1.35, fx:(i%3)/2, fy:((i+1)%2)*0.6+0.2}, refolosit:true, credit:undefined}; }
+    else P.scene[i].img=imagineRezerva(P.scene[i].text, s.format, i);
+    gata++; tick(); }
+}
+function alegeUniform(lista, n){ if(n>=lista.length) return lista; const out=[]; for(let k=0;k<n;k++) out.push(lista[Math.floor((k+0.5)*lista.length/n)]); return [...new Set(out)]; }
 
 /* =====================================================
    6. BUNICUL ANIMAT (desenat în cod — mereu la fel, original)
@@ -890,7 +919,7 @@ function deseneazaImagine(x, L, img, prog, idx, alpha=1){
   if(img.fundal){ // poză cu alt format decât cadrul: fundal estompat + poza întreagă, cu zoom lent
     const p=easeInOut(prog); x.globalAlpha=alpha;
     x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high'; const fb=img.fundal, fs=Math.max(L.W/fb.width,L.H/fb.height)*(1.05+0.04*p); x.drawImage(fb,(L.W-fb.width*fs)/2,(L.H-fb.height*fs)/2,fb.width*fs,fb.height*fs);
-    const b=img.bmp; const baza=L.v? Math.max(L.W/b.width, Math.min(L.H*0.5/b.height, L.W*1.45/b.width)) : Math.min(L.W*0.92/b.width, L.H*0.92/b.height);
+    const b=img.bmp; const baza=(L.v? Math.max(L.W/b.width, Math.min(L.H*0.5/b.height, L.W*1.45/b.width)) : Math.min(L.W*0.92/b.width, L.H*0.92/b.height))*(img.detaliu?1.3:1);
     const z=baza*(1.0+0.08*(idx%2?1-p:p)); const dw=b.width*z, dh=b.height*z; const cy=L.v? L.H*0.40 : L.H*0.5;
     x.save(); x.shadowColor='rgba(0,0,0,.55)'; x.shadowBlur=40; x.drawImage(b,(L.W-dw)/2+(idx%3-1)*L.W*0.02*p,cy-dh/2,dw,dh); x.restore();
     x.globalAlpha=1; return;
@@ -898,8 +927,10 @@ function deseneazaImagine(x, L, img, prog, idx, alpha=1){
   const {bmp,taieJos=0}=img; const sw=bmp.width, sh=bmp.height*(1-taieJos);
   const mod=idx%4; const z=0.09; const p=easeInOut(prog);
   let sc = Math.max(L.W/sw, L.H/sh); let zoom = mod===0? 1+z*p : mod===1? 1+z*(1-p) : 1+z*0.6;
+  if(img.detaliu) zoom*=img.detaliu.z;
   const dw=sw*sc*zoom, dh=sh*sc*zoom; let ox=(L.W-dw)/2, oy=(L.H-dh)/2;
-  if(mod===2) ox = (L.W-dw)*p; if(mod===3) ox=(L.W-dw)*(1-p);
+  if(img.detaliu){ ox=(L.W-dw)*img.detaliu.fx; oy=(L.H-dh)*img.detaliu.fy; }
+  if(mod===2) ox = (L.W-dw)*(img.detaliu? 0.3+0.4*p : p); if(mod===3) ox=(L.W-dw)*(img.detaliu? 0.7-0.4*p : 1-p);
   x.globalAlpha=alpha; x.drawImage(bmp,0,0,sw,sh,ox,oy,dw,dh); x.globalAlpha=1;
 }
 function cuvinteCuTimp(scena){ // distribuie cuvintele pe durata fiecărei propoziții, după lungime
@@ -1007,16 +1038,16 @@ class MP4{
   static matrice(){ return [0,1,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,1,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0x40,0,0,0]; }
   static desc(tag,corp){ const n=corp.length; return [tag,0x80|((n>>21)&127),0x80|((n>>14)&127),0x80|((n>>7)&127),n&127,...corp]; }
   stts(dur){ const r=[]; for(const d of dur){ const u=r[r.length-1]; if(u&&u[1]===d) u[0]++; else r.push([1,d]); } return MP4.fbox('stts',0,0,MP4.u32(r.length),r.map(([c,d])=>[MP4.u32(c),MP4.u32(d)])); }
-  trak(id, tip, timescale, durMedia, durFilm, stsd, dur, sizes, offset, keys, ctts){
+  trak(id, tip, timescale, durMedia, durFilm, stsd, dur, sizes, offset, keys, ctts, pcm){
     const tkhd=MP4.fbox('tkhd',0,3,MP4.u32(0),MP4.u32(0),MP4.u32(id),MP4.u32(0),MP4.u32(durFilm),[0,0,0,0,0,0,0,0],MP4.u16(0),MP4.u16(0),tip==='soun'?MP4.u16(0x0100):MP4.u16(0),MP4.u16(0),MP4.matrice(),tip==='vide'?[...MP4.u32(this.W<<16),...MP4.u32(this.H<<16)]:[0,0,0,0,0,0,0,0]);
     const mdhd=MP4.fbox('mdhd',0,0,MP4.u32(0),MP4.u32(0),MP4.u32(timescale),MP4.u32(durMedia),MP4.u16(0x55c4),MP4.u16(0));
     const hdlr=MP4.fbox('hdlr',0,0,MP4.u32(0),MP4.str(tip),[0,0,0,0,0,0,0,0,0,0,0,0],MP4.str(tip==='vide'?'VideoHandler':'SoundHandler'),[0]);
     const xmhd= tip==='vide'? MP4.fbox('vmhd',0,1,[0,0,0,0,0,0,0,0]) : MP4.fbox('smhd',0,0,[0,0,0,0]);
     const dinf=MP4.box('dinf',MP4.fbox('dref',0,0,MP4.u32(1),MP4.fbox('url ',0,1)));
-    const stsz=MP4.fbox('stsz',0,0,MP4.u32(0),MP4.u32(sizes.length),sizes.map(MP4.u32));
-    const stsc=MP4.fbox('stsc',0,0,MP4.u32(1),MP4.u32(1),MP4.u32(sizes.length),MP4.u32(1));
+    const stsz= pcm? MP4.fbox('stsz',0,0,MP4.u32(pcm.marime),MP4.u32(pcm.n)) : MP4.fbox('stsz',0,0,MP4.u32(0),MP4.u32(sizes.length),sizes.map(MP4.u32));
+    const stsc=MP4.fbox('stsc',0,0,MP4.u32(1),MP4.u32(1),MP4.u32(pcm?pcm.n:sizes.length),MP4.u32(1));
     const stco=MP4.fbox('stco',0,0,MP4.u32(1),MP4.u32(offset));
-    const parti=[stsd,this.stts(dur)];
+    const parti=[stsd, pcm? MP4.fbox('stts',0,0,MP4.u32(1),MP4.u32(pcm.n),MP4.u32(1)) : this.stts(dur)];
     if(keys) parti.push(MP4.fbox('stss',0,0,MP4.u32(keys.length),keys.map(MP4.u32)));
     if(ctts) parti.push(ctts);
     parti.push(stsc,stsz,stco);
@@ -1029,8 +1060,9 @@ class MP4{
     // ctts doar dacă encoderul a scos B-frames
     let ctts=null; const pts=this.v.map(s=>Math.round(s.ts*VT/1e6)); const ord=pts.every((p,i)=>i===0||p>pts[i-1]);
     if(!ord){ const sorted=[...pts].sort((a,b)=>a-b); const off=pts.map((p,i)=>p-sorted[i]); ctts=MP4.fbox('ctts',1,0,MP4.u32(off.length),off.map(o=>[MP4.u32(1),MP4.u32(o>>>0)])); }
-    const implicit=codecAudio==='aac'?1024:960; const aDur=this.a.map(s=>s.dur? Math.max(1,Math.round(s.dur*sr/1e6)) : implicit);
-    const vDurTot=vDur.reduce((a,b)=>a+b,0), aDurTot=aDur.reduce((a,b)=>a+b,0);
+    const pcm = codecAudio==='pcm'? {n:this.pcm.length/(2*canale), marime:2*canale} : null;
+    const implicit=codecAudio==='aac'?1024:960; const aDur=pcm? [] : this.a.map(s=>s.dur? Math.max(1,Math.round(s.dur*sr/1e6)) : implicit);
+    const vDurTot=vDur.reduce((a,b)=>a+b,0), aDurTot=pcm? pcm.n : aDur.reduce((a,b)=>a+b,0);
     const durFilmV=Math.round(vDurTot*1000/VT), durFilmA=Math.round(aDurTot*1000/sr), durFilm=Math.max(durFilmV,durFilmA);
     const avc1=MP4.box('avc1',[0,0,0,0,0,0],MP4.u16(1),MP4.u16(0),MP4.u16(0),[0,0,0,0,0,0,0,0,0,0,0,0],MP4.u16(W),MP4.u16(H),MP4.u32(0x00480000),MP4.u32(0x00480000),MP4.u32(0),MP4.u16(1),new Array(32).fill(0),MP4.u16(0x18),MP4.u16(0xffff),MP4.box('avcC',[...this.vcfg]),MP4.box('pasp',MP4.u32(1),MP4.u32(1)));
     const vStsd=MP4.fbox('stsd',0,0,MP4.u32(1),avc1);
@@ -1040,25 +1072,27 @@ class MP4{
       const dec=MP4.desc(4,[0x40,0x15,0,0,0,...MP4.u32(192000),...MP4.u32(160000),...MP4.desc(5,asc)]);
       const esds=MP4.fbox('esds',0,0,MP4.desc(3,[...MP4.u16(1),0,...dec,...MP4.desc(6,[2])]));
       aEntry=MP4.box('mp4a',[0,0,0,0,0,0],MP4.u16(1),[0,0,0,0,0,0,0,0],MP4.u16(canale),MP4.u16(16),MP4.u16(0),MP4.u16(0),MP4.u32(sr<<16),esds);
+    }else if(pcm){ // PCM 16-bit little-endian („sowt”) — sunet necomprimat, merge sigur pe iPhone
+      aEntry=MP4.box('sowt',[0,0,0,0,0,0],MP4.u16(1),[0,0,0,0,0,0,0,0],MP4.u16(canale),MP4.u16(16),MP4.u16(0),MP4.u16(0),MP4.u32(sr<<16));
     }else{
       let pre=312; if(this.acfg&&this.acfg.length>=12) pre=this.acfg[10]|(this.acfg[11]<<8);
       const dOps=MP4.box('dOps',[0,canale],MP4.u16(pre),MP4.u32(sr),MP4.u16(0),[0]);
       aEntry=MP4.box('Opus',[0,0,0,0,0,0],MP4.u16(1),[0,0,0,0,0,0,0,0],MP4.u16(canale),MP4.u16(16),MP4.u16(0),MP4.u16(0),MP4.u32(sr<<16),dOps);
     }
     const aStsd=MP4.fbox('stsd',0,0,MP4.u32(1),aEntry);
-    const ftyp=MP4.box('ftyp',MP4.str('isom'),MP4.u32(512),MP4.str('isom'),MP4.str('iso2'),MP4.str('avc1'),MP4.str('mp41'));
+    const ftyp= pcm? MP4.box('ftyp',MP4.str('qt  '),MP4.u32(512),MP4.str('qt  ')) : MP4.box('ftyp',MP4.str('isom'),MP4.u32(512),MP4.str('isom'),MP4.str('iso2'),MP4.str('avc1'),MP4.str('mp41'));
     const construieste=(offV,offA)=>{
       const mvhd=MP4.fbox('mvhd',0,0,MP4.u32(0),MP4.u32(0),MP4.u32(1000),MP4.u32(durFilm),MP4.u32(0x00010000),MP4.u16(0x0100),[0,0,0,0,0,0,0,0,0,0],MP4.matrice(),new Array(24).fill(0),MP4.u32(3));
       return MP4.box('moov',mvhd,
         this.trak(1,'vide',VT,vDurTot,durFilmV,vStsd,vDur,vSizes,offV,keys,ctts),
-        this.trak(2,'soun',sr,aDurTot,durFilmA,aStsd,aDur,aSizes,offA,null,null));
+        this.trak(2,'soun',sr,aDurTot,durFilmA,aStsd,aDur,aSizes,offA,null,null,pcm));
     };
     let moov=construieste(0,0);
-    const vBytes=vSizes.reduce((a,b)=>a+b,0), aBytes=aSizes.reduce((a,b)=>a+b,0);
+    const vBytes=vSizes.reduce((a,b)=>a+b,0), aBytes=pcm? this.pcm.length : aSizes.reduce((a,b)=>a+b,0);
     const offV=ftyp.length+moov.length+8, offA=offV+vBytes;
     moov=construieste(offV,offA);
     const mdatHdr=new Uint8Array([...MP4.u32(8+vBytes+aBytes),...MP4.str('mdat')]);
-    return new Blob([new Uint8Array(ftyp),new Uint8Array(moov),mdatHdr,...this.v.map(s=>s.b),...this.a.map(s=>s.b)],{type:'video/mp4'});
+    return new Blob([new Uint8Array(ftyp),new Uint8Array(moov),mdatHdr,...this.v.map(s=>s.b),...(pcm?[this.pcm]:this.a.map(s=>s.b))],{type:pcm?'video/quicktime':'video/mp4'});
   }
 }
 
@@ -1075,12 +1109,14 @@ async function alegeCodecVideo(W,H){
   return null;
 }
 async function alegeCodecAudio(){
+  if(IOS_AUDIO_PCM()) return {nume:'pcm'};
   for(const [codec,nume] of [['mp4a.40.2','aac'],['opus','opus']]){
     const cfg={codec,sampleRate:SR,numberOfChannels:2,bitrate:nume==='aac'?160000:128000};
     try{ const r=await AudioEncoder.isConfigSupported(cfg); if(r.supported) return {cfg,nume}; }catch(e){}
   }
-  return null;
+  return {nume:'pcm'}; // fără encoder audio: sunet necomprimat (merge oriunde)
 }
+function IOS_AUDIO_PCM(){ return IOS || new URLSearchParams(location.search).has('pcm'); }
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 let AC=null;
 function deblocheazaAudio(){ try{ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)({sampleRate:SR}); AC.resume&&AC.resume(); }catch(e){} }
@@ -1099,12 +1135,14 @@ async function randeaza(P, cb){
   const [aL,aR]=await mixeazaAudio(P);
   if(strat==='mr') return await randeazaMediaRecorder(P,aL,aR,cb);
   const vcfg=await alegeCodecVideo(VW,VH), ac=await alegeCodecAudio();
-  if(!vcfg||!ac) return await randeazaMediaRecorder(P,aL,aR,cb);
+  if(!vcfg) return await randeazaMediaRecorder(P,aL,aR,cb);
   const mux=new MP4(); let eroare=null;
   const ve=new VideoEncoder({output:(c,m)=>mux.adaugaVideo(c,m), error:e=>eroare=e}); ve.configure(vcfg);
-  const ae=new AudioEncoder({output:(c,m)=>mux.adaugaAudio(c,m), error:e=>eroare=e}); ae.configure(ac.cfg);
+  let ae=null;
+  if(ac.nume==='pcm'){ const n=aL.length, pcm=new Int16Array(n*2); for(let i=0;i<n;i++){ pcm[2*i]=Math.max(-32768,Math.min(32767,Math.round(aL[i]*32767))); pcm[2*i+1]=Math.max(-32768,Math.min(32767,Math.round(aR[i]*32767))); } mux.pcm=new Uint8Array(pcm.buffer); }
+  else { ae=new AudioEncoder({output:(c,m)=>mux.adaugaAudio(c,m), error:e=>eroare=e}); ae.configure(ac.cfg); }
   // audio
-  const bloc=1024*4; for(let o=0;o<aL.length;o+=bloc){ const n=Math.min(bloc,aL.length-o); const d=new Float32Array(n*2); d.set(aL.subarray(o,o+n),0); d.set(aR.subarray(o,o+n),n);
+  const bloc=1024*4; if(ae) for(let o=0;o<aL.length;o+=bloc){ const n=Math.min(bloc,aL.length-o); const d=new Float32Array(n*2); d.set(aL.subarray(o,o+n),0); d.set(aR.subarray(o,o+n),n);
     const ad=new AudioData({format:'f32-planar',sampleRate:SR,numberOfFrames:n,numberOfChannels:2,timestamp:Math.round(o*1e6/SR),data:d}); ae.encode(ad); ad.close();
     while(ae.encodeQueueSize>10) await sleep(2); }
   // video
@@ -1122,7 +1160,7 @@ async function randeaza(P, cb){
     if(f%15===0){ cb&&cb(f/nf); await sleep(0); }
     if(f%30===0) urma('montaj', `${Math.round(100*f/nf)}% · ${strat} · ${VW}x${VH}`);
   }
-  urma('montaj','flush · '+strat); await ve.flush(); await ae.flush(); ve.close(); ae.close();
+  urma('montaj','flush · '+strat); await ve.flush(); if(ae){ await ae.flush(); ae.close(); } ve.close();
   if(eroare) throw eroare; urma('finalizare MP4', strat);
   return {blob:mux.finalizeaza(VW,VH,FPS,ac.nume,SR,2), video:vcfg.codec, audio:ac.nume, metoda:'WebCodecs'};
 }
@@ -1184,8 +1222,9 @@ async function auditFinal(P, rez){
   add(!!P.verificare, `Verificare de fapte: ${P.verificare||'sărită'}`, P.verificare?'ok':'warn');
   const nRez=P.scene.filter(x=>x.img?.rezerva).length; add(nRez===0, nRez? `${nRez} scene cu fundal de rezervă (serviciul de imagini n-a răspuns) — apasă „Refă doar montajul” după ce revine` : `Toate cele ${P.scene.length} imagini generate`, nRez?'warn':'ok');
   const logo=P.scene.some(x=>x.img&&x.img.taieJos>0); if(logo) add(true,'Sigla Pollinations tăiată din cadru');
-  add(true, `Encodare: ${rez.video} + ${rez.audio} (${rez.metoda})`, rez.audio==='aac'?'ok':'warn');
-  if(rez.audio!=='aac') a[a.length-1].txt+=' — browserul nu are AAC; pentru Facebook folosește Chrome/Edge pe Windows sau Android';
+  add(true, `Encodare: ${rez.video} + ${rez.audio==='pcm'?'sunet PCM necomprimat (.mov — merge pe iPhone și pe Facebook)':rez.audio} (${rez.metoda})`, (rez.audio==='aac'||rez.audio==='pcm')?'ok':'warn');
+  if(rez.audio!=='aac'&&rez.audio!=='pcm') a[a.length-1].txt+=' — browserul nu are AAC; pentru Facebook folosește Chrome/Edge pe Windows sau Android';
+  const are=P.scene.some(x=>x.voce&&x.voce.samples&&x.voce.samples.some&&x.voce.samples.some(v=>Math.abs(v)>0.02)); add(are, are? 'Vocea are sunet (verificat)' : 'Vocea a ieșit mută — schimbă vocea din Setări', are?'ok':'err');
   add(rez.blob.size<4e9, `Mărime fișier: ${(rez.blob.size/1048576).toFixed(1)} MB`);
   // verificare reală: fișierul se poate reda?
   if(IOS) add(true,'Redare: apasă Play mai jos ca să verifici clipul','warn'); else try{ const ok=await new Promise(res=>{ const v=document.createElement('video'); v.muted=true; v.preload='metadata'; v.onloadedmetadata=()=>res(Math.abs(v.duration-P.durata)<1.5); v.onerror=()=>res(false); v.src=URL.createObjectURL(rez.blob); setTimeout(()=>res(null),8000); });
@@ -1226,16 +1265,10 @@ async function creeaza(){
     // 4+5. voce și imagini în paralel
     pas('voce','run','pregătesc vocea…'); pas('imagini','run');
     const nImg=P.scene.length; let gataImg=0;
-    const jobImg=(async()=>{
-      for(let i=0;i<nImg;i++){
-        urma('imagini', `${i+1}/${nImg}`); P.scene[i].img=await imagineScena(P, i);
-        gataImg++; const nf=P.scene.filter(x=>x.img?.foto).length;
-        progresPas('imagini',gataImg/nImg,`${gataImg}/${nImg} (${nf} fotografii reale)`+(s.provImg!=='foto'&&furnizoriImg()[0]==='pollinations'&&!TEST&&!P.scene[i].img?.foto?` · desenele gratuite vin la ~45s una`:''));
-      }
-    })();
+    const jobImg=imaginiRapide(P, (n,t)=>{ gataImg=n; progresPas('imagini',n/nImg,t); });
     const jobVoce=genereazaVocea(P);
     await jobVoce; await jobImg;
-    const nRez=P.scene.filter(x=>x.img?.rezerva).length, nFoto=P.scene.filter(x=>x.img?.foto).length; pas('imagini', nRez?'warn':'ok', (nRez? `${nRez} scene fără imagine (fundal de rezervă) · ` : '')+`${nFoto} fotografii reale, ${nImg-nFoto-nRez} desene AI`);
+    const nRez=P.scene.filter(x=>x.img?.rezerva).length, nFoto=P.scene.filter(x=>x.img?.foto&&!x.img.refolosit).length, nRef=P.scene.filter(x=>x.img?.refolosit).length; pas('imagini', nRez?'warn':'ok', (nRez? `${nRez} scene fără imagine (fundal de rezervă) · ` : '')+`${nFoto} fotografii reale, ${nImg-nFoto-nRez-nRef} desene AI`+(nRef?`, ${nRef} cadre de detaliu`:''));
     // punct de salvare: dacă pagina se reîncarcă în timpul montajului, se poate continua de aici
     try{ await salveazaProiect(P); }catch(e){ log('checkpoint eșuat',e.message); }
     // 6. montaj
@@ -1248,7 +1281,7 @@ async function creeaza(){
   }finally{ lucreaza=false; $('#btnCreeaza').disabled=false; try{ wake&&wake.release(); }catch(e){} }
 }
 function arataRezultat(r, scroll){
-  const ext=(r.video.type||'').includes('webm')?'webm':'mp4'; const nume=(r.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
+  const ext=(r.video.type||'').includes('webm')?'webm':(r.video.type||'').includes('quicktime')?'mov':'mp4'; const nume=(r.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
   const uV=URL.createObjectURL(r.video); $('#vid').src=uV; $('#dlVid').href=uV; $('#dlVid').download=`${nume}.${ext}`;
   $('#dlCover').href=URL.createObjectURL(r.coperta); $('#dlCover').download=`${nume}-coperta.jpg`;
   $('#dlSrt').href=URL.createObjectURL(new Blob([r.srt],{type:'text/plain'})); $('#dlSrt').download=`${nume}.srt`;
@@ -1287,7 +1320,7 @@ async function bitmapLaBlob(bmp){ const c=new OffscreenCanvas(bmp.width,bmp.heig
 async function salveazaProiect(P){
   const scene=[]; for(const sc of P.scene){ const im=sc.img||{};
     scene.push({text:sc.text, imagine:sc.imagine, foto:sc.foto, eticheta:sc.eticheta, voce:sc.voce,
-      img: im.rezerva? {rezerva:true} : {blob:await bitmapLaBlob(im.bmp), foto:!!im.foto, credit:im.credit||'', taieJos:im.taieJos||0, fundal:!!im.fundal}}); }
+      img: im.rezerva? {rezerva:true} : {blob:await bitmapLaBlob(im.bmp), foto:!!im.foto, credit:im.credit||'', taieJos:im.taieJos||0, fundal:!!im.fundal, detaliu:im.detaliu||null}}); }
   await idbPut('proiect',{subiect:P.subiect, setari:P.setari, seed:P.seed, scenariu:P.scenariu, surse:P.surse, verificare:P.verificare, vocea:P.vocea, scene, data:Date.now()});
 }
 function faFundal(bmp, L){
@@ -1301,7 +1334,7 @@ function faFundal(bmp, L){
 async function incarcaProiect(d){
   const s={...S(), ...d.setari}; const P={subiect:d.subiect, setari:s, L:layout(s.format), seed:d.seed, scenariu:d.scenariu, surse:d.surse||[], verificare:d.verificare, vocea:d.vocea};
   P.scene=[]; for(let i=0;i<d.scene.length;i++){ const x=d.scene[i]; let img;
-    if(x.img?.blob){ const bmp=await createImageBitmap(x.img.blob); img={bmp, foto:x.img.foto, credit:x.img.credit, taieJos:x.img.taieJos}; if(x.img.fundal) img.fundal=faFundal(bmp,P.L); }
+    if(x.img?.blob){ const bmp=await createImageBitmap(x.img.blob); img={bmp, foto:x.img.foto, credit:x.img.credit, taieJos:x.img.taieJos, detaliu:x.img.detaliu||undefined}; if(x.img.fundal) img.fundal=faFundal(bmp,P.L); }
     else img=imagineRezerva(x.text,s.format,i);
     P.scene.push({text:x.text, imagine:x.imagine, foto:x.foto, eticheta:x.eticheta, voce:x.voce, img}); }
   return P;
