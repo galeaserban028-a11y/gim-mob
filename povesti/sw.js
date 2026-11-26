@@ -1,5 +1,5 @@
 // Mașina de Povești — service worker: aplicația pornește și fără net; versiunea nouă vine automat când ai net.
-const CACHE='povesti-v1';
+const CACHE='povesti-v2';
 const FISIERE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./apple-touch-icon.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FISIERE)).then(()=>self.skipWaiting())); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==CACHE).map(x=>caches.delete(x)))).then(()=>self.clients.claim())); });
