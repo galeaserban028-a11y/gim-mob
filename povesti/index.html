@@ -148,7 +148,7 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
       <div><label>Desene AI de la</label><select id="provAI"><option value="auto">Automat (Worker dacă ai, altfel Pollinations)</option><option value="worker">Cloudflare Worker (rapid, 1024px)</option><option value="pollinations">Pollinations (fără cheie, ~45s/imagine)</option><option value="puter">Puter (cont gratuit, modele premium)</option></select></div>
     </div>
     <div class="row">
-      <div><label>Voce</label><select id="provVoce"><option value="auto">Automat (Gemini dacă ai cheie, altfel Mihai)</option><option value="gemini">Gemini — voce naturală (cheie gratuită)</option><option value="piper">Mihai — Piper (gratis, rulează local; pe iPhone poate să nu meargă)</option><option value="puter">Puter ElevenLabs (cont gratuit, credit limitat)</option></select></div>
+      <div><label>Voce</label><select id="provVoce"><option value="auto">Automat (Gemini dacă ai cheie, altfel Mihai)</option><option value="gemini">Gemini — voce naturală (cheie gratuită)</option><option value="piper">Mihai — Piper (gratis, doar pe laptop/Android)</option><option value="puter">Puter ElevenLabs (cont gratuit, credit limitat)</option></select></div>
       <div><label>Stil desen</label><select id="stilImg">
         <option value="cartoon">Cartoon 2D cu contur gros (ca Nea Caisă)</option>
         <option value="carte">Ilustrație de carte veche</option>
@@ -657,10 +657,13 @@ async function voceMihaiToate(P, cb){
 }
 async function genereazaVocea(P){
   const s=P.setari; const cb=(f,t)=>progresPas('voce',f,t);
-  const ord = s.provVoce==='gemini'? ['gemini','piper'] : s.provVoce==='piper'? ['piper','gemini'] : s.provVoce==='puter'? ['puter','gemini'] : (s.geminiKey? ['gemini','piper'] : ['piper']);
+  let ord = s.provVoce==='gemini'? ['gemini','piper'] : s.provVoce==='piper'? ['piper','gemini'] : s.provVoce==='puter'? ['puter','gemini'] : (s.geminiKey? ['gemini','piper'] : ['piper']);
+  if(IOS) ord=ord.filter(v=>v!=='piper'); // pe iPhone, modelul Piper (63 MB) umple memoria și Safari închide pagina
   const lista=ord.filter(v=>v!=='gemini'||s.geminiKey); let erori=[];
+  if(!lista.length) throw new Error('Pe iPhone vocea merge doar cu Gemini: pune cheia gratuită în Setări (aistudio.google.com/apikey).');
   for(const v of lista){
     try{
+      urma('voce', v);
       if(v==='gemini') await voceGeminiToate(P,cb); else await voceMihaiToate(P,cb);
       pas('voce', erori.length?'warn':'ok', `${v==='gemini'?'Gemini':v==='puter'?'Puter':'Mihai'} · ${P.scene.reduce((a,x)=>a+x.voce.durata,0).toFixed(1)}s de narațiune`+(erori.length?` (prima variantă n-a mers: ${erori[0]})`:''));
       P.vocea=v; return;
@@ -732,7 +735,7 @@ function imagineRezerva(text, fmt, i){ // dacă un serviciu cade, clipul tot ies
 const FOTO_EXCLUS=/(map|hartă|harta|logo|flag|steag|coat of arms|stema|diagram|chart|signature|semnătur|icon|symbol|location|locator|plan|scheme|graph|\.svg|\.tif|\.pdf|\.gif)/i;
 function faraHTML(t){ const d=document.createElement('div'); d.innerHTML=String(t||''); return (d.textContent||'').replace(/\s+/g,' ').trim(); }
 async function commonsCauta(q, n=12){
-  const u=`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q+' filetype:bitmap')}&gsrnamespace=6&gsrlimit=${n}&prop=imageinfo&iiprop=url|size|mime|extmetadata&iiurlwidth=1600&format=json&origin=*`;
+  const u=`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q+' filetype:bitmap')}&gsrnamespace=6&gsrlimit=${n}&prop=imageinfo&iiprop=url|size|mime|extmetadata&iiurlwidth=${IOS?1200:1600}&format=json&origin=*`;
   const r=await fetchTimeout(u,{},20000); if(!r.ok) return [];
   const j=await r.json(); const pag=Object.values(j.query?.pages||{}).sort((a,b)=>(a.index||0)-(b.index||0));
   return pag.map(p=>{ const ii=p.imageinfo?.[0]; if(!ii) return null; const m=ii.extmetadata||{};
@@ -751,7 +754,8 @@ function fotoBuna(c, folosite){
 }
 async function incarcaFoto(c, L){
   const r=await fetchTimeout(c.url,{},40000); if(!r.ok) throw new Error('foto HTTP '+r.status);
-  const bmp=await createImageBitmap(await r.blob());
+  const bl=await r.blob(); let bmp=await createImageBitmap(bl);
+  const maxL=IOS?1200:1700; if(Math.max(bmp.width,bmp.height)>maxL){ const f=maxL/Math.max(bmp.width,bmp.height); const m=await createImageBitmap(bmp,{resizeWidth:Math.round(bmp.width*f),resizeHeight:Math.round(bmp.height*f),resizeQuality:'high'}); bmp.close(); bmp=m; }
   const img={bmp, taieJos:0, foto:true, credit:`${(c.titlu||'').replace(/^File:|^Fișier:/,'').replace(/\.[a-z]+$/i,'')}${c.autor?' — '+c.autor:''}${c.licenta?' ('+c.licenta+')':''}`};
   const rImg=bmp.width/bmp.height, rCadru=L.W/L.H;
   if(Math.abs(Math.log(rImg/rCadru))>0.25) img.fundal=faFundal(bmp, L); // alt format => fundal estompat
@@ -1224,7 +1228,7 @@ async function creeaza(){
     const nImg=P.scene.length; let gataImg=0;
     const jobImg=(async()=>{
       for(let i=0;i<nImg;i++){
-        P.scene[i].img=await imagineScena(P, i);
+        urma('imagini', `${i+1}/${nImg}`); P.scene[i].img=await imagineScena(P, i);
         gataImg++; const nf=P.scene.filter(x=>x.img?.foto).length;
         progresPas('imagini',gataImg/nImg,`${gataImg}/${nImg} (${nf} fotografii reale)`+(s.provImg!=='foto'&&furnizoriImg()[0]==='pollinations'&&!TEST&&!P.scene[i].img?.foto?` · desenele gratuite vin la ~45s una`:''));
       }
@@ -1422,6 +1426,7 @@ if(TEST){
   $('#statusServicii').textContent='🧪 Mod demo offline: scenariu, voce și imagini simulate — testează doar montajul și auditul.';
 }
 incarcaSetari(); statusServicii(); aratIdei([...IDEI_FIXE].sort(()=>Math.random()-.5));
+if(IOS&&$('#provVoce').value==='piper'){ $('#provVoce').value='auto'; salveazaSetari(); }
 verificaSalvari(); if(TEST) window.__salveaza=salveazaProiect;
 if(IOS) document.addEventListener('visibilitychange',()=>{ if(document.hidden&&lucreaza) log('pagina în fundal'); });
 window.__creeaza=creeaza; if(TEST) window.__MP4=MP4;
