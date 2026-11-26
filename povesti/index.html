@@ -295,7 +295,9 @@ function initPasi(){
   $('#pasi').innerHTML = PASI.map(([k,ic,t])=>`<li id="p-${k}"><span class="ic">⏳</span><div><div>${t}</div><div class="d"></div></div></li>`).join('');
   for(const [k] of PASI) stare[k]=0; actualizeazaBara();
 }
+function urma(etapa, extra, activ=true){ try{ localStorage.setItem('povesti_jurnal', JSON.stringify({etapa, extra:extra||'', activ, t:Date.now()})); }catch(e){} }
 function pas(k, st, detaliu){ // st: 'run'|'ok'|'warn'|'err'|'skip'
+  if(st==='run') urma(k); if(st==='err') urma(k,'eroare: '+(detaliu||''),false);
   const li=$('#p-'+k); if(!li) return;
   li.querySelector('.ic').textContent = {run:'🔄',ok:'✅',warn:'⚠️',err:'❌',skip:'➖'}[st]||'⏳';
   if(detaliu!==undefined) li.querySelector('.d').textContent = detaliu;
@@ -883,7 +885,7 @@ function deseneazaImagine(x, L, img, prog, idx, alpha=1){
   if(!img) return;
   if(img.fundal){ // poză cu alt format decât cadrul: fundal estompat + poza întreagă, cu zoom lent
     const p=easeInOut(prog); x.globalAlpha=alpha;
-    const fb=img.fundal, fs=Math.max(L.W/fb.width,L.H/fb.height)*(1.05+0.04*p); x.drawImage(fb,(L.W-fb.width*fs)/2,(L.H-fb.height*fs)/2,fb.width*fs,fb.height*fs);
+    x.imageSmoothingEnabled=true; x.imageSmoothingQuality='high'; const fb=img.fundal, fs=Math.max(L.W/fb.width,L.H/fb.height)*(1.05+0.04*p); x.drawImage(fb,(L.W-fb.width*fs)/2,(L.H-fb.height*fs)/2,fb.width*fs,fb.height*fs);
     const b=img.bmp; const baza=L.v? Math.max(L.W/b.width, Math.min(L.H*0.5/b.height, L.W*1.45/b.width)) : Math.min(L.W*0.92/b.width, L.H*0.92/b.height);
     const z=baza*(1.0+0.08*(idx%2?1-p:p)); const dw=b.width*z, dh=b.height*z; const cy=L.v? L.H*0.40 : L.H*0.5;
     x.save(); x.shadowColor='rgba(0,0,0,.55)'; x.shadowBlur=40; x.drawImage(b,(L.W-dw)/2+(idx%3-1)*L.W*0.02*p,cy-dh/2,dw,dh); x.restore();
@@ -1076,12 +1078,22 @@ async function alegeCodecAudio(){
   return null;
 }
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let AC=null;
+function deblocheazaAudio(){ try{ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)({sampleRate:SR}); AC.resume&&AC.resume(); }catch(e){} }
+function strategieMontaj(){
+  if(new URLSearchParams(location.search).has('mr')) return 'mr';
+  if(new URLSearchParams(location.search).has('buf')) return 'buffer';
+  if(!('VideoEncoder' in window)) return 'mr';
+  if(IOS){ let n=0; try{ n=+localStorage.getItem('povesti_cadere')||0; }catch(e){} return n>=1? 'mr' : 'buffer'; }
+  return 'canvas';
+}
 function scalaVideo(s){ const r=s.rezolutie||'auto'; return r==='720'||(r==='auto'&&IOS)? 2/3 : 1; }
 async function randeaza(P, cb){
   const L=P.L, k=scalaVideo(P.setari), VW=Math.round(L.W*k/2)*2, VH=Math.round(L.H*k/2)*2; P.out={W:VW,H:VH};
-  const cv=new OffscreenCanvas(VW,VH), x=cv.getContext('2d',{alpha:false});
+  let strat=strategieMontaj(); P.strategie=strat;
+  const cv=new OffscreenCanvas(VW,VH), x=cv.getContext('2d',{alpha:false, willReadFrequently: strat==='buffer'});
   const [aL,aR]=await mixeazaAudio(P);
-  if(!('VideoEncoder' in window) || new URLSearchParams(location.search).has('mr')) return await randeazaMediaRecorder(P,aL,aR,cb);
+  if(strat==='mr') return await randeazaMediaRecorder(P,aL,aR,cb);
   const vcfg=await alegeCodecVideo(VW,VH), ac=await alegeCodecAudio();
   if(!vcfg||!ac) return await randeazaMediaRecorder(P,aL,aR,cb);
   const mux=new MP4(); let eroare=null;
@@ -1096,26 +1108,31 @@ async function randeaza(P, cb){
   for(let f=0;f<nf;f++){
     if(eroare) throw eroare;
     x.setTransform(k,0,0,k,0,0); deseneazaCadru(x,P,f/FPS);
-    const vf=new VideoFrame(cv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)});
+    const ts={timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)}; let vf;
+    if(strat==='buffer'){ // pe iPhone: cadrul trece prin memorie normală (evită scurgerea de memorie video din Safari)
+      try{ const id=x.getImageData(0,0,VW,VH); vf=new VideoFrame(id.data,{format:'RGBA',codedWidth:VW,codedHeight:VH,...ts}); }
+      catch(e){ strat='canvas'; P.strategie='canvas'; vf=new VideoFrame(cv,ts); }
+    } else vf=new VideoFrame(cv,ts);
     ve.encode(vf,{keyFrame:f%(FPS*2)===0}); vf.close();
     while(ve.encodeQueueSize>(IOS?2:6)) await sleep(4);
     if(f%15===0){ cb&&cb(f/nf); await sleep(0); }
+    if(f%30===0) urma('montaj', `${Math.round(100*f/nf)}% · ${strat} · ${VW}x${VH}`);
   }
-  await ve.flush(); await ae.flush(); ve.close(); ae.close();
-  if(eroare) throw eroare;
+  urma('montaj','flush · '+strat); await ve.flush(); await ae.flush(); ve.close(); ae.close();
+  if(eroare) throw eroare; urma('finalizare MP4', strat);
   return {blob:mux.finalizeaza(VW,VH,FPS,ac.nume,SR,2), video:vcfg.codec, audio:ac.nume, metoda:'WebCodecs'};
 }
 async function randeazaMediaRecorder(P,aL,aR,cb){ // rezervă: timp real (browsere vechi)
   const L=P.L, k=scalaVideo(P.setari), cv=document.createElement('canvas'); cv.width=Math.round(L.W*k/2)*2; cv.height=Math.round(L.H*k/2)*2; P.out={W:cv.width,H:cv.height}; const x=cv.getContext('2d'); x.setTransform(k,0,0,k,0,0);
-  const ctx=new AudioContext({sampleRate:SR}); await ctx.resume(); const buf=ctx.createBuffer(2,aL.length,SR); buf.copyToChannel(aL,0); buf.copyToChannel(aR,1);
+  const ctx=AC||new AudioContext({sampleRate:SR}); try{ await ctx.resume(); }catch(e){} const buf=ctx.createBuffer(2,aL.length,SR); buf.copyToChannel(aL,0); buf.copyToChannel(aR,1);
   const src=ctx.createBufferSource(); src.buffer=buf; const dest=ctx.createMediaStreamDestination(); src.connect(dest);
   const st=new MediaStream([...cv.captureStream(FPS).getVideoTracks(),...dest.stream.getAudioTracks()]);
   const mime=['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
   const rec=new MediaRecorder(st,{mimeType:mime,videoBitsPerSecond:8e6}); const parti=[]; rec.ondataavailable=e=>e.data.size&&parti.push(e.data);
   const gata=new Promise(r=>rec.onstop=r); rec.start(500); const t0=ctx.currentTime+0.1; src.start(t0);
-  await new Promise(res=>{ const tick=()=>{ const t=ctx.currentTime-t0; if(t>=P.durata){ res(); return; } deseneazaCadru(x,P,Math.max(0,t)); cb&&cb(t/P.durata); requestAnimationFrame(tick); }; tick(); });
-  rec.stop(); await gata; ctx.close();
-  return {blob:new Blob(parti,{type:mime.split(';')[0]}), video:mime.split(';')[0], audio:/mp4a/.test(mime)?'aac':'opus/altul', metoda:'MediaRecorder (timp real)'};
+  let ultimUrma=0; await new Promise(res=>{ const tick=()=>{ const t=ctx.currentTime-t0; if(t>=P.durata){ res(); return; } deseneazaCadru(x,P,Math.max(0,t)); cb&&cb(t/P.durata); if(t-ultimUrma>2){ ultimUrma=t; urma('montaj',`${Math.round(100*t/P.durata)}% · mr`); } requestAnimationFrame(tick); }; tick(); });
+  rec.stop(); await gata; if(ctx!==AC) ctx.close();
+  return {blob:new Blob(parti,{type:mime.split(';')[0]}), video:mime.split(';')[0], audio:/mp4a/.test(mime)||(IOS&&/mp4/.test(mime))?'aac':'opus/altul', metoda:'MediaRecorder (timp real)'};
 }
 
 /* =====================================================
@@ -1179,7 +1196,7 @@ async function auditFinal(P, rez){
    ===================================================== */
 let PROIECT=null, lucreaza=false;
 async function creeaza(){
-  if(lucreaza) return; const subiect=diacritice($('#subiect').value.trim());
+  if(lucreaza) return; deblocheazaAudio(); const subiect=diacritice($('#subiect').value.trim());
   if(!subiect){ $('#subiect').focus(); $('#subiect').placeholder='✍️ Scrie întâi un subiect (sau apasă 🎲)'; return; }
   const s=salveazaSetari(); s.workerUrl=(s.workerUrl||'').replace(/\/+$/,'');
   lucreaza=true; $('#btnCreeaza').disabled=true; $('#out').classList.add('hide'); $('#eroare').classList.add('hide'); $('#progres').classList.remove('hide'); initPasi();
@@ -1248,8 +1265,9 @@ async function montajSiFinal(P){
   // salvez IMEDIAT clipul gata (dacă pagina se reîncarcă, îl găsești tot aici)
   PROIECT=P; if(TEST) window.__P=P;
   const rezultat={titlu:P.scenariu.titlu, video:rez.blob, coperta:cop, srt:srt(P), postare:`TITLU: ${P.scenariu.titlu}\n\n`+textPostare(P), audit:au, scenariu:P.scene.map((x,i)=>`${i+1}. ${x.text}`).join('\n'), data:Date.now()};
-  await idbPut('ultimul', rezultat); await idbDel('proiect'); $('#reluare').classList.add('hide');
-  arataRezultat(rezultat, true);
+  urma('salvare clip'); await idbPut('ultimul', rezultat); await idbDel('proiect'); $('#reluare').classList.add('hide');
+  urma('afișare'); arataRezultat(rezultat, true);
+  urma('gata', P.strategie||'', false); try{ localStorage.setItem('povesti_cadere','0'); }catch(e){}
   window.__REZULTAT={durata:P.durata, size:rez.blob.size, audit:au, metoda:rez.metoda, video:rez.video, audio:rez.audio};
   window.__BLOB=rez.blob; window.__COPERTA=cop;
 }
@@ -1272,7 +1290,8 @@ function faFundal(bmp, L){
   const fw=Math.round(L.W/4), fh=Math.round(L.H/4); const oc=new OffscreenCanvas(fw,fh), ox=oc.getContext('2d');
   const mic=new OffscreenCanvas(Math.max(8,Math.round(fw/12)),Math.max(8,Math.round(fh/12))), mx=mic.getContext('2d');
   const sc=Math.max(mic.width/bmp.width,mic.height/bmp.height)*1.2; mx.drawImage(bmp,(mic.width-bmp.width*sc)/2,(mic.height-bmp.height*sc)/2,bmp.width*sc,bmp.height*sc);
-  ox.imageSmoothingEnabled=true; ox.imageSmoothingQuality='high'; ox.drawImage(mic,0,0,fw,fh); ox.fillStyle='rgba(0,0,0,.42)'; ox.fillRect(0,0,fw,fh);
+  let src=mic; while(src.width*2<fw){ const n=new OffscreenCanvas(src.width*2,src.height*2), nx=n.getContext('2d'); nx.imageSmoothingEnabled=true; nx.imageSmoothingQuality='high'; nx.drawImage(src,0,0,n.width,n.height); src=n; } // mărire în pași = estompare lină
+  ox.imageSmoothingEnabled=true; ox.imageSmoothingQuality='high'; ox.drawImage(src,0,0,fw,fh); ox.fillStyle='rgba(0,0,0,.42)'; ox.fillRect(0,0,fw,fh);
   return oc.transferToImageBitmap();
 }
 async function incarcaProiect(d){
@@ -1283,13 +1302,26 @@ async function incarcaProiect(d){
     P.scene.push({text:x.text, imagine:x.imagine, foto:x.foto, eticheta:x.eticheta, voce:x.voce, img}); }
   return P;
 }
+function citesteJurnal(){
+  let j=null; try{ j=JSON.parse(localStorage.getItem('povesti_jurnal')||'null'); }catch(e){}
+  if(!j||!j.activ) return null;
+  urma(j.etapa, j.extra, false); // îl închid, ca să nu-l număr de două ori
+  if(/montaj|finalizare|salvare|afișare/.test(j.etapa)){ try{ localStorage.setItem('povesti_cadere', String((+localStorage.getItem('povesti_cadere')||0)+1)); }catch(e){} }
+  return j;
+}
 async function verificaSalvari(){
+  const j=citesteJurnal();
+  if(j){ const b=$('#banner'); b.classList.remove('hide');
+    const urm = IOS&&/montaj|finalizare/.test(j.etapa)? ' Data asta montajul folosește alt mod (înregistrare în timp real, mai ușor pentru iPhone) — ține ecranul aprins.' : '';
+    b.innerHTML='<b>🔄 Pagina s-a închis singură data trecută.</b><br><span class="mut">S-a oprit la: <b>'+String(j.etapa).replace(/</g,'&lt;')+'</b> '+String(j.extra||'').replace(/</g,'&lt;')+'.'+urm+'</span><div class="btns"><button class="btn" id="btnCopyJurnal">📋 Copiază pentru Claude</button></div>';
+    $('#btnCopyJurnal').onclick=async()=>{ const t=JSON.stringify({jurnal:j, cadere:localStorage.getItem('povesti_cadere'), ...mediu()},null,1); try{ await navigator.clipboard.writeText(t); $('#btnCopyJurnal').textContent='✅ Copiat'; }catch(e){ b.insertAdjacentHTML('beforeend','<pre>'+t.replace(/</g,'&lt;')+'</pre>'); } };
+  }
   const ult=await idbGet('ultimul'); if(ult&&ult.video){ arataRezultat(ult,false); $('#out').querySelector('h2').textContent='✅ Ultimul clip făcut'; }
   const pr=await idbGet('proiect'); if(pr&&pr.scene){ $('#reluare').classList.remove('hide');
     $('#reluareTxt').textContent=`„${pr.scenariu?.titlu||pr.subiect}” — vocea și imaginile sunt gata, a rămas doar montajul. ${IOS?'Pe iPhone ține Safari deschis și ecranul aprins cât lucrează.':''}`; }
 }
 $('#btnRenunta').onclick=async()=>{ await idbDel('proiect'); $('#reluare').classList.add('hide'); };
-$('#btnReia').onclick=async()=>{ if(lucreaza) return; const d=await idbGet('proiect'); if(!d) return; lucreaza=true; $('#reluare').classList.add('hide');
+$('#btnReia').onclick=async()=>{ if(lucreaza) return; deblocheazaAudio(); const d=await idbGet('proiect'); if(!d) return; lucreaza=true; $('#reluare').classList.add('hide');
   $('#eroare').classList.add('hide'); $('#progres').classList.remove('hide'); initPasi(); for(const k of ['cercetare','scenariu','verificare','voce','imagini']) pas(k,'skip','salvat');
   let wake=null; try{ wake=await navigator.wakeLock?.request('screen'); }catch(e){}
   try{ const P=await incarcaProiect(d); await montajSiFinal(P); }catch(e){ console.error(e); pas('montaj','err',e.message); aratEroare(e,'montaj'); }
@@ -1393,7 +1425,7 @@ incarcaSetari(); statusServicii(); aratIdei([...IDEI_FIXE].sort(()=>Math.random(
 verificaSalvari(); if(TEST) window.__salveaza=salveazaProiect;
 if(IOS) document.addEventListener('visibilitychange',()=>{ if(document.hidden&&lucreaza) log('pagina în fundal'); });
 window.__creeaza=creeaza; if(TEST) window.__MP4=MP4;
-function mediu(){ return {url:location.href.split('?')[0], protocol:location.protocol, ua:navigator.userAgent, webcodecs:'VideoEncoder' in window, offscreen:'OffscreenCanvas' in window, gemini:!!S().geminiKey, worker:!!S().workerUrl, imagini:S().provImg, ai:S().provAI, voce:S().provVoce}; }
+function mediu(){ return {url:location.href.split('?')[0], protocol:location.protocol, ua:navigator.userAgent, webcodecs:'VideoEncoder' in window, offscreen:'OffscreenCanvas' in window, gemini:!!S().geminiKey, worker:!!S().workerUrl, imagini:S().provImg, ai:S().provAI, voce:S().provVoce, strategie:strategieMontaj(), cadere:(()=>{try{return localStorage.getItem('povesti_cadere')}catch(e){return null}})()}; }
 const SFATURI=[
   [/Failed to fetch|NetworkError|Load failed|rețea|CORS/i,'Un serviciu de pe internet n-a răspuns. Verifică netul și încearcă din nou. Dacă ai deschis fișierul direct din Descărcări, pune-l întâi online (tab-ul Ajutor).'],
   [/Gemini/i,'Problema e la Gemini: verifică cheia în Setări (fără spații), sau ai depășit limita gratuită pe azi — aplicația trece singură pe Pollinations dacă pui „Automat”.'],
