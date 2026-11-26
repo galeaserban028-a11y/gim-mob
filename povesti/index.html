@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Mașina de Povești — clipuri gratis pentru Facebook</title>
 <meta name="theme-color" content="#14110f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Moș Ghiță">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap" rel="stylesheet">
@@ -53,7 +60,12 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
 .toggle{display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:700;font-size:14.5px}
 .toggle input{width:22px;height:22px;accent-color:var(--acc)}
 .pill{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:800;margin-left:6px}
-.pill.ok{color:var(--ok)}.pill.no{color:var(--warn)}
+.pill.ok{color:var(--ok)}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:8px}
+.vcard{background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:10px}
+.vcard img{width:100%;border-radius:10px;display:block;background:#000}
+.vcard b{display:block;margin:8px 0 6px;font-size:14px;line-height:1.3}
+.vcard .btns{margin-top:6px}.pill.no{color:var(--warn)}
 </style>
 </head>
 <body>
@@ -68,6 +80,11 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
 
 <!-- ===================== CREEAZĂ ===================== -->
 <section id="tab-creeaza">
+  <div class="card hide" id="instalare" style="border-color:#ffd400">
+    <h2>📲 Pune aplicația pe telefon</h2>
+    <p class="mut" id="instalareTxt"></p>
+    <div class="btns"><button class="btn y hide" id="btnInstaleaza">📲 Instalează aplicația</button><button class="btn" id="btnInstAscunde">Mai târziu</button></div>
+  </div>
   <div class="card">
     <h2>Despre ce e clipul?</h2>
     <input id="subiect" placeholder="ex: De ce zicem „trage apa” când apăsăm pe un buton?" autocomplete="off">
@@ -122,13 +139,18 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
     <h2>✅ Gata!</h2>
     <video id="vid" controls playsinline></video>
     <div class="btns">
-      <a class="btn y" id="dlVid" download>⬇️ Descarcă video</a>
-      <a class="btn" id="dlCover" download>🖼️ Coperta</a>
+      <button class="btn y" id="btnSalvVid">📲 Salvează clipul în telefon</button>
+      <a class="btn" id="dlVid" download>⬇️ Descarcă video</a>
+      <button class="btn" id="btnSalvCop">🖼️ Salvează coperta</button>
+      <a class="btn hide" id="dlCover" download>🖼️ Coperta</a>
       <a class="btn" id="dlSrt" download>💬 Subtitrări .srt</a>
       <button class="btn" id="btnCopy">📋 Copiază textul postării</button>
       <button class="btn" id="btnRemontaj">🔁 Refă doar montajul</button>
     </div>
-    <label>Textul postării pentru Facebook</label>
+    <h2 style="margin-top:16px">🎯 Titluri + miniaturi (3 variante)</h2>
+    <p class="mut" id="varianteInfo">Pe YouTube le poți încărca pe toate 3 la „Test și comparare” (A/B) — YouTube o păstrează pe cea care aduce cel mai mult timp de vizionare.</p>
+    <div class="vgrid" id="variante"></div>
+    <label>Textul postării</label>
     <pre id="postare"></pre>
     <h2 style="margin-top:16px">🔎 Auditul clipului</h2>
     <ul class="audit" id="audit"></ul>
@@ -487,6 +509,15 @@ IMAGINI: pentru fiecare scenă dă DOUĂ lucruri:
 - "imagine": un prompt în ENGLEZĂ pentru o ilustrație, foarte concret și vizual (cine, ce face, unde, epoca, obiecte, culori, lumină),
   fără text/litere, fără portrete realiste ale persoanelor reale (doar personaje cartoon generice), subiectul centrat.
 
+TITLURI (după studii pe milioane de clipuri YouTube, 2026):
+- max 60 de caractere, fiecare cuvânt cu majusculă (ca „Black Friday NU Vine de la Reduceri”), cel mult UN cuvânt scris tot cu majuscule pentru accent;
+- subiectul concret (obiectul, cuvântul, omul, locul) în primele 3–4 cuvinte;
+- NU termina titlul cu semnul întrebării (titlurile-întrebare au în medie 0,82× vizualizări) — transformă întrebarea în afirmație sau dezvăluire;
+- evită cifrele dacă nu sunt chiar ideea (titlurile cu cifre au în medie ~11% mai puține vizualizări);
+- cele 3 titluri au unghiuri DIFERITE: (1) contrazicere/dezvăluire („X NU Vine de la Y”), (2) poveste cu personaj/moment concret („Polițiștii Care Au Inventat X”), (3) secret/adevăr („Adevărul Despre X Pe Care Nu Ți l-a Spus Nimeni” — dar scurt);
+- ce promite titlul trebuie să se întâmple în clip (fără minciuni).
+MINIATURI: 2–4 cuvinte MARI care COMPLETEAZĂ titlul (nu-l repetă): o emoție, un șoc, o cifră-cheie sau o contrazicere („NU E CE CREZI”, „ERA INTERZIS”, „+100 DE ANI”).
+
 Răspunde DOAR cu JSON valid:
 {
  "titlu": "titlul postării, max 70 caractere, curiozitate + claritate",
@@ -494,6 +525,8 @@ Răspunde DOAR cu JSON valid:
  "accent_carlig": "1-2 cuvinte din carlig_ecran care se colorează în roșu",
  "coperta_text": "2-4 cuvinte MARI pentru copertă",
  "coperta_sub": "3-5 cuvinte mici, ex: NU E CE CREZI",
+ "titluri": ["3 titluri cu UNGHIURI DIFERITE pentru test A/B (vezi regulile TITLURI)"],
+ "miniaturi": [{"text": "2-4 cuvinte MARI, NU repetă titlul", "accent": "1 cuvânt din text"}, {"text": "...", "accent": "..."}, {"text": "...", "accent": "..."}],
  "postare": "textul postării: prima linie = cârlig, apoi 2-3 propoziții, fără hashtaguri",
  "intrebare": "întrebarea pentru comentarii",
  "hashtaguri": ["#...", "#...", "#..."],
@@ -551,7 +584,13 @@ function normalizeazaScenariu(sc, s){
   sc.accent_carlig = (sc.accent_carlig||'').toUpperCase();
   sc.coperta_text = (sc.coperta_text||sc.carlig_ecran).toUpperCase();
   sc.coperta_sub = (sc.coperta_sub||'').toUpperCase();
-  sc.titlu_youtube=diacritice(sc.titlu_youtube||sc.titlu||''); sc.descriere_youtube=diacritice(sc.descriere_youtube||sc.postare||'');
+  sc.titlu_youtube=diacritice(sc.titlu_youtube||sc.titlu||'');
+  sc.titluri=(Array.isArray(sc.titluri)?sc.titluri:[]).map(t=>diacritice(String(t)).trim()).filter(t=>t.length>5).slice(0,3);
+  if(!sc.titluri.length) sc.titluri=[sc.titlu_youtube||sc.titlu];
+  sc.miniaturi=(Array.isArray(sc.miniaturi)?sc.miniaturi:[]).filter(m=>m&&m.text).map(m=>({text:diacritice(String(m.text)).toUpperCase().split(/\s+/).slice(0,5).join(' '), accent:diacritice(String(m.accent||'')).toUpperCase()})).slice(0,3);
+  const rezM=[{text:sc.coperta_text||sc.carlig_ecran||'', accent:sc.accent_carlig||''},{text:sc.coperta_sub||'NU E CE CREZI', accent:''},{text:(sc.carlig_ecran||'').split(/\s+/).slice(0,3).join(' '), accent:''}];
+  while(sc.miniaturi.length<3) sc.miniaturi.push(rezM[sc.miniaturi.length]);
+  while(sc.titluri.length<3 && sc.titluri.length<sc.miniaturi.length && sc.titluri[0]) sc.titluri.push(sc.titluri[0]); sc.descriere_youtube=diacritice(sc.descriere_youtube||sc.postare||'');
   sc.taguri=(Array.isArray(sc.taguri)?sc.taguri:[]).map(t=>diacritice(String(t)).replace(/^#/,'').trim()).filter(Boolean).slice(0,15);
   sc.hashtaguri = (Array.isArray(sc.hashtaguri)?sc.hashtaguri:[]).map(h=>'#'+String(h).replace(/^#/,'').replace(/\s+/g,'')).filter(h=>h.length>2).slice(0,5);
   const sem = diacritice(s.semnatura||'').trim();
@@ -1272,6 +1311,99 @@ async function randeazaMediaRecorder(P,aL,aR,cb){ // rezervă: timp real (browse
 /* =====================================================
    12. COPERTĂ, SRT, POSTARE
    ===================================================== */
+
+/* =====================================================
+   MINIATURI (thumbnail) — 3 variante pentru test A/B
+   ===================================================== */
+function intensifica(c, sat=1.35, con=1.12){ // saturație + contrast (merge în orice browser)
+  const x=c.getContext('2d'); const d=x.getImageData(0,0,c.width,c.height), a=d.data;
+  for(let i=0;i<a.length;i+=4){ let r=a[i],g=a[i+1],b=a[i+2]; const l=0.299*r+0.587*g+0.114*b;
+    r=l+(r-l)*sat; g=l+(g-l)*sat; b=l+(b-l)*sat; r=(r-128)*con+128; g=(g-128)*con+128; b=(b-128)*con+128;
+    a[i]=r<0?0:r>255?255:r; a[i+1]=g<0?0:g>255?255:g; a[i+2]=b<0?0:b>255?255:b; }
+  x.putImageData(d,0,0);
+}
+function imagineSubiect(P){ // cea mai bună poză a clipului (fotografie reală mare, altfel primul desen)
+  const c=P.scene.map(s=>s.img).filter(i=>i&&!i.rezerva&&!i.refolosit);
+  const f=c.filter(i=>i.foto).sort((a,b)=>b.bmp.width*b.bmp.height-a.bmp.width*a.bmp.height);
+  return f[0]||c[0]||P.scene[0].img;
+}
+function cardImagine(img, w, h, rotunda=false){ // poza decupată, intensificată, cu ramă albă
+  const bmp=img.bmp, sh=bmp.height*(1-(img.taieJos||0)); const c=new OffscreenCanvas(w,h), x=c.getContext('2d');
+  const sc=Math.max(w/bmp.width,h/sh); x.drawImage(bmp,0,0,bmp.width,sh,(w-bmp.width*sc)/2,(h-sh*sc)/2,bmp.width*sc,sh*sc);
+  intensifica(c); return c;
+}
+function deseneazaCard(x, card, cx, cy, rot, rama, rotunda){
+  x.save(); x.translate(cx,cy); x.rotate(rot); const w=card.width, h=card.height;
+  x.shadowColor='rgba(0,0,0,.55)'; x.shadowBlur=40; x.shadowOffsetY=14;
+  x.fillStyle='#fff'; if(rotunda){ x.beginPath(); x.arc(0,0,w/2+rama,0,7); x.fill(); } else { rrect(x,-w/2-rama,-h/2-rama,w+2*rama,h+2*rama,rama*1.2); x.fill(); }
+  x.shadowColor='transparent'; x.save(); if(rotunda){ x.beginPath(); x.arc(0,0,w/2,0,7); x.clip(); } else { rrect(x,-w/2,-h/2,w,h,rama*0.6); x.clip(); }
+  x.drawImage(card,-w/2,-h/2); x.restore();
+  x.lineWidth=Math.max(4,rama*0.35); x.strokeStyle='#141414'; if(rotunda){ x.beginPath(); x.arc(0,0,w/2+rama,0,7); x.stroke(); } else { rrect(x,-w/2-rama,-h/2-rama,w+2*rama,h+2*rama,rama*1.2); x.stroke(); }
+  x.restore();
+}
+function bunicConturat(H, stare){ // moșul cu contur alb gros (se vede bine pe orice fundal)
+  const W=Math.round(H*0.95), Hh=Math.round(H*1.12), c=new OffscreenCanvas(W,Hh), x=c.getContext('2d');
+  deseneazaBunic(x,W*0.55,Hh*0.98,H,stare);
+  const o=new OffscreenCanvas(W,Hh), ox=o.getContext('2d'); const r=Math.max(4,H*0.018);
+  for(let k=0;k<16;k++){ const a=k*Math.PI/8; ox.drawImage(c,Math.cos(a)*r,Math.sin(a)*r); }
+  ox.globalCompositeOperation='source-in'; ox.fillStyle='#fff'; ox.fillRect(0,0,W,Hh); ox.globalCompositeOperation='source-over'; ox.drawImage(c,0,0);
+  return o;
+}
+function textMare(x, text, accent, X, Y, maxW, pxMax, aliniere='left', culoare='#ffd400'){
+  const cuv=text.toUpperCase().split(/\s+/).filter(Boolean); const acc=new Set(String(accent||'').toUpperCase().split(/\s+/).filter(Boolean));
+  let px=pxMax, randuri=[];
+  for(;px>40;px-=4){ x.font=FONT(px); randuri=[]; let cur=[]; for(const c of cuv){ const t=[...cur,c].join(' '); if(x.measureText(t).width<=maxW||!cur.length) cur.push(c); else { randuri.push(cur); cur=[c]; } } if(cur.length) randuri.push(cur);
+    if(randuri.length<=3 && randuri.every(r=>x.measureText(r.join(' ')).width<=maxW)) break; }
+  x.textBaseline='top'; x.lineJoin='round'; const sp=x.measureText(' ').width; let y=Y;
+  for(const r of randuri){ const lat=x.measureText(r.join(' ')).width; let xx= aliniere==='center'? X-lat/2 : X;
+    for(const c of r){ const w=x.measureText(c).width; const eAcc=acc.has(c.replace(/[?!.,]/g,''));
+      if(eAcc){ x.save(); x.translate(xx+w/2,y+px*0.5); x.rotate(-0.04); x.fillStyle='#e2262a'; x.strokeStyle='#141414'; x.lineWidth=px*0.08; rrect(x,-w/2-px*0.14,-px*0.56,w+px*0.28,px*1.1,px*0.14); x.fill(); x.stroke(); x.restore(); }
+      x.lineWidth=px*0.17; x.strokeStyle='#000'; x.strokeText(c,xx,y); x.fillStyle=eAcc?'#fff':culoare; x.fillText(c,xx,y); xx+=w+sp; }
+    y+=px*1.02; }
+  return y;
+}
+function sageata(x, x1,y1,x2,y2, gros){ // săgeată roșie curbată
+  const mx=(x1+x2)/2+(y2-y1)*0.25, my=(y1+y2)/2-(x2-x1)*0.25; const ang=Math.atan2(y2-my,x2-mx);
+  for(const [cul,lw] of [['#141414',gros+10],['#e2262a',gros]]){ x.strokeStyle=cul; x.fillStyle=cul; x.lineWidth=lw; x.lineCap='round';
+    x.beginPath(); x.moveTo(x1,y1); x.quadraticCurveTo(mx,my,x2-Math.cos(ang)*gros*1.2,y2-Math.sin(ang)*gros*1.2); x.stroke();
+    const k=gros*2.4+(cul==='#141414'?8:0); x.beginPath(); x.moveTo(x2,y2); x.lineTo(x2-Math.cos(ang-0.5)*k,y2-Math.sin(ang-0.5)*k); x.lineTo(x2-Math.cos(ang+0.5)*k,y2-Math.sin(ang+0.5)*k); x.closePath(); x.fill(); }
+}
+function fundalViu(x, W, H, c1, c2, raze=true){
+  const g=x.createRadialGradient(W*0.5,H*0.45,Math.min(W,H)*0.05,W*0.5,H*0.5,Math.max(W,H)*0.75); g.addColorStop(0,c1); g.addColorStop(1,c2); x.fillStyle=g; x.fillRect(0,0,W,H);
+  if(raze){ x.save(); x.globalAlpha=0.16; x.fillStyle='#fff'; x.translate(W*0.5,H*0.45); for(let k=0;k<18;k++){ x.rotate(Math.PI/9); x.beginPath(); x.moveTo(0,0); x.lineTo(-Math.max(W,H)*0.07,-Math.max(W,H)); x.lineTo(Math.max(W,H)*0.07,-Math.max(W,H)); x.closePath(); x.fill(); } x.restore(); }
+}
+async function miniatura(P, v, W, H){
+  const c=new OffscreenCanvas(W,H), x=c.getContext('2d'); const vert=H>W; const img=imagineSubiect(P);
+  const m=P.scenariu.miniaturi[v]||P.scenariu.miniaturi[0];
+  if(v===0){ // REACȚIE: poza în ramă + moșul mare care arată spre ea + săgeată
+    fundalViu(x,W,H,'#ffe066','#ff7a00');
+    if(!vert){ const card=cardImagine(img,Math.round(W*0.5),Math.round(H*0.56)); deseneazaCard(x,card,W*0.32,H*0.64,-0.045,14);
+      const b=bunicConturat(H*0.82,{t:0,gura:0.35,surpriza:0.55,sprancene:1,brat:1,zambet:0.4,ochiX:-1,ochiY:0.2,inclinare:-0.06}); x.drawImage(b,W-b.width*0.98,H-b.height*0.97);
+      textMare(x,m.text,m.accent,W*0.035,H*0.03,W*0.62,140); sageata(x,W*0.5,H*0.1,W*0.53,H*0.4,18); }
+    else { const card=cardImagine(img,Math.round(W*0.84),Math.round(W*0.84)); deseneazaCard(x,card,W*0.5,H*0.47,-0.04,16);
+      textMare(x,m.text,m.accent,W*0.5,H*0.06,W*0.9,150,'center');
+      const b=bunicConturat(H*0.36,{t:0,gura:0.35,surpriza:0.55,sprancene:1,brat:1,zambet:0.4,ochiY:-1,inclinare:-0.05}); x.drawImage(b,(W-b.width)/2+W*0.08,H-b.height*0.98); }
+  } else if(v===1){ // DEZVĂLUIRE: poza pe tot cadrul, text mare cu accent roșu, moșul șiret cu „?”
+    const card=cardImagine(img,W,H); x.drawImage(card,0,0);
+    const g=x.createLinearGradient(0,0,vert?0:W,vert?H:0); g.addColorStop(0,'rgba(0,0,0,.65)'); g.addColorStop(0.55,'rgba(0,0,0,.1)'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle=g; x.fillRect(0,0,W,H);
+    textMare(x,m.text,m.accent||m.text.split(/\s+/).slice(-1)[0],vert?W*0.5:W*0.04,vert?H*0.06:H*0.08,vert?W*0.9:W*0.56,vert?150:128,vert?'center':'left','#fff');
+    const b=bunicConturat(vert?H*0.34:H*0.7,{t:0,gura:0,zambet:1,sprancene:0.9,ochiX:-0.8,inclinare:0.1,bula:'?',bulaP:1}); x.drawImage(b,vert?(W-b.width)/2:W-b.width*0.92,H-b.height*0.96);
+  } else { // OBIECTUL-ERou: poza rotundă în centru, raze, moșul arată, text jos
+    fundalViu(x,W,H,'#ff5a5f','#7b1fa2');
+    if(!vert){ const d=Math.round(H*0.6); const card=cardImagine(img,d,d); deseneazaCard(x,card,W*0.36,H*0.4,0,16,true);
+      const b=bunicConturat(H*0.78,{t:0,gura:0.5,surpriza:0.3,sprancene:0.8,brat:1,zambet:0.8,ochiX:-1,inclinare:-0.08}); x.drawImage(b,W-b.width*0.98,H-b.height*0.97);
+      textMare(x,m.text,m.accent,W*0.04,H*0.76,W*0.64,110,'left','#ffd400'); }
+    else { const d=Math.round(W*0.78); const card=cardImagine(img,d,d); deseneazaCard(x,card,W*0.5,H*0.42,0,18,true);
+      textMare(x,m.text,m.accent,W*0.5,H*0.06,W*0.9,140,'center');
+      const b=bunicConturat(H*0.34,{t:0,gura:0.5,surpriza:0.3,sprancene:0.8,brat:1,zambet:0.8,ochiY:-1}); x.drawImage(b,(W-b.width)/2+W*0.06,H-b.height*0.98); }
+  }
+  return await c.convertToBlob({type:'image/jpeg',quality:0.9});
+}
+async function variante(P){
+  const yt=(P.setari.platforma||'facebook')==='yt_lung'; const [W,H]= yt? [1280,720] : (P.L.v? [1080,1920] : [1280,720]);
+  const out=[]; for(let v=0;v<3;v++){ out.push({titlu:P.scenariu.titluri[v]||P.scenariu.titluri[0], text:P.scenariu.miniaturi[v]?.text||'', blob:await miniatura(P,v,W,H)}); }
+  return out;
+}
 async function coperta(P){
   const L=P.L, cv=new OffscreenCanvas(L.W,L.H), x=cv.getContext('2d');
   const i=P.scene.findIndex(s=>s.img&&!s.img.rezerva); deseneazaImagine(x,L,P.scene[Math.max(0,i)].img,0.5,1);
@@ -1304,7 +1436,8 @@ function textYouTube(P, pl){
   cap=cap.filter((c,i)=>i===0||c.t-cap[i-1].t>=10); // YouTube: capitole de minim 10s
   let hs=(sc.hashtaguri||[]).slice(0,3); if(pl==='yt_shorts'&&!hs.some(h=>/^#shorts$/i.test(h))) hs=['#shorts',...hs].slice(0,3);
   const desc=[sc.descriere_youtube||sc.postare, '', pl==='yt_lung'&&cap.length>=3? cap.map(c=>`${timpYT(c.t)} ${c.n}`).join('\n')+'\n' : '', `📌 ${sc.intrebare||'Voi ce știați?'} Scrieți-mi în comentarii 👇`, '', lista.length? 'SURSE:\n'+lista.map(s=>`• ${s.titlu} — ${s.url}`).join('\n') : '', cred.length? '\nFoto: Wikimedia Commons — '+cred.slice(0,8).join('; ') : '', '', hs.join(' ')].join('\n').replace(/\n{3,}/g,'\n\n').trim();
-  return `TITLU YOUTUBE:\n${sc.titlu_youtube||sc.titlu}\n\nDESCRIERE:\n${desc}\n\nTAGURI (le pui la „Etichete”):\n${((sc.taguri&&sc.taguri.length)? sc.taguri : [...(sc.hashtaguri||[]).map(h=>h.replace(/^#/,'')).filter(h=>!/^shorts$/i.test(h)), ...String(P.subiect||'').toLowerCase().replace(/[^a-zăâîșț0-9 ]/g,'').split(/\s+/).filter(w=>w.length>3)]).join(', ')}\n\nLA ÎNCĂRCARE:\n• „Conținut modificat sau sintetic”: Da (vocea e generată) — nu afectează monetizarea.\n• ${pl==='yt_lung'?'Încarcă și coperta ca miniatură (Thumbnail).':'Shorts: alege coperta din clip.'}`;
+  const tl=(sc.titluri&&sc.titluri.length? sc.titluri : [sc.titlu_youtube||sc.titlu]);
+  return `TITLU YOUTUBE:\n${tl[0]}\n${tl.length>1? '\nVARIANTE PENTRU TEST A/B:\n'+tl.slice(1).map((t,i)=>`${i+2}. ${t}`).join('\n')+'\n' : ''}\nDESCRIERE:\n${desc}\n\nTAGURI (le pui la „Etichete”):\n${((sc.taguri&&sc.taguri.length)? sc.taguri : [...(sc.hashtaguri||[]).map(h=>h.replace(/^#/,'')).filter(h=>!/^shorts$/i.test(h)), ...String(P.subiect||'').toLowerCase().replace(/[^a-zăâîșț0-9 ]/g,'').split(/\s+/).filter(w=>w.length>3)]).join(', ')}\n\nLA ÎNCĂRCARE:\n• „Conținut modificat sau sintetic”: Da (vocea e generată) — nu afectează monetizarea.\n• ${pl==='yt_lung'?'Încarcă și coperta ca miniatură (Thumbnail).':'Shorts: alege coperta din clip.'}`;
 }
 
 /* =====================================================
@@ -1334,6 +1467,10 @@ async function auditFinal(P, rez){
   if(IOS) add(true,'Redare: apasă Play mai jos ca să verifici clipul','warn'); else try{ const ok=await new Promise(res=>{ const v=document.createElement('video'); v.muted=true; v.preload='metadata'; v.onloadedmetadata=()=>res(Math.abs(v.duration-P.durata)<1.5); v.onerror=()=>res(false); v.src=URL.createObjectURL(rez.blob); setTimeout(()=>res(null),8000); });
     add(ok!==false, ok===null?'Redare: nu s-a putut verifica în acest browser':'Fișierul se deschide și are durata corectă', ok===null?'warn':ok?'ok':'err'); }catch(e){}
   const pl=s.platforma||'facebook';
+  const tl=P.scenariu.titluri||[]; const lungi=tl.filter(t=>t.length>60), intreb=tl.filter(t=>/\?\s*$/.test(t));
+  add(!lungi.length&&!intreb.length, (!lungi.length&&!intreb.length)? `${tl.length} titluri scurte (sub 60 de caractere), fără semn de întrebare la final` : `Titluri de verificat: ${[...lungi.map(t=>'prea lung: „'+t+'”'), ...intreb.map(t=>'se termină cu „?”: „'+t+'”')].join('; ')}`, (!lungi.length&&!intreb.length)?'ok':'warn');
+  const rep=(P.scenariu.miniaturi||[]).filter((m,i)=>tl[i]&&normIdee(m.text).length&&normIdee(m.text).every(w=>normIdee(tl[i]).includes(w)));
+  add(!rep.length, !rep.length? '3 miniaturi cu text scurt care completează titlul (nu îl repetă)' : 'O miniatură repetă titlul — schimbă textul', !rep.length?'ok':'warn');
   if(pl==='yt_lung'){ add(P.durata>=480, P.durata>=480? 'Peste 8 minute: YouTube permite reclame la mijlocul clipului' : `Sub 8 minute (${(P.durata/60).toFixed(1)} min): fără reclame la mijloc — pentru bani mai mulți alege „~8 minute”`, P.durata>=480?'ok':'warn');
     const nc=P.scene.filter(x=>x.capitol).length; add(nc>=3, nc>=3? `${nc} capitole puse automat în descriere` : 'Prea puține capitole pentru YouTube', nc>=3?'ok':'warn'); }
   if(pl==='yt_shorts') add(P.durata<=180 && P.L.v, 'Format valid pentru YouTube Shorts (vertical, sub 3 minute)', P.durata<=180&&P.L.v?'ok':'err');
@@ -1390,12 +1527,26 @@ async function creeaza(){
     aratEroare(e, k);
   }finally{ lucreaza=false; $('#btnCreeaza').disabled=false; try{ wake&&wake.release(); }catch(e){} }
 }
+let REZ_CURENT=null;
+async function salveazaInTelefon(blob, nume, link){
+  try{ const f=new File([blob], nume, {type:blob.type||'video/mp4'});
+    if(navigator.canShare && navigator.canShare({files:[f]})){ await navigator.share({files:[f], title:nume}); return true; } }
+  catch(e){ if(e&&e.name==='AbortError') return true; log('share',e&&e.message); }
+  link.click(); return false;
+}
+$('#btnSalvVid').onclick=()=>{ if(!REZ_CURENT) return; const a=$('#dlVid'); salveazaInTelefon(REZ_CURENT.video, a.download||'clip.mp4', a); };
+$('#btnSalvCop').onclick=()=>{ if(!REZ_CURENT) return; const a=$('#dlCover'); salveazaInTelefon(REZ_CURENT.coperta, a.download||'coperta.jpg', a); };
 function arataRezultat(r, scroll){
+  REZ_CURENT=r;
   const ext=(r.video.type||'').includes('webm')?'webm':(r.video.type||'').includes('quicktime')?'mov':'mp4'; const nume=(r.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
   const uV=URL.createObjectURL(r.video); $('#vid').src=uV; $('#dlVid').href=uV; $('#dlVid').download=`${nume}.${ext}`;
   $('#dlCover').href=URL.createObjectURL(r.coperta); $('#dlCover').download=`${nume}-coperta.jpg`;
   $('#dlSrt').href=URL.createObjectURL(new Blob([r.srt],{type:'text/plain'})); $('#dlSrt').download=`${nume}.srt`;
   $('#postare').textContent=r.postare; $('#scenariuOut').textContent=r.scenariu||'';
+  const vs=r.variante||[]; $('#variante').innerHTML=vs.map((v,i)=>`<div class="vcard"><img alt="Miniatura ${i+1}" src="${URL.createObjectURL(v.blob)}"><b>${i+1}. ${String(v.titlu).replace(/[<>&]/g,'')}</b><div class="btns"><button class="btn" data-copiaza="${i}">📋 Titlul</button><button class="btn" data-salveaza="${i}">💾 Miniatura</button></div></div>`).join('');
+  $('#variante').querySelectorAll('[data-copiaza]').forEach(b=>b.onclick=async()=>{ try{ await navigator.clipboard.writeText(vs[+b.dataset.copiaza].titlu); b.textContent='✅ Copiat'; }catch(e){} });
+  $('#variante').querySelectorAll('[data-salveaza]').forEach(b=>b.onclick=()=>{ const i=+b.dataset.salveaza; const a=document.createElement('a'); a.href=URL.createObjectURL(vs[i].blob); a.download=`miniatura-${i+1}.jpg`; salveazaInTelefon(vs[i].blob,`miniatura-${i+1}.jpg`,a); });
+  $('#varianteInfo').textContent = (r.platforma==='facebook')? 'Pe Facebook: pune varianta care îți place ca și copertă a clipului (Reels → Editează coperta) și titlul ca primă linie în postare.' : 'Pe YouTube: în Studio → clip → „Test și comparare” încarci toate 3 titlurile și miniaturile; YouTube o păstrează pe cea cu cel mai mult timp de vizionare.';
   $('#audit').innerHTML=(r.audit||[]).map(x=>`<li>${x.nivel==='ok'?'✅':x.nivel==='warn'?'⚠️':'❌'} ${String(x.txt).replace(/</g,'&lt;')}</li>`).join('');
   $('#out').classList.remove('hide'); if(scroll) $('#out').scrollIntoView({behavior:'smooth'});
 }
@@ -1406,12 +1557,12 @@ async function montajSiFinal(P){
   const rez=await randeaza(P,f=>progresPas('montaj',f,`${Math.round(f*100)}%`));
   pas('montaj','ok',`${rez.metoda} · ${(rez.blob.size/1048576).toFixed(1)} MB`);
   pas('audit','run');
-  const cop=await coperta(P);
+  const vari=await variante(P); const cop=vari[0].blob;
   const au=await auditFinal(P,rez);
   pas('audit', au.some(x=>x.nivel==='err')?'warn':'ok', `${au.filter(x=>x.nivel==='ok').length}/${au.length} verificări trecute`);
   // salvez IMEDIAT clipul gata (dacă pagina se reîncarcă, îl găsești tot aici)
   PROIECT=P; if(TEST) window.__P=P;
-  const rezultat={titlu:P.scenariu.titlu, video:rez.blob, coperta:cop, srt:srt(P), postare:((P.setari.platforma||'facebook')==='facebook'? `TITLU: ${P.scenariu.titlu}\n\n` : '')+textPostare(P), audit:au, scenariu:P.scene.map((x,i)=>`${i+1}. ${x.text}`).join('\n'), data:Date.now()};
+  const rezultat={titlu:P.scenariu.titlu, video:rez.blob, coperta:cop, variante:vari, platforma:P.setari.platforma||'facebook', srt:srt(P), postare:((P.setari.platforma||'facebook')==='facebook'? `TITLU: ${P.scenariu.titlu}\n\n` : '')+textPostare(P), audit:au, scenariu:P.scene.map((x,i)=>`${i+1}. ${x.text}`).join('\n'), data:Date.now()};
   urma('salvare clip'); await idbPut('ultimul', rezultat); await idbDel('proiect'); $('#reluare').classList.add('hide');
   urma('afișare'); arataRezultat(rezultat, true);
   urma('gata', P.strategie||'', false); try{ localStorage.setItem('povesti_cadere','0'); }catch(e){}
@@ -1598,7 +1749,7 @@ $('#btnCopyWorker').onclick=async()=>{ try{ await navigator.clipboard.writeText(
    MOD TEST / DEMO OFFLINE (fără internet): ?test=1
    ===================================================== */
 const TEST_SCENARIU={titlu:'De Ce Zicem „Trage Apa” Când Apăsăm pe un Buton?',carlig_ecran:'NIMENI NU MAI TRAGE APA',accent_carlig:'TRAGE',coperta_text:'TRAGE APA?',coperta_sub:'NU E CE CREZI',
-  postare:'Zicem „trage apa”, dar nimeni n-a mai tras de nimic de zeci de ani. Explicația e într-un lanț de pe vremea bunicilor.',intrebare:'Voi cum îi ziceți acasă?',hashtaguri:['#StiaiCa','#Romania','#Curiozitati'],surse_folosite:[0],
+  titluri:['Nimeni NU Mai Trage Apa de 60 de Ani','Lanțul Care a Dat Numele Toaletei','Adevărul Despre „Trage Apa”'],miniaturi:[{text:'NU E CE CREZI',accent:'NU'},{text:'ERA UN LANȚ',accent:'LANȚ'},{text:'+100 DE ANI',accent:''}],postare:'Zicem „trage apa”, dar nimeni n-a mai tras de nimic de zeci de ani. Explicația e într-un lanț de pe vremea bunicilor.',intrebare:'Voi cum îi ziceți acasă?',hashtaguri:['#StiaiCa','#Romania','#Curiozitati'],surse_folosite:[0],
   scene:[
    {capitol:'Misterul',text:'Toată lumea zice „trage apa”. Dar voi când ați tras ultima dată de ceva?',imagine:'toilet',eticheta:{text:'NIMENI NU TRAGE',accent:'TRAGE',stil:'alb'}},
    {text:'Apăsăm pe un buton. Și totuși zicem că tragem. Stați așa.',imagine:'button',eticheta:null},
@@ -1642,6 +1793,20 @@ $('#btnCopyEroare').onclick=async()=>{ const t=$('#eroareDet').textContent; try{
 window.addEventListener('unhandledrejection',ev=>{ if(lucreaza) return; console.error(ev.reason); });
 if(location.protocol==='file:'){ const b=$('#banner'); b.classList.remove('hide'); b.innerHTML='<b>⚠️ Ai deschis fișierul direct de pe dispozitiv.</b><br><span class="mut">Pe telefon așa nu merge (browserul blochează scripturile și internetul). Pune pagina online — durează 2 minute, vezi tab-ul <b>Ajutor</b>.</span>'; }
 window.__gata=true;
+/* ---------- Aplicație instalabilă (PWA) ---------- */
+if('serviceWorker' in navigator && location.protocol==='https:') navigator.serviceWorker.register('sw.js').catch(e=>log('sw',e.message));
+const INSTALAT = matchMedia('(display-mode: standalone)').matches || navigator.standalone===true;
+let promptInstalare=null;
+function aratInstalare(){ let ascuns=false; try{ ascuns=localStorage.getItem('povesti_inst_ascuns')==='1'; }catch(e){}
+  if(INSTALAT||ascuns||TEST) return; const c=$('#instalare'); c.classList.remove('hide');
+  if(IOS) $('#instalareTxt').innerHTML='În <b>Safari</b>: apasă butonul <b>Partajează</b> (pătratul cu săgeata ⬆️ de jos) → <b>Adaugă pe ecranul principal</b> → <b>Adaugă</b>. Apare iconița cu moșul și se deschide ca o aplicație.<br><br>⚠️ În aplicația instalată pune din nou cheia Gemini în Setări (iPhone-ul ține setările separat).';
+  else if(promptInstalare){ $('#instalareTxt').textContent='Apasă butonul și aplicația apare pe ecranul telefonului, cu iconița moșului.'; $('#btnInstaleaza').classList.remove('hide'); }
+  else $('#instalareTxt').innerHTML='În <b>Chrome</b>: meniul ⋮ (sus, dreapta) → <b>Adaugă pe ecranul de pornire</b> / <b>Instalează aplicația</b>.'; }
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); promptInstalare=e; aratInstalare(); });
+$('#btnInstaleaza').onclick=async()=>{ if(!promptInstalare) return; promptInstalare.prompt(); const r=await promptInstalare.userChoice.catch(()=>null); promptInstalare=null; if(r&&r.outcome==='accepted') $('#instalare').classList.add('hide'); };
+$('#btnInstAscunde').onclick=()=>{ $('#instalare').classList.add('hide'); try{ localStorage.setItem('povesti_inst_ascuns','1'); }catch(e){} };
+window.addEventListener('appinstalled',()=>$('#instalare').classList.add('hide'));
+aratInstalare();
 </script>
 <script>
 setTimeout(function(){ if(!window.__gata){ var d=document.createElement('div'); d.style.cssText='position:fixed;left:10px;right:10px;bottom:10px;background:#e2262a;color:#fff;padding:14px;border-radius:14px;font:700 15px sans-serif;z-index:99';
