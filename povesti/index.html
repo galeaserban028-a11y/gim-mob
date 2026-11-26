@@ -1424,14 +1424,15 @@ async function mixeazaAudio(P){
    10. MP4 MUXER (scris de la zero — fără biblioteci)
    ===================================================== */
 class MP4{
-  constructor(){ this.v=[]; this.a=[]; this.vcfg=null; this.acfg=null; }
+  constructor(){ this.v=[]; this.a=[]; this.vcfg=null; this.acfg=null; this.vBuf=[]; this.aBuf=[]; this.vBl=[]; this.aBl=[]; this.vN=0; this.aN=0; }
+  strange(tip,fortat){ const buf=tip==='v'?this.vBuf:this.aBuf; const n=tip==='v'?this.vN:this.aN; if(!buf.length||(!fortat&&n<8e6)) return; (tip==='v'?this.vBl:this.aBl).push(new Blob(buf)); if(tip==='v'){ this.vBuf=[]; this.vN=0; } else { this.aBuf=[]; this.aN=0; } }
   static u32(n){ return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255]; }
   static u16(n){ return [(n>>8)&255,n&255]; }
   static str(s){ return [...s].map(c=>c.charCodeAt(0)); }
   static box(tip,...parti){ const corp=parti.flat(Infinity); return [...MP4.u32(8+corp.length),...MP4.str(tip),...corp]; }
   static fbox(tip,ver,flags,...parti){ return MP4.box(tip,[ver,(flags>>16)&255,(flags>>8)&255,flags&255],...parti); }
-  adaugaVideo(chunk, meta){ const b=new Uint8Array(chunk.byteLength); chunk.copyTo(b); this.v.push({b,key:chunk.type==='key',ts:chunk.timestamp}); if(meta?.decoderConfig?.description&&!this.vcfg) this.vcfg=new Uint8Array(meta.decoderConfig.description instanceof ArrayBuffer? meta.decoderConfig.description : meta.decoderConfig.description.buffer.slice(meta.decoderConfig.description.byteOffset, meta.decoderConfig.description.byteOffset+meta.decoderConfig.description.byteLength)); }
-  adaugaAudio(chunk, meta){ const b=new Uint8Array(chunk.byteLength); chunk.copyTo(b); this.a.push({b,dur:chunk.duration,ts:chunk.timestamp}); if(meta?.decoderConfig?.description&&!this.acfg){ const d=meta.decoderConfig.description; this.acfg=new Uint8Array(d instanceof ArrayBuffer? d : d.buffer.slice(d.byteOffset,d.byteOffset+d.byteLength)); } }
+  adaugaVideo(chunk, meta){ const b=new Uint8Array(chunk.byteLength); chunk.copyTo(b); this.v.push({len:b.length,key:chunk.type==='key',ts:chunk.timestamp}); this.vBuf.push(b); this.vN+=b.length; this.strange('v'); if(meta?.decoderConfig?.description&&!this.vcfg) this.vcfg=new Uint8Array(meta.decoderConfig.description instanceof ArrayBuffer? meta.decoderConfig.description : meta.decoderConfig.description.buffer.slice(meta.decoderConfig.description.byteOffset, meta.decoderConfig.description.byteOffset+meta.decoderConfig.description.byteLength)); }
+  adaugaAudio(chunk, meta){ const b=new Uint8Array(chunk.byteLength); chunk.copyTo(b); this.a.push({len:b.length,dur:chunk.duration,ts:chunk.timestamp}); this.aBuf.push(b); this.aN+=b.length; this.strange('a'); if(meta?.decoderConfig?.description&&!this.acfg){ const d=meta.decoderConfig.description; this.acfg=new Uint8Array(d instanceof ArrayBuffer? d : d.buffer.slice(d.byteOffset,d.byteOffset+d.byteLength)); } }
   static matrice(){ return [0,1,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,1,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0x40,0,0,0]; }
   static desc(tag,corp){ const n=corp.length; return [tag,0x80|((n>>21)&127),0x80|((n>>14)&127),0x80|((n>>7)&127),n&127,...corp]; }
   stts(dur){ const r=[]; for(const d of dur){ const u=r[r.length-1]; if(u&&u[1]===d) u[0]++; else r.push([1,d]); } return MP4.fbox('stts',0,0,MP4.u32(r.length),r.map(([c,d])=>[MP4.u32(c),MP4.u32(d)])); }
@@ -1452,12 +1453,12 @@ class MP4{
   }
   finalizeaza(W,H,fps,codecAudio,sr,canale){
     this.W=W; this.H=H; const VT=90000, fd=Math.round(VT/fps);
-    const vSizes=this.v.map(s=>s.b.length), aSizes=this.a.map(s=>s.b.length);
+    this.strange('v',true); this.strange('a',true); const vSizes=this.v.map(s=>s.len), aSizes=this.a.map(s=>s.len);
     const vDur=this.v.map(()=>fd); const keys=[]; this.v.forEach((s,i)=>{ if(s.key) keys.push(i+1); });
     // ctts doar dacă encoderul a scos B-frames
     let ctts=null; const pts=this.v.map(s=>Math.round(s.ts*VT/1e6)); const ord=pts.every((p,i)=>i===0||p>pts[i-1]);
     if(!ord){ const sorted=[...pts].sort((a,b)=>a-b); const off=pts.map((p,i)=>p-sorted[i]); ctts=MP4.fbox('ctts',1,0,MP4.u32(off.length),off.map(o=>[MP4.u32(1),MP4.u32(o>>>0)])); }
-    const pcm = codecAudio==='pcm'? {n:this.pcm.length/(2*canale), marime:2*canale} : null;
+    const pcm = codecAudio==='pcm'? {n:this.pcmLen/(2*canale), marime:2*canale} : null;
     const implicit=codecAudio==='aac'?1024:960; const aDur=pcm? [] : this.a.map(s=>s.dur? Math.max(1,Math.round(s.dur*sr/1e6)) : implicit);
     const vDurTot=vDur.reduce((a,b)=>a+b,0), aDurTot=pcm? pcm.n : aDur.reduce((a,b)=>a+b,0);
     const durFilmV=Math.round(vDurTot*1000/VT), durFilmA=Math.round(aDurTot*1000/sr), durFilm=Math.max(durFilmV,durFilmA);
@@ -1485,11 +1486,11 @@ class MP4{
         this.trak(2,'soun',sr,aDurTot,durFilmA,aStsd,aDur,aSizes,offA,null,null,pcm));
     };
     let moov=construieste(0,0);
-    const vBytes=vSizes.reduce((a,b)=>a+b,0), aBytes=pcm? this.pcm.length : aSizes.reduce((a,b)=>a+b,0);
+    const vBytes=vSizes.reduce((a,b)=>a+b,0), aBytes=pcm? this.pcmLen : aSizes.reduce((a,b)=>a+b,0);
     const offV=ftyp.length+moov.length+8, offA=offV+vBytes;
     moov=construieste(offV,offA);
     const mdatHdr=new Uint8Array([...MP4.u32(8+vBytes+aBytes),...MP4.str('mdat')]);
-    return new Blob([new Uint8Array(ftyp),new Uint8Array(moov),mdatHdr,...this.v.map(s=>s.b),...(pcm?[this.pcm]:this.a.map(s=>s.b))],{type:pcm?'video/quicktime':'video/mp4'});
+    return new Blob([new Uint8Array(ftyp),new Uint8Array(moov),mdatHdr,...this.vBl,...(pcm?this.pcmBl:this.aBl)],{type:pcm?'video/quicktime':'video/mp4'});
   }
 }
 
@@ -1499,7 +1500,7 @@ class MP4{
 async function alegeCodecVideo(W,H){
   for(const codec of ['avc1.640028','avc1.4d0028','avc1.42e028','avc1.640033','avc1.4d0033']){
     for(const hw of ['prefer-hardware','no-preference','prefer-software']){
-      const cfg={codec,width:W,height:H,bitrate:(window.__lung? 4_500_000 : W*H>2e6?8_000_000:6_000_000),framerate:FPS,avc:{format:'avc'},hardwareAcceleration:hw,latencyMode:'quality'};
+      const cfg={codec,width:W,height:H,bitrate:(window.__lung? (IOS?2_800_000:4_500_000) : W*H>2e6?8_000_000:6_000_000),framerate:FPS,avc:{format:'avc'},hardwareAcceleration:hw,latencyMode:'quality'};
       try{ const r=await VideoEncoder.isConfigSupported(cfg); if(r.supported) return cfg; }catch(e){}
     }
   }
@@ -1517,6 +1518,7 @@ function IOS_AUDIO_PCM(){ return IOS || new URLSearchParams(location.search).has
 const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 let AC=null;
 function deblocheazaAudio(){ try{ if(!AC) AC=new (window.AudioContext||window.webkitAudioContext)({sampleRate:SR}); AC.resume&&AC.resume(); }catch(e){} }
+try{ if(localStorage.getItem('povesti_ver')!=='4'){ localStorage.setItem('povesti_cadere','0'); localStorage.setItem('povesti_ver','4'); } }catch(e){} // versiune nouă: montajul rapid primește o nouă șansă
 function strategieMontaj(){
   if(new URLSearchParams(location.search).has('mr')) return 'mr';
   if(new URLSearchParams(location.search).has('buf')) return 'buffer';
@@ -1529,19 +1531,21 @@ async function randeaza(P, cb){
   const L=P.L, k=scalaVideo(P.setari), VW=Math.round(L.W*k/2)*2, VH=Math.round(L.H*k/2)*2; P.out={W:VW,H:VH};
   let strat=strategieMontaj(); P.strategie=strat;
   const cv=new OffscreenCanvas(VW,VH), x=cv.getContext('2d',{alpha:false, willReadFrequently: strat==='buffer'});
-  const [aL,aR]=await mixeazaAudio(P);
+  let [aL,aR]=await mixeazaAudio(P);
   if(strat==='mr') return await randeazaMediaRecorder(P,aL,aR,cb);
   window.__lung = P.durata>150; const vcfg=await alegeCodecVideo(VW,VH), ac=await alegeCodecAudio();
   if(!vcfg) return await randeazaMediaRecorder(P,aL,aR,cb);
   const mux=new MP4(); let eroare=null;
   const ve=new VideoEncoder({output:(c,m)=>mux.adaugaVideo(c,m), error:e=>eroare=e}); ve.configure(vcfg);
   let ae=null;
-  if(ac.nume==='pcm'){ const n=aL.length, pcm=new Int16Array(n*2); for(let i=0;i<n;i++){ pcm[2*i]=Math.max(-32768,Math.min(32767,Math.round(aL[i]*32767))); pcm[2*i+1]=Math.max(-32768,Math.min(32767,Math.round(aR[i]*32767))); } mux.pcm=new Uint8Array(pcm.buffer); }
+  if(ac.nume==='pcm'){ const n=aL.length, B=SR*10; mux.pcmBl=[]; mux.pcmLen=n*4; const cl=v=>v>1?32767:v<-1?-32768:Math.round(v*32767);
+    for(let o=0;o<n;o+=B){ const m=Math.min(B,n-o), pcm=new Int16Array(m*2); for(let i=0;i<m;i++){ pcm[2*i]=cl(aL[o+i]); pcm[2*i+1]=cl(aR[o+i]); } mux.pcmBl.push(new Blob([pcm.buffer])); } }
   else { ae=new AudioEncoder({output:(c,m)=>mux.adaugaAudio(c,m), error:e=>eroare=e}); ae.configure(ac.cfg); }
   // audio
   const bloc=1024*4; if(ae) for(let o=0;o<aL.length;o+=bloc){ const n=Math.min(bloc,aL.length-o); const d=new Float32Array(n*2); d.set(aL.subarray(o,o+n),0); d.set(aR.subarray(o,o+n),n);
     const ad=new AudioData({format:'f32-planar',sampleRate:SR,numberOfFrames:n,numberOfChannels:2,timestamp:Math.round(o*1e6/SR),data:d}); ae.encode(ad); ad.close();
     while(ae.encodeQueueSize>10) await sleep(2); }
+  aL=aR=null; if(IOS) for(const sc of P.scene){ if(sc.voce&&sc.voce.samples){ sc.voce.areSunet=sc.voce.samples.some(v=>Math.abs(v)>0.02); sc.voce.samples=null; } } // eliberez memoria înainte de video (proiectul e deja salvat)
   // video
   const nf=Math.ceil(P.durata*FPS);
   for(let f=0;f<nf;f++){
@@ -1776,7 +1780,7 @@ async function auditFinal(P, rez){
   const logo=P.scene.some(x=>x.img&&x.img.taieJos>0); if(logo) add(true,'Sigla Pollinations tăiată din cadru');
   add(true, `Encodare: ${rez.video} + ${rez.audio==='pcm'?'sunet PCM necomprimat (.mov — merge pe iPhone și pe Facebook)':rez.audio} (${rez.metoda})`, (rez.audio==='aac'||rez.audio==='pcm')?'ok':'warn');
   if(rez.audio!=='aac'&&rez.audio!=='pcm') a[a.length-1].txt+=' — browserul nu are AAC; pentru Facebook folosește Chrome/Edge pe Windows sau Android';
-  const are=P.scene.some(x=>x.voce&&x.voce.samples&&x.voce.samples.some&&x.voce.samples.some(v=>Math.abs(v)>0.02)); add(are, are? 'Vocea are sunet (verificat)' : 'Vocea a ieșit mută — schimbă vocea din Setări', are?'ok':'err');
+  const are=P.scene.some(x=>x.voce&&(x.voce.areSunet||(x.voce.samples&&x.voce.samples.some&&x.voce.samples.some(v=>Math.abs(v)>0.02)))); add(are, are? 'Vocea are sunet (verificat)' : 'Vocea a ieșit mută — schimbă vocea din Setări', are?'ok':'err');
   add(rez.blob.size<4e9, `Mărime fișier: ${(rez.blob.size/1048576).toFixed(1)} MB`);
   // verificare reală: fișierul se poate reda?
   if(IOS) add(true,'Redare: apasă Play mai jos ca să verifici clipul','warn'); else try{ const ok=await new Promise(res=>{ const v=document.createElement('video'); v.muted=true; v.preload='metadata'; v.onloadedmetadata=()=>res(Math.abs(v.duration-P.durata)<1.5); v.onerror=()=>res(false); v.src=URL.createObjectURL(rez.blob); setTimeout(()=>res(null),8000); });
