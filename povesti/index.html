@@ -73,9 +73,11 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
     <input id="subiect" placeholder="ex: De ce zicem „trage apa” când apăsăm pe un buton?" autocomplete="off">
     <div class="chips" id="idei"></div>
     <div class="btns"><button class="btn" id="btnIdei">💡 Idei noi cu AI</button><button class="btn" id="btnSurpriza">🎲 Alege tu</button></div>
+    <label>Pentru</label>
+    <select id="platforma"><option value="facebook">📘 Facebook Reels</option><option value="yt_shorts">▶️ YouTube Shorts</option><option value="yt_lung">📺 YouTube video lung (aici sunt banii)</option></select>
     <div class="row">
       <div><label>Format</label><select id="format"><option value="9:16">Reel vertical 9:16 (recomandat)</option><option value="16:9">Orizontal 16:9</option></select></div>
-      <div><label>Durată</label><select id="durata"><option value="35">~35 secunde</option><option value="60" selected>~60 secunde (recomandat)</option><option value="90">~90 secunde</option><option value="150">~2,5 minute</option></select></div>
+      <div><label>Durată</label><select id="durata"><option value="35">~35 secunde</option><option value="60" selected>~60 secunde (recomandat)</option><option value="90">~90 secunde</option><option value="150">~2,5 minute</option><option value="300">~5 minute (YouTube)</option><option value="480">~8 minute (YouTube, reclame la mijloc)</option></select></div>
     </div>
     <label>Calitate video</label>
     <select id="rezolutie"><option value="auto">Automat (1080p; 720p pe iPhone, ca să nu se închidă pagina)</option><option value="1080">1080p — cea mai bună</option><option value="720">720p — mai ușor pentru telefon</option></select>
@@ -198,6 +200,12 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
     <div class="stat"><b>Invitație</b><span>Programul Facebook Content Monetization e pe bază de invitație; plătește Reels, clipuri lungi, poze și text [4]. Ce contează e „Qualified Views”, nu vizualizările totale.</span></div>
     <div class="stat"><b>Original</b><span>Conturile care repostează conținutul altora pierd monetizarea și reach-ul; conținutul făcut cu AI e acceptat dacă e creat de tine [5][6]. <i>→ Scenariu, voce și desene noi la fiecare clip, niciodată copiate.</i></span></div>
     <div class="stat"><b>Etichetă AI</b><span>Meta poate cere eticheta „AI info” pentru video fotorealist sau audio care sună realist, creat digital [7]. <i>→ Desenele cartoon nu intră aici, dar vocea sintetică poate intra: bifează „AI info” la postare, ca să fii sigur.</i></span></div>
+    <h2 style="margin-top:14px">YouTube: ce trebuie să știi</h2>
+    <div class="stat"><b>1.000</b><span>abonați + 4.000 ore de vizionare în 12 luni, SAU 10 milioane de vizualizări Shorts în 90 de zile, ca să intri în programul de parteneri [8].</span></div>
+    <div class="stat"><b>1 feb 2027</b><span>pragurile se dublează pentru canalele noi: 8.000 de ore sau 20 de milioane de vizualizări Shorts [9].</span></div>
+    <div class="stat"><b>3–14%</b><span>cât plătesc Shorts față de clipurile lungi, la aceleași vizualizări [10]. <i>→ Shorts aduc abonați, clipurile lungi aduc banii.</i></span></div>
+    <div class="stat"><b>Original</b><span>YouTube nu interzice AI-ul sau canalele fără față; nu plătește conținutul generic, repetitiv, făcut după același șablon [11]. <i>→ Variază stilul scenariului și subiectele.</i></span></div>
+    <p class="mut">Strategia: 1 clip lung (5–8 min) pe săptămână + Shorts zilnice din același subiect, care trimit spre clipul lung.</p>
     <h2 style="margin-top:14px">Structura fiecărui scenariu</h2>
     <ol class="mut">
       <li><b>0–3s Cârlig:</b> o întrebare sau o contrazicere („Toată lumea zice X. Greșit.”) + text mare pe ecran.</li>
@@ -215,6 +223,10 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
       <li><a href="https://www.socialmediatoday.com/news/facebook-cracking-down-unoriginal-content-ai-replicas/753001/" target="_blank" rel="noopener">Social Media Today — Facebook restricts unoriginal content</a></li>
       <li><a href="https://publisherinabox.com/ai-content-monetization-without-getting-demonetized-2026" target="_blank" rel="noopener">Publisher in a Box — AI Content Monetization Rules 2026</a></li>
       <li><a href="https://www.meta.com/help/artificial-intelligence/1783222608822690/" target="_blank" rel="noopener">Meta — How to identify AI content on Meta products</a></li>
+      <li><a href="https://support.google.com/youtube/answer/72851" target="_blank" rel="noopener">YouTube Help — YouTube Partner Program overview &amp; eligibility</a></li>
+      <li><a href="https://blog.youtube/news-and-events/youtube-partner-program-updates-2027-new-opportunities-earn/" target="_blank" rel="noopener">YouTube Blog — YPP updates 2027</a></li>
+      <li><a href="https://air.io/air-data-findings/youtube-shorts-rpm-vs-long-form-how-much-do-shorts-earn-in-2026" target="_blank" rel="noopener">AIR Media-Tech — Shorts RPM vs long-form (274 de canale)</a></li>
+      <li><a href="https://www.vidpal.ai/blog/youtube-ai-content-monetization-policy-2026" target="_blank" rel="noopener">Vidpal — Can you monetize AI videos on YouTube? 2026</a></li>
     </ol>
   </div>
 </section>
@@ -271,7 +283,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const TEST = new URLSearchParams(location.search).has('test');
 
 /* ---------------- Setări ---------------- */
-const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip','rezolutie','vitezaImg','voceMos'];
+const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip','rezolutie','vitezaImg','voceMos','platforma'];
 function incarcaSetari(){
   try{ const s = JSON.parse(localStorage.getItem('povesti_setari')||'{}');
     for(const k of CAMPURI){ const el=$('#'+k); if(!el||s[k]===undefined) continue; if(el.type==='checkbox') el.checked=!!s[k]; else el.value=s[k]; }
@@ -459,7 +471,7 @@ REGULI FACEBOOK (bazate pe date — respectă-le strict):
 3. Contextul (ce crede lumea) în max 2 propoziții, apoi povestea cu 2–3 momente CONCRETE: nume, ani, locuri, cifre.
 4. O idee nouă la fiecare 3–6 secunde (o scenă = 1–2 propoziții scurte, 8–18 cuvinte).
 5. Răsplata clară spre final + o mică surpriză. Ultima scenă: o întrebare pentru comentarii, apoi semnătura: „${s.semnatura}”
-   Fă ca finalul să se lege natural de început (ca clipul să meargă în buclă).
+   ${REGULI_PLATFORMA[s.platforma||'facebook']}
 6. Română vorbită, caldă, cu umor fin, propoziții scurte, diacritice corecte (ș, ț cu virgulă). Fără emoji în narațiune.
    Interzis: „în concluzie”, „este important de menționat”, „fascinant”, „în era modernă”, „haideți să descoperim”.
 7. ADEVĂR: folosește DOAR fapte care apar în SURSELE primite. Dacă o informație nu e în surse, nu o spune.
@@ -484,19 +496,28 @@ Răspunde DOAR cu JSON valid:
  "intrebare": "întrebarea pentru comentarii",
  "hashtaguri": ["#...", "#...", "#..."],
  "surse_folosite": [0, 1],
+ "titlu_youtube": "titlu YouTube, max 70 caractere, curiozitate, cuvântul-cheie la început",
+ "descriere_youtube": "2-4 propoziții pentru descrierea YouTube, cu cuvintele-cheie natural",
+ "taguri": ["8-15 taguri YouTube în română, fără #"],
  "scene": [
-   {"text": "narațiunea scenei", "foto": "real photo search EN", "imagine": "illustration prompt EN", "eticheta": {"text": "MAX 4 CUVINTE", "accent": "cuvânt roșu", "stil": "alb|rosu|galben"} sau null}
+   {"capitol": "titlul capitolului DOAR pe prima scenă a fiecărui capitol, altfel null", "text": "narațiunea scenei", "foto": "real photo search EN", "imagine": "illustration prompt EN", "eticheta": {"text": "MAX 4 CUVINTE", "accent": "cuvânt roșu", "stil": "alb|rosu|galben"} sau null}
  ]
 }`;
 }
+const REGULI_PLATFORMA={
+  facebook:'Fă ca finalul să se lege natural de început (ca clipul să meargă în buclă). Înainte de semnătură, o invitație scurtă: „Urmăriți pagina pentru mai multe povești.”',
+  yt_shorts:'E un YouTube Short: finalul se leagă de început (buclă). Înainte de semnătură: „Abonează-te, că mâine vă spun alta.” Pune 3 hashtaguri, primul #shorts.',
+  yt_lung:'E un clip YouTube LUNG: în primele 15 secunde promite ce află spectatorul până la final („rămâneți până la capăt, că partea cu ... e cea mai tare”). Împarte în 4–7 CAPITOLE cu titluri scurte și curioase (câmpul "capitol" pe prima scenă a fiecăruia; prima scenă are capitolul „Introducere” sau un titlu-cârlig). Între capitole, câte o frază-punte care ține curiozitatea. La final: „Dacă v-a plăcut, abonați-vă și lăsați un like, ajută canalul.”'
+};
 function promptScenariu(subiect, s, surse){
   const sec=+s.durata, cuv=Math.round(sec*2.45);
-  const nrScene=Math.max(6, Math.round(sec/4.6));
+  const nrScene=Math.max(6, Math.round(sec/(s.platforma==='yt_lung'||sec>=200? 8.5 : 4.6)));
   const txtSurse = surse.length? surse.map((x,i)=>`[${i}] ${x.titlu} (${x.lang}.wikipedia)\n${x.text}`).join('\n\n---\n\n') : '(nu s-au găsit surse — rămâi la fapte generale, foarte cunoscute, fără ani/nume/cifre precise)';
   return `SUBIECT: ${subiect}
 STIL: ${TIPURI[s.tip]||TIPURI.auto}
 DURATĂ: ~${sec} secunde citite => în total ${cuv-12}–${cuv+8} de cuvinte în toate scenele, în ${nrScene}–${nrScene+2} scene.
-Pune "eticheta" doar la ~1 din 2 scene (cele cu cifra sau ideea-cheie).
+Pune "eticheta" doar la ~1 din ${s.platforma==='yt_lung'?3:2} scene (cele cu cifra sau ideea-cheie).
+PLATFORMĂ: ${s.platforma==='yt_lung'?'YouTube clip lung (orizontal)':s.platforma==='yt_shorts'?'YouTube Shorts (vertical)':'Facebook Reels (vertical)'}
 
 SURSE:
 ${txtSurse}`;
@@ -520,6 +541,7 @@ function normalizeazaScenariu(sc, s){
     text: diacritice(String(x.text).trim()),
     imagine: String(x.imagine||x.image||sc.titlu||'').trim(),
     foto: String(x.foto||'').trim(),
+    capitol: x.capitol&&String(x.capitol).trim()&&String(x.capitol)!=='null'? diacritice(String(x.capitol).trim()) : null,
     eticheta: x.eticheta&&x.eticheta.text? {text:diacritice(String(x.eticheta.text)).toUpperCase().split(/\s+/).slice(0,5).join(' '), accent:diacritice(String(x.eticheta.accent||'')).toUpperCase(), stil:['alb','rosu','galben'].includes(x.eticheta.stil)?x.eticheta.stil:'alb'} : null
   }));
   for(const k of ['titlu','carlig_ecran','accent_carlig','coperta_text','coperta_sub','postare','intrebare']) sc[k]=diacritice(sc[k]||'');
@@ -527,6 +549,8 @@ function normalizeazaScenariu(sc, s){
   sc.accent_carlig = (sc.accent_carlig||'').toUpperCase();
   sc.coperta_text = (sc.coperta_text||sc.carlig_ecran).toUpperCase();
   sc.coperta_sub = (sc.coperta_sub||'').toUpperCase();
+  sc.titlu_youtube=diacritice(sc.titlu_youtube||sc.titlu||''); sc.descriere_youtube=diacritice(sc.descriere_youtube||sc.postare||'');
+  sc.taguri=(Array.isArray(sc.taguri)?sc.taguri:[]).map(t=>diacritice(String(t)).replace(/^#/,'').trim()).filter(Boolean).slice(0,15);
   sc.hashtaguri = (Array.isArray(sc.hashtaguri)?sc.hashtaguri:[]).map(h=>'#'+String(h).replace(/^#/,'').replace(/\s+/g,'')).filter(h=>h.length>2).slice(0,5);
   const sem = diacritice(s.semnatura||'').trim();
   const ultima = sc.scene[sc.scene.length-1];
@@ -832,9 +856,13 @@ function alegeUniform(lista, n){ if(n>=lista.length) return lista; const out=[];
    6. BUNICUL ANIMAT (desenat în cod — mereu la fel, original)
    ===================================================== */
 function deseneazaBunic(x, cx, by, H, gura=0, clipit=0, t=0){
-  // cx = centru, by = baza (jos), H = înălțimea totală
+  // st = starea moșului în cadrul ăsta (gesturi, priviri, emoții)
+  const st = (typeof gura==='object')? gura : {gura, clipit, t};
+  const g=clamp(st.gura||0,0,1), cl=clamp(st.clipit||0,0,1); t=st.t||0;
+  const brat=clamp(st.brat||0,0,1), val=st.val||0, spr=clamp(st.sprancene||0,0,1), sur=clamp(st.surpriza||0,0,1), zam=clamp(st.zambet??0.6,0,1);
+  const ochiX=st.ochiX||0, ochiY=st.ochiY||0, incl=st.inclinare||0, salt=st.salt||0;
   const s=H/100, O='#1d1612', lw=Math.max(2,2.4*s);
-  x.save(); x.translate(cx, by + Math.sin(t*2.2)*1.2*s); x.lineJoin='round'; x.lineCap='round'; x.lineWidth=lw; x.strokeStyle=O;
+  x.save(); x.translate(cx, by + Math.sin(t*2.2)*1.2*s - salt*14*s); x.lineJoin='round'; x.lineCap='round'; x.lineWidth=lw; x.strokeStyle=O;
   // corp + vestă
   x.fillStyle='#f4efe6'; x.beginPath(); x.moveTo(-34*s,0); x.quadraticCurveTo(-36*s,-30*s,-14*s,-36*s); x.lineTo(14*s,-36*s); x.quadraticCurveTo(36*s,-30*s,34*s,0); x.closePath(); x.fill(); x.stroke();
   x.fillStyle='#8a5a3b'; x.beginPath(); x.moveTo(-30*s,0); x.quadraticCurveTo(-32*s,-26*s,-13*s,-34*s); x.lineTo(-5*s,0); x.closePath(); x.fill(); x.stroke();
@@ -842,27 +870,30 @@ function deseneazaBunic(x, cx, by, H, gura=0, clipit=0, t=0){
   x.fillStyle='#d9a066'; for(const yy of [-24,-15,-6]){ x.beginPath(); x.arc(-8*s,yy*s,1.6*s,0,7); x.fill(); }
   // gât
   x.fillStyle='#f2c4a0'; x.beginPath(); x.rect(-7*s,-42*s,14*s,8*s); x.fill(); x.stroke();
-  // cap
+  // CAPUL (se înclină, dă din cap)
+  x.save(); x.translate(0,-40*s); x.rotate(incl); x.translate(0,40*s);
   x.fillStyle='#f6cfab'; x.beginPath(); x.ellipse(0,-63*s,22*s,24*s,0,0,7); x.fill(); x.stroke();
-  // urechi
   for(const sx of [-1,1]){ x.beginPath(); x.ellipse(sx*22*s,-62*s,4*s,6*s,0,0,7); x.fill(); x.stroke(); }
-  // nas
+  // obraji rumeni când zâmbește
+  x.fillStyle='rgba(230,110,90,'+(0.25*zam)+')'; for(const sx of [-1,1]){ x.beginPath(); x.ellipse(sx*14*s,-55*s,4.5*s,3*s,0,0,7); x.fill(); }
   x.fillStyle='#eaa984'; x.beginPath(); x.ellipse(0,-59*s,5.5*s,5*s,0,0,7); x.fill(); x.stroke();
-  // gura (se mișcă)
-  const g=clamp(gura,0,1);
-  x.fillStyle='#5a1f1a'; x.beginPath(); x.ellipse(0,-47*s,6*s,(1+6*g)*s,0,0,7); x.fill(); x.stroke();
+  // gura: vorbește / zâmbește / „O” de mirare
+  const desch=Math.max(g, sur*0.9);
+  x.fillStyle='#5a1f1a';
+  if(desch>0.08){ x.beginPath(); x.ellipse(0,-47*s,(6-1.5*sur)*s,(1+6*desch)*s,0,0,7); x.fill(); x.stroke(); }
+  else { x.beginPath(); x.moveTo(-6*s,-48*s); x.quadraticCurveTo(0,(-48+4*zam)*s,6*s,-48*s); x.stroke(); }
   // mustață albă
   x.fillStyle='#ffffff'; x.beginPath();
   x.moveTo(0,-54*s); x.bezierCurveTo(-8*s,-58*s,-20*s,-55*s,-21*s,-47*s); x.bezierCurveTo(-14*s,-50*s,-7*s,-49*s,0,-51*s);
   x.bezierCurveTo(7*s,-49*s,14*s,-50*s,21*s,-47*s); x.bezierCurveTo(20*s,-55*s,8*s,-58*s,0,-54*s); x.closePath(); x.fill(); x.stroke();
-  // sprâncene
-  x.lineWidth=lw*1.6; x.strokeStyle='#ffffff'; for(const sx of [-1,1]){ x.beginPath(); x.moveTo(sx*5*s,-74*s); x.quadraticCurveTo(sx*10*s,-77*s,sx*15*s,-74*s); x.stroke(); }
+  // sprâncene (se ridică la mirare / întrebare)
+  const sy=-74-4*spr;
+  x.lineWidth=lw*1.6; x.strokeStyle='#ffffff'; for(const sx of [-1,1]){ x.beginPath(); x.moveTo(sx*5*s,(sy+1*spr)*s); x.quadraticCurveTo(sx*10*s,(sy-3-2*spr)*s,sx*15*s,sy*s); x.stroke(); }
   x.lineWidth=lw; x.strokeStyle=O;
-  // ochi + ochelari
-  const cl=clamp(clipit,0,1);
+  // ochi + ochelari (privesc spre ce se întâmplă)
   for(const sx of [-1,1]){
     x.fillStyle='rgba(255,255,255,.35)'; x.beginPath(); x.arc(sx*9.5*s,-66*s,7*s,0,7); x.fill(); x.stroke();
-    x.fillStyle=O; x.beginPath(); x.ellipse(sx*9.5*s,-66*s,2.2*s,Math.max(.3,2.6*(1-cl))*s,0,0,7); x.fill();
+    x.fillStyle=O; x.beginPath(); x.ellipse((sx*9.5+ochiX*2.2)*s,(-66+ochiY*2)*s,(2.2+0.6*sur)*s,Math.max(.3,(2.6+0.6*sur)*(1-cl))*s,0,0,7); x.fill();
   }
   x.beginPath(); x.moveTo(-2.5*s,-66*s); x.lineTo(2.5*s,-66*s); x.stroke();
   // șapcă în carouri
@@ -872,11 +903,51 @@ function deseneazaBunic(x, cx, by, H, gura=0, clipit=0, t=0){
   x.restore(); x.lineWidth=lw; x.strokeStyle=O;
   x.beginPath(); x.moveTo(-23*s,-74*s); x.quadraticCurveTo(-22*s,-92*s,0,-93*s); x.quadraticCurveTo(24*s,-92*s,25*s,-75*s); x.quadraticCurveTo(0,-79*s,-23*s,-74*s); x.closePath(); x.stroke();
   x.fillStyle='#a72323'; x.beginPath(); x.moveTo(8*s,-77*s); x.quadraticCurveTo(26*s,-80*s,33*s,-74*s); x.quadraticCurveTo(22*s,-72*s,10*s,-74*s); x.closePath(); x.fill(); x.stroke();
-  // ceașca de cafea
+  x.restore(); // capul
+  // ceașca de cafea (mâna dreaptă)
   x.fillStyle='#fff'; x.beginPath(); x.moveTo(18*s,-14*s); x.lineTo(30*s,-14*s); x.lineTo(28*s,-2*s); x.lineTo(20*s,-2*s); x.closePath(); x.fill(); x.stroke();
   x.beginPath(); x.arc(31*s,-9*s,3*s,-1.4,1.4); x.stroke();
   x.fillStyle='#f6cfab'; x.beginPath(); x.ellipse(19*s,-6*s,4*s,5*s,0,0,7); x.fill(); x.stroke();
+  // BRAȚUL STÂNG: gesticulează, arată spre etichete, face cu mâna la final
+  if(brat>0.02 || val){
+    const umar={x:-27*s,y:-28*s}; const ridicare=easeInOut(brat);
+    const ung1=(110-150*ridicare)*Math.PI/180 + (val? Math.sin(t*9)*0.25 : Math.sin(t*3.1)*0.06*ridicare);
+    const lung1=17*s, lung2=15*s; const cot={x:umar.x-Math.cos(ung1)*lung1, y:umar.y+Math.sin(ung1)*lung1};
+    const ung2=ung1-(0.9*ridicare)+(val? Math.sin(t*9+1)*0.35 : 0);
+    const mana={x:cot.x-Math.cos(ung2)*lung2*0.2+Math.sin(ung2)*0, y:cot.y-lung2*ridicare+lung2*(1-ridicare)*0.6};
+    x.strokeStyle=O; x.lineWidth=11*s; x.beginPath(); x.moveTo(umar.x,umar.y); x.lineTo(cot.x,cot.y); x.lineTo(mana.x,mana.y); x.stroke();
+    x.strokeStyle='#f4efe6'; x.lineWidth=11*s-2*lw; x.beginPath(); x.moveTo(umar.x,umar.y); x.lineTo(cot.x,cot.y); x.lineTo(mana.x,mana.y); x.stroke();
+    x.lineWidth=lw; x.strokeStyle=O; x.fillStyle='#f6cfab'; x.beginPath(); x.arc(mana.x,mana.y,4.6*s,0,7); x.fill(); x.stroke();
+    if(!val && ridicare>0.6){ x.beginPath(); x.moveTo(mana.x,mana.y-3*s); x.lineTo(mana.x+1*s,mana.y-10*s); x.lineWidth=3.2*s; x.stroke(); x.lineWidth=3.2*s-lw; x.strokeStyle='#f6cfab'; x.stroke(); x.lineWidth=lw; x.strokeStyle=O; }
+  }
+  // bula de reacție („!” / „?”)
+  if(st.bula){ const p=clamp(st.bulaP||1,0,1), r=9*s*(0.5+0.5*easeOutBack(p)); const bx=24*s, byy=-98*s;
+    x.fillStyle='#ffd400'; x.beginPath(); x.arc(bx,byy,r,0,7); x.fill(); x.stroke();
+    x.beginPath(); x.moveTo(bx-4*s,byy+r*0.8); x.lineTo(bx-9*s,byy+r+5*s); x.lineTo(bx+1*s,byy+r*0.9); x.fill();
+    x.fillStyle=O; x.font=`900 ${Math.round(13*s*(0.5+0.5*p))}px Montserrat, Arial, sans-serif`; x.textAlign='center'; x.textBaseline='middle'; x.fillText(st.bula,bx,byy+1*s); x.textAlign='left'; }
   x.restore();
+}
+function stareBunic(P, t, i){
+  const sc=P.scene, env=P.anvelopa[Math.min(P.anvelopa.length-1,Math.floor(t*FPS))]||0;
+  const st={t, gura:env, clipit:((t%3.7)<0.12)?1:0, zambet:0.55, brat:0, sprancene:0, surpriza:0, ochiX:0.35, ochiY:0, inclinare:0, salt:0};
+  // vorbește: dă ușor din cap
+  st.inclinare = 0.05*Math.sin(t*6.5)*env + 0.03*Math.sin(t*1.1);
+  // gesturi naturale cât vorbește (mâna urcă și coboară)
+  let act=0; for(let k=1;k<=8;k++){ const e=P.anvelopa[Math.max(0,Math.floor(t*FPS)-k*3)]||0; act+=e; } act/=8;
+  st.brat = clamp((Math.sin(t*1.25+i*1.7)-0.15)*1.3,0,1)*clamp(act*2.2,0,1)*0.75;
+  // etichetă nouă: tresare, ridică sprâncenele, arată cu degetul spre ea
+  for(const e of P.etichete){ const d=t-e.t; if(d<-0.1||d>1.8) continue;
+    if(d>=0&&d<0.6){ st.surpriza=Math.max(st.surpriza,1-d/0.6); st.bula='!'; st.bulaP=d/0.25; st.salt=Math.max(st.salt,Math.sin(Math.PI*clamp(d/0.35,0,1))); }
+    st.sprancene=Math.max(st.sprancene, d<1.2?1-Math.max(0,d-0.6)/0.6:0); st.brat=Math.max(st.brat, d<0.2? d/0.2 : d>1.4? 1-(d-1.4)/0.4 : 1); st.ochiY=-1; st.ochiX=0.8; }
+  // întrebări: capul înclinat, sprâncene sus, „?”
+  for(const q of (P.intrebari||[])){ if(t>=q.s&&t<=q.e+0.3){ st.inclinare+=0.13; st.sprancene=Math.max(st.sprancene,0.8); if(!st.bula){ st.bula='?'; st.bulaP=(t-q.s)/0.25; } } }
+  // prima secundă: intră cu un salt și face cu mâna
+  if(i===0&&t<1.6){ st.val=true; st.brat=1; st.zambet=1; }
+  // finalul: face cu mâna, zâmbește larg
+  if(i===sc.length-1){ st.val=true; st.brat=1; st.zambet=1; }
+  // trecerea între scene: un mic salt
+  const c=sc[i]; if(c&&i>0){ const d=t-c.start; if(d>=0&&d<0.3) st.salt=Math.max(st.salt,Math.sin(Math.PI*d/0.3)*0.5); }
+  return st;
 }
 
 /* =====================================================
@@ -911,7 +982,7 @@ async function genereazaMuzica(durata, seed=1){
 const FPS=30;
 function layout(fmt){
   const v=fmt==='9:16'; const W=v?1080:1920, H=v?1920:1080;
-  return v? {W,H,v, carligY:H*0.13, eticY:H*0.30, subY:H*0.50, subMaxW:W*0.86, subPx:78, bunic:{cx:W*0.15,by:H*0.80,h:H*0.20}, bunicMare:{cx:W*0.2,by:H*0.81,h:H*0.27}}
+  return v? {W,H,v, carligY:H*0.13, eticY:H*0.30, subY:H*0.50, subMaxW:W*0.86, subPx:78, bunic:{cx:W*0.22,by:H*0.80,h:H*0.20}, bunicMare:{cx:W*0.28,by:H*0.81,h:H*0.27}}
            : {W,H,v, carligY:H*0.12, eticY:H*0.24, subY:H*0.86, subMaxW:W*0.70, subPx:64, bunic:{cx:W*0.90,by:H*0.98,h:H*0.32}, bunicMare:{cx:W*0.85,by:H*1.0,h:H*0.48}};
 }
 function rrect(x,X,Y,w,h,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
@@ -987,6 +1058,7 @@ function construiesteCronologie(proiect){
   proiect.durata=t;
   const toate=[]; scene.forEach(sc=>toate.push(...cuvinteCuTimp(sc)));
   proiect.cuvinte=toate; proiect.grupuri=grupuriSubtitrari(toate);
+  proiect.intrebari=[]; scene.forEach(sc=>sc.voce.segmente.forEach(g=>{ if(/\?/.test(g.text)) proiect.intrebari.push({s:sc.start+g.start, e:sc.start+g.end}); }));
   proiect.etichete=scene.map((sc,i)=>sc.eticheta? {...sc.eticheta, t:sc.start+0.25, end:sc.start+sc.durata, i} : null).filter(Boolean);
 }
 function deseneazaCadru(x, P, t){
@@ -1006,10 +1078,11 @@ function deseneazaCadru(x, P, t){
   // subtitrări
   if(s.optSubt){ const gr=P.grupuri.find(gg=>t>=gg[0].s-0.02&&t<gg[gg.length-1].e+0.12); if(gr) deseneazaSubtitrare(x,L,gr,t); }
   // bunicul
-  if(s.optMascota){ const mare=(i===0&&t<3.2)||(i===sc.length-1); const B= mare? L.bunicMare : L.bunic;
-    const env=P.anvelopa[Math.min(P.anvelopa.length-1,Math.floor(t*FPS))]||0; const clip=((t%3.7)<0.12)?1:0;
-    const intrare = i===0? easeOutBack(clamp(t/0.35,0,1)) : 1;
-    deseneazaBunic(x,B.cx,B.by+(1-intrare)*B.h,B.h,env,clip,t);
+  if(s.optMascota){
+    const ult=sc[sc.length-1]; let mf = t<3.2? 1 : t<3.6? 1-easeInOut((t-3.2)/0.4) : 0; if(t>=ult.start) mf=Math.max(mf,easeInOut((t-ult.start)/0.5));
+    const A=L.bunic, Bm=L.bunicMare, B={cx:A.cx+(Bm.cx-A.cx)*mf, by:A.by+(Bm.by-A.by)*mf, h:A.h+(Bm.h-A.h)*mf};
+    const intrare = easeOutBack(clamp(t/0.35,0,1));
+    deseneazaBunic(x,B.cx,B.by+(1-intrare)*B.h,B.h,stareBunic(P,t,i));
     if(i===sc.length-1 && s.numePagina){ x.font=FONT(L.v?44:36,800); x.textBaseline='middle'; const nx=L.v? B.cx+B.h*0.42 : L.W*0.05, ny=L.v? B.by-B.h*0.3 : L.H*0.9; x.lineWidth=9; x.lineJoin='round'; x.strokeStyle='#000'; x.strokeText(s.numePagina,nx,ny); x.fillStyle='#fff'; x.fillText(s.numePagina,nx,ny); }
   }
   // bară de progres sus
@@ -1119,7 +1192,7 @@ class MP4{
 async function alegeCodecVideo(W,H){
   for(const codec of ['avc1.640028','avc1.4d0028','avc1.42e028','avc1.640033','avc1.4d0033']){
     for(const hw of ['prefer-hardware','no-preference','prefer-software']){
-      const cfg={codec,width:W,height:H,bitrate:W*H>2e6?8_000_000:6_000_000,framerate:FPS,avc:{format:'avc'},hardwareAcceleration:hw,latencyMode:'quality'};
+      const cfg={codec,width:W,height:H,bitrate:(window.__lung? 4_500_000 : W*H>2e6?8_000_000:6_000_000),framerate:FPS,avc:{format:'avc'},hardwareAcceleration:hw,latencyMode:'quality'};
       try{ const r=await VideoEncoder.isConfigSupported(cfg); if(r.supported) return cfg; }catch(e){}
     }
   }
@@ -1151,7 +1224,7 @@ async function randeaza(P, cb){
   const cv=new OffscreenCanvas(VW,VH), x=cv.getContext('2d',{alpha:false, willReadFrequently: strat==='buffer'});
   const [aL,aR]=await mixeazaAudio(P);
   if(strat==='mr') return await randeazaMediaRecorder(P,aL,aR,cb);
-  const vcfg=await alegeCodecVideo(VW,VH), ac=await alegeCodecAudio();
+  window.__lung = P.durata>150; const vcfg=await alegeCodecVideo(VW,VH), ac=await alegeCodecAudio();
   if(!vcfg) return await randeazaMediaRecorder(P,aL,aR,cb);
   const mux=new MP4(); let eroare=null;
   const ve=new VideoEncoder({output:(c,m)=>mux.adaugaVideo(c,m), error:e=>eroare=e}); ve.configure(vcfg);
@@ -1214,10 +1287,22 @@ function srt(P){
   const f=t=>{ const ms=Math.round(t*1000); const h=Math.floor(ms/3600000), m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')},${String(ms%1000).padStart(3,'0')}`; };
   return P.grupuri.map((g,i)=>{ const nx=P.grupuri[i+1]; const e=Math.min(g[g.length-1].e+0.1, nx?nx[0].s-0.01:1e9); return `${i+1}\n${f(g[0].s)} --> ${f(e)}\n${g.map(c=>c.w).join(' ')}\n`; }).join('\n');
 }
+function timpYT(t){ t=Math.round(t); const h=Math.floor(t/3600), m=Math.floor(t%3600/60), s=t%60; return (h? h+':'+String(m).padStart(2,'0') : m)+':'+String(s).padStart(2,'0'); }
 function textPostare(P){
+  const pl=P.setari.platforma||'facebook'; if(pl!=='facebook') return textYouTube(P, pl);
   const sc=P.scenariu; const surse=(sc.surse_folosite||[]).map(i=>P.surse[i]).filter(Boolean); const lista=(surse.length?surse:P.surse).slice(0,3);
   const cred=[...new Set(P.scene.map(x=>x.img?.credit).filter(Boolean))];
   return [sc.postare||sc.titlu, '', `👇 ${sc.intrebare||'Voi ce știați?'}`, lista.length? '\nSurse: '+lista.map(s=>s.url).join(' ') : '', cred.length? 'Foto: Wikimedia Commons — '+cred.slice(0,6).join('; ') : '', '', (sc.hashtaguri||[]).join(' ')].join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+
+function textYouTube(P, pl){
+  const sc=P.scenariu; const surse=(sc.surse_folosite||[]).map(i=>P.surse[i]).filter(Boolean); const lista=(surse.length?surse:P.surse).slice(0,5);
+  const cred=[...new Set(P.scene.map(x=>x.img?.credit).filter(Boolean))];
+  let cap=P.scene.filter(x=>x.capitol).map(x=>({t:x.start,n:x.capitol})); if(cap.length&&cap[0].t>0.5) cap.unshift({t:0,n:'Introducere'}); if(cap.length) cap[0].t=0;
+  cap=cap.filter((c,i)=>i===0||c.t-cap[i-1].t>=10); // YouTube: capitole de minim 10s
+  let hs=(sc.hashtaguri||[]).slice(0,3); if(pl==='yt_shorts'&&!hs.some(h=>/^#shorts$/i.test(h))) hs=['#shorts',...hs].slice(0,3);
+  const desc=[sc.descriere_youtube||sc.postare, '', pl==='yt_lung'&&cap.length>=3? cap.map(c=>`${timpYT(c.t)} ${c.n}`).join('\n')+'\n' : '', `📌 ${sc.intrebare||'Voi ce știați?'} Scrieți-mi în comentarii 👇`, '', lista.length? 'SURSE:\n'+lista.map(s=>`• ${s.titlu} — ${s.url}`).join('\n') : '', cred.length? '\nFoto: Wikimedia Commons — '+cred.slice(0,8).join('; ') : '', '', hs.join(' ')].join('\n').replace(/\n{3,}/g,'\n\n').trim();
+  return `TITLU YOUTUBE:\n${sc.titlu_youtube||sc.titlu}\n\nDESCRIERE:\n${desc}\n\nTAGURI (le pui la „Etichete”):\n${((sc.taguri&&sc.taguri.length)? sc.taguri : [...(sc.hashtaguri||[]).map(h=>h.replace(/^#/,'')).filter(h=>!/^shorts$/i.test(h)), ...String(P.subiect||'').toLowerCase().replace(/[^a-zăâîșț0-9 ]/g,'').split(/\s+/).filter(w=>w.length>3)]).join(', ')}\n\nLA ÎNCĂRCARE:\n• „Conținut modificat sau sintetic”: Da (vocea e generată) — nu afectează monetizarea.\n• ${pl==='yt_lung'?'Încarcă și coperta ca miniatură (Thumbnail).':'Shorts: alege coperta din clip.'}`;
 }
 
 /* =====================================================
@@ -1246,8 +1331,12 @@ async function auditFinal(P, rez){
   // verificare reală: fișierul se poate reda?
   if(IOS) add(true,'Redare: apasă Play mai jos ca să verifici clipul','warn'); else try{ const ok=await new Promise(res=>{ const v=document.createElement('video'); v.muted=true; v.preload='metadata'; v.onloadedmetadata=()=>res(Math.abs(v.duration-P.durata)<1.5); v.onerror=()=>res(false); v.src=URL.createObjectURL(rez.blob); setTimeout(()=>res(null),8000); });
     add(ok!==false, ok===null?'Redare: nu s-a putut verifica în acest browser':'Fișierul se deschide și are durata corectă', ok===null?'warn':ok?'ok':'err'); }catch(e){}
-  add(true,'Conținut original (scenariu, voce și desene noi) — eligibil la regulile de originalitate Meta');
-  a.push({ok:true,nivel:'warn',txt:'La postare: bifează „AI info” (vocea e sintetică — Meta poate cere etichetă pentru audio realist).'});
+  const pl=s.platforma||'facebook';
+  if(pl==='yt_lung'){ add(P.durata>=480, P.durata>=480? 'Peste 8 minute: YouTube permite reclame la mijlocul clipului' : `Sub 8 minute (${(P.durata/60).toFixed(1)} min): fără reclame la mijloc — pentru bani mai mulți alege „~8 minute”`, P.durata>=480?'ok':'warn');
+    const nc=P.scene.filter(x=>x.capitol).length; add(nc>=3, nc>=3? `${nc} capitole puse automat în descriere` : 'Prea puține capitole pentru YouTube', nc>=3?'ok':'warn'); }
+  if(pl==='yt_shorts') add(P.durata<=180 && P.L.v, 'Format valid pentru YouTube Shorts (vertical, sub 3 minute)', P.durata<=180&&P.L.v?'ok':'err');
+  add(true, pl==='facebook'? 'Conținut original (scenariu, voce și desene noi) — eligibil la regulile de originalitate Meta' : 'Conținut original, narat, cu poveste — nu e „conținut generic/repetitiv” (regula YouTube). Variază stilurile de scenariu între clipuri.');
+  a.push({ok:true,nivel:'warn',txt: pl==='facebook'? 'La postare: bifează „AI info” (vocea e sintetică — Meta poate cere etichetă pentru audio realist).' : 'La încărcare pe YouTube: la „Conținut modificat sau sintetic” alege Da (vocea e generată).'});
   return a;
 }
 
@@ -1261,7 +1350,7 @@ async function creeaza(){
   const s=salveazaSetari(); s.workerUrl=(s.workerUrl||'').replace(/\/+$/,'');
   lucreaza=true; $('#btnCreeaza').disabled=true; $('#out').classList.add('hide'); $('#eroare').classList.add('hide'); $('#progres').classList.remove('hide'); initPasi();
   let wake=null; try{ wake=await navigator.wakeLock?.request('screen'); }catch(e){}
-  $('#eta').textContent = IOS? '— ține Safari deschis și ecranul aprins' : '';
+  $('#eta').textContent = IOS? (+s.durata>=300? '— clip lung pe iPhone: poate dura și poate pica; e mai sigur pe laptop' : '— ține Safari deschis și ecranul aprins') : '';
   const t0=Date.now();
   const P={subiect, setari:s, L:layout(s.format), seed:Math.floor(Math.random()*1e6)};
   try{
@@ -1318,7 +1407,7 @@ async function montajSiFinal(P){
   pas('audit', au.some(x=>x.nivel==='err')?'warn':'ok', `${au.filter(x=>x.nivel==='ok').length}/${au.length} verificări trecute`);
   // salvez IMEDIAT clipul gata (dacă pagina se reîncarcă, îl găsești tot aici)
   PROIECT=P; if(TEST) window.__P=P;
-  const rezultat={titlu:P.scenariu.titlu, video:rez.blob, coperta:cop, srt:srt(P), postare:`TITLU: ${P.scenariu.titlu}\n\n`+textPostare(P), audit:au, scenariu:P.scene.map((x,i)=>`${i+1}. ${x.text}`).join('\n'), data:Date.now()};
+  const rezultat={titlu:P.scenariu.titlu, video:rez.blob, coperta:cop, srt:srt(P), postare:((P.setari.platforma||'facebook')==='facebook'? `TITLU: ${P.scenariu.titlu}\n\n` : '')+textPostare(P), audit:au, scenariu:P.scene.map((x,i)=>`${i+1}. ${x.text}`).join('\n'), data:Date.now()};
   urma('salvare clip'); await idbPut('ultimul', rezultat); await idbDel('proiect'); $('#reluare').classList.add('hide');
   urma('afișare'); arataRezultat(rezultat, true);
   urma('gata', P.strategie||'', false); try{ localStorage.setItem('povesti_cadere','0'); }catch(e){}
@@ -1391,6 +1480,9 @@ $('#btnIdei').onclick=async()=>{ const b=$('#btnIdei'); b.disabled=true; b.textC
   b.disabled=false; b.textContent='💡 Idei noi cu AI'; };
 
 /* ---------------- Butoane ---------------- */
+$('#platforma').addEventListener('change',()=>{ const v=$('#platforma').value;
+  if(v==='yt_lung'){ $('#format').value='16:9'; if(+$('#durata').value<300) $('#durata').value='300'; }
+  else { $('#format').value='9:16'; if(+$('#durata').value>150) $('#durata').value='60'; } });
 $('#btnCreeaza').onclick=creeaza;
 $('#subiect').addEventListener('keydown',e=>{ if(e.key==='Enter') creeaza(); });
 $('#btnSalveaza').onclick=()=>{ salveazaSetari(); $('#btnSalveaza').textContent='✅ Salvat'; setTimeout(()=>$('#btnSalveaza').textContent='💾 Salvează',1500); statusServicii(); };
@@ -1462,12 +1554,12 @@ $('#btnCopyWorker').onclick=async()=>{ try{ await navigator.clipboard.writeText(
 const TEST_SCENARIU={titlu:'De Ce Zicem „Trage Apa” Când Apăsăm pe un Buton?',carlig_ecran:'NIMENI NU MAI TRAGE APA',accent_carlig:'TRAGE',coperta_text:'TRAGE APA?',coperta_sub:'NU E CE CREZI',
   postare:'Zicem „trage apa”, dar nimeni n-a mai tras de nimic de zeci de ani. Explicația e într-un lanț de pe vremea bunicilor.',intrebare:'Voi cum îi ziceți acasă?',hashtaguri:['#StiaiCa','#Romania','#Curiozitati'],surse_folosite:[0],
   scene:[
-   {text:'Toată lumea zice „trage apa”. Dar voi când ați tras ultima dată de ceva?',imagine:'toilet',eticheta:{text:'NIMENI NU TRAGE',accent:'TRAGE',stil:'alb'}},
+   {capitol:'Misterul',text:'Toată lumea zice „trage apa”. Dar voi când ați tras ultima dată de ceva?',imagine:'toilet',eticheta:{text:'NIMENI NU TRAGE',accent:'TRAGE',stil:'alb'}},
    {text:'Apăsăm pe un buton. Și totuși zicem că tragem. Stați așa.',imagine:'button',eticheta:null},
-   {text:'Acum o sută de ani, rezervorul de apă stătea sus, aproape de tavan.',foto:'Victorian toilet cistern',imagine:'old tank',eticheta:{text:'+100 DE ANI',accent:'',stil:'galben'}},
+   {capitol:'Lanțul bunicilor',text:'Acum o sută de ani, rezervorul de apă stătea sus, aproape de tavan.',foto:'Victorian toilet cistern',imagine:'old tank',eticheta:{text:'+100 DE ANI',accent:'',stil:'galben'}},
    {text:'Avea un lanț lung, cu un mâner de porțelan la capăt.',imagine:'chain',eticheta:null},
    {text:'Trăgeai de lanț și apa cădea cu putere. De aici vine expresia.',imagine:'water',eticheta:{text:'DE AICI VINE',accent:'VINE',stil:'rosu'}},
-   {text:'Rezervoarele au coborât, lanțul a dispărut, dar vorba a rămas.',imagine:'modern',eticheta:null},
+   {capitol:'Ce a rămas',text:'Rezervoarele au coborât, lanțul a dispărut, dar vorba a rămas.',imagine:'modern',eticheta:null},
    {text:'Voi cum îi ziceți acasă? Scrieți-mi în comentarii.',imagine:'grandpa',eticheta:{text:'SCRIE ÎN COMENTARII',accent:'COMENTARII',stil:'alb'}},
    {text:'Hai că v-am lăsat. Pe data viitoare, nepoților!',imagine:'bye',eticheta:null}]};
 async function TEST_AI(sistem,prompt){ await sleep(50); if(/termen de căutare/.test(prompt)) return {ro:'Toaletă',en:'Flush toilet'}; if(/verificator/.test(sistem)) return {probleme:[],scene:JSON.parse(JSON.stringify(TEST_SCENARIU.scene))}; if(/idei/.test(prompt)) return {idei:IDEI_FIXE}; return JSON.parse(JSON.stringify(TEST_SCENARIU)); }
