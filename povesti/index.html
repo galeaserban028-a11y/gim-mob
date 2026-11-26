@@ -77,6 +77,8 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
       <div><label>Format</label><select id="format"><option value="9:16">Reel vertical 9:16 (recomandat)</option><option value="16:9">Orizontal 16:9</option></select></div>
       <div><label>Durată</label><select id="durata"><option value="35">~35 secunde</option><option value="60" selected>~60 secunde (recomandat)</option><option value="90">~90 secunde</option><option value="150">~2,5 minute</option></select></div>
     </div>
+    <label>Calitate video</label>
+    <select id="rezolutie"><option value="auto">Automat (1080p; 720p pe iPhone, ca să nu se închidă pagina)</option><option value="1080">1080p — cea mai bună</option><option value="720">720p — mai ușor pentru telefon</option></select>
     <label>Stil scenariu</label>
     <select id="tip">
       <option value="auto">Automat (alege AI-ul ce se potrivește)</option>
@@ -87,6 +89,12 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
     </select>
     <button class="big" id="btnCreeaza">🎬 CREEAZĂ CLIPUL</button>
     <p class="mut" id="statusServicii"></p>
+  </div>
+
+  <div class="card hide" id="reluare" style="border-color:#ffd400">
+    <h2>⏸️ Un clip a rămas neterminat</h2>
+    <p class="mut" id="reluareTxt"></p>
+    <div class="btns"><button class="btn y" id="btnReia">▶️ Continuă montajul</button><button class="btn" id="btnRenunta">🗑️ Renunță</button></div>
   </div>
 
   <div class="card hide" id="progres">
@@ -252,7 +260,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const TEST = new URLSearchParams(location.search).has('test');
 
 /* ---------------- Setări ---------------- */
-const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip'];
+const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip','rezolutie'];
 function incarcaSetari(){
   try{ const s = JSON.parse(localStorage.getItem('povesti_setari')||'{}');
     for(const k of CAMPURI){ const el=$('#'+k); if(!el||s[k]===undefined) continue; if(el.type==='checkbox') el.checked=!!s[k]; else el.value=s[k]; }
@@ -744,14 +752,7 @@ async function incarcaFoto(c, L){
   const bmp=await createImageBitmap(await r.blob());
   const img={bmp, taieJos:0, foto:true, credit:`${(c.titlu||'').replace(/^File:|^Fișier:/,'').replace(/\.[a-z]+$/i,'')}${c.autor?' — '+c.autor:''}${c.licenta?' ('+c.licenta+')':''}`};
   const rImg=bmp.width/bmp.height, rCadru=L.W/L.H;
-  if(Math.abs(Math.log(rImg/rCadru))>0.25){ // alt format => fundal estompat
-    const fw=Math.round(L.W/4), fh=Math.round(L.H/4); const oc=new OffscreenCanvas(fw,fh), ox=oc.getContext('2d');
-    const mic=new OffscreenCanvas(Math.max(8,Math.round(fw/12)),Math.max(8,Math.round(fh/12))), mx=mic.getContext('2d');
-    const sc=Math.max(mic.width/bmp.width,mic.height/bmp.height)*1.2; mx.imageSmoothingQuality='high';
-    mx.drawImage(bmp,(mic.width-bmp.width*sc)/2,(mic.height-bmp.height*sc)/2,bmp.width*sc,bmp.height*sc);
-    ox.imageSmoothingEnabled=true; ox.imageSmoothingQuality='high'; ox.drawImage(mic,0,0,fw,fh); // mărire din foarte mic = estompare (merge în orice browser)
-    ox.fillStyle='rgba(0,0,0,.42)'; ox.fillRect(0,0,fw,fh); img.fundal=oc.transferToImageBitmap();
-  }
+  if(Math.abs(Math.log(rImg/rCadru))>0.25) img.fundal=faFundal(bmp, L); // alt format => fundal estompat
   return img;
 }
 async function fotoScena(P, i){
@@ -1074,34 +1075,38 @@ async function alegeCodecAudio(){
   }
   return null;
 }
+const IOS=/iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function scalaVideo(s){ const r=s.rezolutie||'auto'; return r==='720'||(r==='auto'&&IOS)? 2/3 : 1; }
 async function randeaza(P, cb){
-  const L=P.L, cv=new OffscreenCanvas(L.W,L.H), x=cv.getContext('2d',{alpha:false});
+  const L=P.L, k=scalaVideo(P.setari), VW=Math.round(L.W*k/2)*2, VH=Math.round(L.H*k/2)*2; P.out={W:VW,H:VH};
+  const cv=new OffscreenCanvas(VW,VH), x=cv.getContext('2d',{alpha:false});
   const [aL,aR]=await mixeazaAudio(P);
   if(!('VideoEncoder' in window) || new URLSearchParams(location.search).has('mr')) return await randeazaMediaRecorder(P,aL,aR,cb);
-  const vcfg=await alegeCodecVideo(L.W,L.H), ac=await alegeCodecAudio();
+  const vcfg=await alegeCodecVideo(VW,VH), ac=await alegeCodecAudio();
   if(!vcfg||!ac) return await randeazaMediaRecorder(P,aL,aR,cb);
   const mux=new MP4(); let eroare=null;
   const ve=new VideoEncoder({output:(c,m)=>mux.adaugaVideo(c,m), error:e=>eroare=e}); ve.configure(vcfg);
   const ae=new AudioEncoder({output:(c,m)=>mux.adaugaAudio(c,m), error:e=>eroare=e}); ae.configure(ac.cfg);
   // audio
   const bloc=1024*4; for(let o=0;o<aL.length;o+=bloc){ const n=Math.min(bloc,aL.length-o); const d=new Float32Array(n*2); d.set(aL.subarray(o,o+n),0); d.set(aR.subarray(o,o+n),n);
-    const ad=new AudioData({format:'f32-planar',sampleRate:SR,numberOfFrames:n,numberOfChannels:2,timestamp:Math.round(o*1e6/SR),data:d}); ae.encode(ad); ad.close(); }
+    const ad=new AudioData({format:'f32-planar',sampleRate:SR,numberOfFrames:n,numberOfChannels:2,timestamp:Math.round(o*1e6/SR),data:d}); ae.encode(ad); ad.close();
+    while(ae.encodeQueueSize>10) await sleep(2); }
   // video
   const nf=Math.ceil(P.durata*FPS);
   for(let f=0;f<nf;f++){
     if(eroare) throw eroare;
-    deseneazaCadru(x,P,f/FPS);
+    x.setTransform(k,0,0,k,0,0); deseneazaCadru(x,P,f/FPS);
     const vf=new VideoFrame(cv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)});
     ve.encode(vf,{keyFrame:f%(FPS*2)===0}); vf.close();
-    while(ve.encodeQueueSize>6) await sleep(4);
+    while(ve.encodeQueueSize>(IOS?2:6)) await sleep(4);
     if(f%15===0){ cb&&cb(f/nf); await sleep(0); }
   }
   await ve.flush(); await ae.flush(); ve.close(); ae.close();
   if(eroare) throw eroare;
-  return {blob:mux.finalizeaza(L.W,L.H,FPS,ac.nume,SR,2), video:vcfg.codec, audio:ac.nume, metoda:'WebCodecs'};
+  return {blob:mux.finalizeaza(VW,VH,FPS,ac.nume,SR,2), video:vcfg.codec, audio:ac.nume, metoda:'WebCodecs'};
 }
 async function randeazaMediaRecorder(P,aL,aR,cb){ // rezervă: timp real (browsere vechi)
-  const L=P.L, cv=document.createElement('canvas'); cv.width=L.W; cv.height=L.H; const x=cv.getContext('2d');
+  const L=P.L, k=scalaVideo(P.setari), cv=document.createElement('canvas'); cv.width=Math.round(L.W*k/2)*2; cv.height=Math.round(L.H*k/2)*2; P.out={W:cv.width,H:cv.height}; const x=cv.getContext('2d'); x.setTransform(k,0,0,k,0,0);
   const ctx=new AudioContext({sampleRate:SR}); await ctx.resume(); const buf=ctx.createBuffer(2,aL.length,SR); buf.copyToChannel(aL,0); buf.copyToChannel(aR,1);
   const src=ctx.createBufferSource(); src.buffer=buf; const dest=ctx.createMediaStreamDestination(); src.connect(dest);
   const st=new MediaStream([...cv.captureStream(FPS).getVideoTracks(),...dest.stream.getAudioTracks()]);
@@ -1145,7 +1150,7 @@ function textPostare(P){
 async function auditFinal(P, rez){
   const a=[]; const add=(ok,txt,nivel)=>a.push({ok,txt,nivel:nivel||(ok?'ok':'err')});
   const s=P.setari, tinta=+s.durata;
-  add(P.L.W===(P.L.v?1080:1920)&&P.L.H===(P.L.v?1920:1080), `Rezoluție ${P.L.W}×${P.L.H} ${P.L.v?'(vertical 9:16 — format recomandat pentru Reels)':'(orizontal 16:9)'}`);
+  const O=P.out||{W:P.L.W,H:P.L.H}; add(true, `Rezoluție ${O.W}×${O.H} ${P.L.v?'(vertical 9:16 — format recomandat pentru Reels)':'(orizontal 16:9)'}${O.W<P.L.W?' — 720p ca să nu se închidă pagina pe iPhone; pe laptop poți alege 1080p':''}`);
   add(Math.abs(P.durata-tinta)<=tinta*0.35, `Durată ${P.durata.toFixed(1)}s (țintă ~${tinta}s)`, Math.abs(P.durata-tinta)<=tinta*0.35?'ok':'warn');
   add(P.scene[0].voce.segmente[0].start<0.3, 'Vocea începe din prima secundă (+24,7% retenție la 10s)');
   const carlig=propozitii(P.scene[0].text)[0]||''; add(carlig.split(/\s+/).length<=14, `Cârlig scurt: „${carlig}”`, carlig.split(/\s+/).length<=14?'ok':'warn');
@@ -1162,7 +1167,7 @@ async function auditFinal(P, rez){
   if(rez.audio!=='aac') a[a.length-1].txt+=' — browserul nu are AAC; pentru Facebook folosește Chrome/Edge pe Windows sau Android';
   add(rez.blob.size<4e9, `Mărime fișier: ${(rez.blob.size/1048576).toFixed(1)} MB`);
   // verificare reală: fișierul se poate reda?
-  try{ const ok=await new Promise(res=>{ const v=document.createElement('video'); v.muted=true; v.preload='metadata'; v.onloadedmetadata=()=>res(Math.abs(v.duration-P.durata)<1.5); v.onerror=()=>res(false); v.src=URL.createObjectURL(rez.blob); setTimeout(()=>res(null),8000); });
+  if(IOS) add(true,'Redare: apasă Play mai jos ca să verifici clipul','warn'); else try{ const ok=await new Promise(res=>{ const v=document.createElement('video'); v.muted=true; v.preload='metadata'; v.onloadedmetadata=()=>res(Math.abs(v.duration-P.durata)<1.5); v.onerror=()=>res(false); v.src=URL.createObjectURL(rez.blob); setTimeout(()=>res(null),8000); });
     add(ok!==false, ok===null?'Redare: nu s-a putut verifica în acest browser':'Fișierul se deschide și are durata corectă', ok===null?'warn':ok?'ok':'err'); }catch(e){}
   add(true,'Conținut original (scenariu, voce și desene noi) — eligibil la regulile de originalitate Meta');
   a.push({ok:true,nivel:'warn',txt:'La postare: bifează „AI info” (vocea e sintetică — Meta poate cere etichetă pentru audio realist).'});
@@ -1179,6 +1184,7 @@ async function creeaza(){
   const s=salveazaSetari(); s.workerUrl=(s.workerUrl||'').replace(/\/+$/,'');
   lucreaza=true; $('#btnCreeaza').disabled=true; $('#out').classList.add('hide'); $('#eroare').classList.add('hide'); $('#progres').classList.remove('hide'); initPasi();
   let wake=null; try{ wake=await navigator.wakeLock?.request('screen'); }catch(e){}
+  $('#eta').textContent = IOS? '— ține Safari deschis și ecranul aprins' : '';
   const t0=Date.now();
   const P={subiect, setari:s, L:layout(s.format), seed:Math.floor(Math.random()*1e6)};
   try{
@@ -1209,6 +1215,8 @@ async function creeaza(){
     const jobVoce=genereazaVocea(P);
     await jobVoce; await jobImg;
     const nRez=P.scene.filter(x=>x.img?.rezerva).length, nFoto=P.scene.filter(x=>x.img?.foto).length; pas('imagini', nRez?'warn':'ok', (nRez? `${nRez} scene fără imagine (fundal de rezervă) · ` : '')+`${nFoto} fotografii reale, ${nImg-nFoto-nRez} desene AI`);
+    // punct de salvare: dacă pagina se reîncarcă în timpul montajului, se poate continua de aici
+    try{ await salveazaProiect(P); }catch(e){ log('checkpoint eșuat',e.message); }
     // 6. montaj
     await montajSiFinal(P);
     log('total', ((Date.now()-t0)/1000).toFixed(0)+'s');
@@ -1217,6 +1225,15 @@ async function creeaza(){
     const k=PASI.find(([k])=>stare[k]<1)?.[0]; if(k) pas(k,'err',(e&&e.message)||String(e));
     aratEroare(e, k);
   }finally{ lucreaza=false; $('#btnCreeaza').disabled=false; try{ wake&&wake.release(); }catch(e){} }
+}
+function arataRezultat(r, scroll){
+  const ext=(r.video.type||'').includes('webm')?'webm':'mp4'; const nume=(r.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
+  const uV=URL.createObjectURL(r.video); $('#vid').src=uV; $('#dlVid').href=uV; $('#dlVid').download=`${nume}.${ext}`;
+  $('#dlCover').href=URL.createObjectURL(r.coperta); $('#dlCover').download=`${nume}-coperta.jpg`;
+  $('#dlSrt').href=URL.createObjectURL(new Blob([r.srt],{type:'text/plain'})); $('#dlSrt').download=`${nume}.srt`;
+  $('#postare').textContent=r.postare; $('#scenariuOut').textContent=r.scenariu||'';
+  $('#audit').innerHTML=(r.audit||[]).map(x=>`<li>${x.nivel==='ok'?'✅':x.nivel==='warn'?'⚠️':'❌'} ${String(x.txt).replace(/</g,'&lt;')}</li>`).join('');
+  $('#out').classList.remove('hide'); if(scroll) $('#out').scrollIntoView({behavior:'smooth'});
 }
 async function montajSiFinal(P){
   pas('montaj','run');
@@ -1228,17 +1245,55 @@ async function montajSiFinal(P){
   const cop=await coperta(P);
   const au=await auditFinal(P,rez);
   pas('audit', au.some(x=>x.nivel==='err')?'warn':'ok', `${au.filter(x=>x.nivel==='ok').length}/${au.length} verificări trecute`);
-  // afișare
-  PROIECT=P; if(TEST) window.__P=P; const ext=rez.blob.type.includes('webm')?'webm':'mp4'; const nume=(P.scenariu.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
-  const uV=URL.createObjectURL(rez.blob); $('#vid').src=uV; $('#dlVid').href=uV; $('#dlVid').download=`${nume}.${ext}`;
-  $('#dlCover').href=URL.createObjectURL(cop); $('#dlCover').download=`${nume}-coperta.jpg`;
-  $('#dlSrt').href=URL.createObjectURL(new Blob([srt(P)],{type:'text/plain'})); $('#dlSrt').download=`${nume}.srt`;
-  $('#postare').textContent=`TITLU: ${P.scenariu.titlu}\n\n`+textPostare(P);
-  $('#audit').innerHTML=au.map(x=>`<li>${x.nivel==='ok'?'✅':x.nivel==='warn'?'⚠️':'❌'} ${x.txt.replace(/</g,'&lt;')}</li>`).join('');
-  $('#out').classList.remove('hide'); $('#out').scrollIntoView({behavior:'smooth'});
+  // salvez IMEDIAT clipul gata (dacă pagina se reîncarcă, îl găsești tot aici)
+  PROIECT=P; if(TEST) window.__P=P;
+  const rezultat={titlu:P.scenariu.titlu, video:rez.blob, coperta:cop, srt:srt(P), postare:`TITLU: ${P.scenariu.titlu}\n\n`+textPostare(P), audit:au, scenariu:P.scene.map((x,i)=>`${i+1}. ${x.text}`).join('\n'), data:Date.now()};
+  await idbPut('ultimul', rezultat); await idbDel('proiect'); $('#reluare').classList.add('hide');
+  arataRezultat(rezultat, true);
   window.__REZULTAT={durata:P.durata, size:rez.blob.size, audit:au, metoda:rez.metoda, video:rez.video, audio:rez.audio};
   window.__BLOB=rez.blob; window.__COPERTA=cop;
 }
+
+
+/* ---------- Salvare locală (IndexedDB): nimic nu se pierde dacă pagina se reîncarcă ---------- */
+function idbDeschide(){ return new Promise((ok,no)=>{ try{ const r=indexedDB.open('masina-povesti',1); r.onupgradeneeded=()=>r.result.createObjectStore('kv'); r.onsuccess=()=>ok(r.result); r.onerror=()=>no(r.error); }catch(e){ no(e); } }); }
+async function idbOp(mod, f){ try{ const db=await idbDeschide(); return await new Promise((ok,no)=>{ const tx=db.transaction('kv',mod); const st=tx.objectStore('kv'); const r=f(st); tx.oncomplete=()=>ok(r&&r.result); tx.onerror=()=>no(tx.error); tx.onabort=()=>no(tx.error); }); }catch(e){ log('idb',e&&e.message); return null; } }
+const idbPut=(k,v)=>idbOp('readwrite',st=>st.put(v,k));
+const idbGet=k=>idbOp('readonly',st=>st.get(k));
+const idbDel=k=>idbOp('readwrite',st=>st.delete(k));
+async function bitmapLaBlob(bmp){ const c=new OffscreenCanvas(bmp.width,bmp.height); c.getContext('2d').drawImage(bmp,0,0); return await c.convertToBlob({type:'image/jpeg',quality:0.9}); }
+async function salveazaProiect(P){
+  const scene=[]; for(const sc of P.scene){ const im=sc.img||{};
+    scene.push({text:sc.text, imagine:sc.imagine, foto:sc.foto, eticheta:sc.eticheta, voce:sc.voce,
+      img: im.rezerva? {rezerva:true} : {blob:await bitmapLaBlob(im.bmp), foto:!!im.foto, credit:im.credit||'', taieJos:im.taieJos||0, fundal:!!im.fundal}}); }
+  await idbPut('proiect',{subiect:P.subiect, setari:P.setari, seed:P.seed, scenariu:P.scenariu, surse:P.surse, verificare:P.verificare, vocea:P.vocea, scene, data:Date.now()});
+}
+function faFundal(bmp, L){
+  const fw=Math.round(L.W/4), fh=Math.round(L.H/4); const oc=new OffscreenCanvas(fw,fh), ox=oc.getContext('2d');
+  const mic=new OffscreenCanvas(Math.max(8,Math.round(fw/12)),Math.max(8,Math.round(fh/12))), mx=mic.getContext('2d');
+  const sc=Math.max(mic.width/bmp.width,mic.height/bmp.height)*1.2; mx.drawImage(bmp,(mic.width-bmp.width*sc)/2,(mic.height-bmp.height*sc)/2,bmp.width*sc,bmp.height*sc);
+  ox.imageSmoothingEnabled=true; ox.imageSmoothingQuality='high'; ox.drawImage(mic,0,0,fw,fh); ox.fillStyle='rgba(0,0,0,.42)'; ox.fillRect(0,0,fw,fh);
+  return oc.transferToImageBitmap();
+}
+async function incarcaProiect(d){
+  const s={...S(), ...d.setari}; const P={subiect:d.subiect, setari:s, L:layout(s.format), seed:d.seed, scenariu:d.scenariu, surse:d.surse||[], verificare:d.verificare, vocea:d.vocea};
+  P.scene=[]; for(let i=0;i<d.scene.length;i++){ const x=d.scene[i]; let img;
+    if(x.img?.blob){ const bmp=await createImageBitmap(x.img.blob); img={bmp, foto:x.img.foto, credit:x.img.credit, taieJos:x.img.taieJos}; if(x.img.fundal) img.fundal=faFundal(bmp,P.L); }
+    else img=imagineRezerva(x.text,s.format,i);
+    P.scene.push({text:x.text, imagine:x.imagine, foto:x.foto, eticheta:x.eticheta, voce:x.voce, img}); }
+  return P;
+}
+async function verificaSalvari(){
+  const ult=await idbGet('ultimul'); if(ult&&ult.video){ arataRezultat(ult,false); $('#out').querySelector('h2').textContent='✅ Ultimul clip făcut'; }
+  const pr=await idbGet('proiect'); if(pr&&pr.scene){ $('#reluare').classList.remove('hide');
+    $('#reluareTxt').textContent=`„${pr.scenariu?.titlu||pr.subiect}” — vocea și imaginile sunt gata, a rămas doar montajul. ${IOS?'Pe iPhone ține Safari deschis și ecranul aprins cât lucrează.':''}`; }
+}
+$('#btnRenunta').onclick=async()=>{ await idbDel('proiect'); $('#reluare').classList.add('hide'); };
+$('#btnReia').onclick=async()=>{ if(lucreaza) return; const d=await idbGet('proiect'); if(!d) return; lucreaza=true; $('#reluare').classList.add('hide');
+  $('#eroare').classList.add('hide'); $('#progres').classList.remove('hide'); initPasi(); for(const k of ['cercetare','scenariu','verificare','voce','imagini']) pas(k,'skip','salvat');
+  let wake=null; try{ wake=await navigator.wakeLock?.request('screen'); }catch(e){}
+  try{ const P=await incarcaProiect(d); await montajSiFinal(P); }catch(e){ console.error(e); pas('montaj','err',e.message); aratEroare(e,'montaj'); }
+  finally{ lucreaza=false; try{ wake&&wake.release(); }catch(e){} } };
 
 /* ---------------- Idei ---------------- */
 const IDEI_FIXE=['De ce zicem „trage apa” când apăsăm pe un buton?','De unde vine cuvântul „ceau”?','Mămăliga se făcea înainte de porumb?','De ce au covrigii găuri?','Cine a inventat stiloul? (Un român!)','De ce ciocnim ouăle de Paști?','De unde vine expresia „a trage la măsea”?','De ce e Dracula celebru în străinătate, dar nu la noi?','De ce mărțișorul are șnur alb-roșu?','Ce înseamnă numele „București”?','De ce bem cafea dimineața?','Ce e de fapt „ciorba de burtă”?','De ce dăm „noroc” când ciocnim paharele?','Cine a fost Ana Aslan și ce a inventat?','De unde vine sarmaua?','De ce are săptămâna 7 zile?','De ce zicem „la mulți ani”?','Prima benzinărie din lume a fost în România?','De ce nu avem voie să zâmbim în poza de buletin?','De ce sunt băncile din parc verzi?'];
@@ -1335,6 +1390,8 @@ if(TEST){
   $('#statusServicii').textContent='🧪 Mod demo offline: scenariu, voce și imagini simulate — testează doar montajul și auditul.';
 }
 incarcaSetari(); statusServicii(); aratIdei([...IDEI_FIXE].sort(()=>Math.random()-.5));
+verificaSalvari(); if(TEST) window.__salveaza=salveazaProiect;
+if(IOS) document.addEventListener('visibilitychange',()=>{ if(document.hidden&&lucreaza) log('pagina în fundal'); });
 window.__creeaza=creeaza; if(TEST) window.__MP4=MP4;
 function mediu(){ return {url:location.href.split('?')[0], protocol:location.protocol, ua:navigator.userAgent, webcodecs:'VideoEncoder' in window, offscreen:'OffscreenCanvas' in window, gemini:!!S().geminiKey, worker:!!S().workerUrl, imagini:S().provImg, ai:S().provAI, voce:S().provVoce}; }
 const SFATURI=[
