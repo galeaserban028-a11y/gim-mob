@@ -157,6 +157,15 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
         <option value="3d">3D cartoon (stil animație)</option>
       </select></div>
     </div>
+    <label>Vocea moșului (Gemini)</label>
+    <select id="voceMos">
+      <option value="Algenib|cald">👴 Moș cald, ușor răgușit (recomandat)</option>
+      <option value="Sadaltager|povestitor">📖 Moș povestitor, înțelept</option>
+      <option value="Umbriel|glumet">😄 Moș glumeț, pus pe șotii</option>
+      <option value="Enceladus|bland">☕ Moș blând, liniștit</option>
+      <option value="Charon|clar">🎙️ Moș clar, ca la radio</option>
+    </select>
+    <div class="btns"><button class="btn" id="btnMostra">▶️ Ascultă vocea</button><span class="mut" id="mostraInfo" style="align-self:center"></span></div>
   </div>
   <div class="card">
     <h2>Personajul și canalul</h2>
@@ -262,7 +271,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const TEST = new URLSearchParams(location.search).has('test');
 
 /* ---------------- Setări ---------------- */
-const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip','rezolutie','vitezaImg'];
+const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip','rezolutie','vitezaImg','voceMos'];
 function incarcaSetari(){
   try{ const s = JSON.parse(localStorage.getItem('povesti_setari')||'{}');
     for(const k of CAMPURI){ const el=$('#'+k); if(!el||s[k]===undefined) continue; if(el.type==='checkbox') el.checked=!!s[k]; else el.value=s[k]; }
@@ -597,7 +606,15 @@ async function voceScena(text){
 
 /* ---------- Vocea Gemini (gratuită cu cheia ta; merge pe orice telefon) ---------- */
 const GEMINI_TTS=['gemini-2.5-flash-preview-tts','gemini-2.5-flash-tts','gemini-3.1-flash-tts-preview'];
-const VOCI_GEMINI=['Algenib','Charon','Iapetus'];
+const STIL_MOS={
+  cald:'un bunic român de vreo 75 de ani, foarte prietenos și bun la suflet. Voce gravă, ușor răgușită de bătrânețe, caldă, cu zâmbetul în glas, ca și cum le-ai povesti nepoților la o cafea, pe prispă. Ritm domol dar nu plictisitor, mici pauze înainte de partea surprinzătoare, un chicotit scurt unde e ceva amuzant',
+  povestitor:'un bunic înțelept de vreo 75 de ani care spune povești la gura sobei. Voce gravă, caldă, puțin tremurată de vârstă, rostire rară și apăsată pe cuvintele importante, ton de taină când vine partea interesantă',
+  glumet:'un moș glumeț de vreo 70 de ani, pus pe șotii, care se amuză de ce povestește. Voce de bătrân veselă, cu zâmbet larg în glas, ritm viu, mici râsete scurte, ton complice cu nepoții',
+  bland:'un bunic blând și liniștit de vreo 80 de ani. Voce joasă, moale, caldă, foarte prietenoasă, ritm calm, ca o poveste de seară spusă nepoților',
+  clar:'un bunic simpatic de vreo 70 de ani cu voce clară și caldă, ca un povestitor de radio de altădată, ritm vioi și prietenos'
+};
+function voceMos(){ const [nume,stil]=(S().voceMos||'Algenib|cald').split('|'); return {nume:nume||'Algenib', stil:STIL_MOS[stil]||STIL_MOS.cald}; }
+function instructiuneMos(){ return `Citește textul de mai jos în limba română, cu pronunție românească corectă și naturală. Vorbește ca ${voceMos().stil}. Accent pe cuvintele-cheie, o pauză scurtă între paragrafe. Citește DOAR textul, cuvânt cu cuvânt, fără nimic în plus.\n\n`; }
 function b64LaBytes(b){ const s=atob(b); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
 async function pcmLa48k(bytes, rata){
   const n=Math.floor(bytes.length/2), dv=new DataView(bytes.buffer, bytes.byteOffset, n*2), f=new Float32Array(n);
@@ -609,7 +626,7 @@ async function pcmLa48k(bytes, rata){
 async function geminiTTS(text){
   const key=S().geminiKey; let ultima='';
   for(const m of GEMINI_TTS){
-    const body={contents:[{parts:[{text}]}], generationConfig:{responseModalities:['AUDIO'], speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:VOCI_GEMINI[0]}}}}};
+    const body={contents:[{parts:[{text}]}], generationConfig:{responseModalities:['AUDIO'], speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voceMos().nume}}}}};
     try{
       const r=await fetchTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body)},240000);
       if(!r.ok){ ultima=`${m}: HTTP ${r.status}${r.status===429?' (limita gratuită pe azi)':''}`; continue; }
@@ -637,7 +654,7 @@ function impartePeLiniste(total, texte, pz, t0, t1){ // granițe între texte, l
 }
 async function voceGeminiToate(P, cb){
   const texte=P.scene.map(x=>curataTTS(x.text));
-  const instr=`Citește textul de mai jos în limba română, ca un bunic simpatic care povestește la o cafea: voce caldă, zâmbitoare, ritm vioi și natural, accent pe cuvintele-cheie. Fă o pauză scurtă între paragrafe. Citește DOAR textul, fără nimic în plus.\n\n`;
+  const instr=instructiuneMos();
   cb&&cb(0.15,'Gemini citește tot scenariul…');
   const d=await geminiTTS(instr+texte.join('\n\n'));
   cb&&cb(0.8,'împart vocea pe scene…');
@@ -1381,6 +1398,12 @@ $('#btnCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText($('#po
 $('#btnRemontaj').onclick=async()=>{ if(!PROIECT||lucreaza) return; lucreaza=true; const P=PROIECT; P.setari=S(); $('#progres').classList.remove('hide'); initPasi(); for(const k of ['cercetare','scenariu','verificare','voce']) pas(k,'skip','păstrat');
   try{ pas('imagini','run'); let n=0; for(let i=0;i<P.scene.length;i++) if(P.scene[i].img?.rezerva){ const im=await imagineScena(P,i); if(!im.rezerva){ P.scene[i].img=im; n++; } } pas('imagini','ok',n?`${n} imagini refăcute`:'păstrate'); await montajSiFinal(P); }
   catch(e){ console.error(e); pas('montaj','err',e.message); } finally{ lucreaza=false; } };
+$('#btnMostra').onclick=async()=>{ const b=$('#btnMostra'), inf=$('#mostraInfo'); salveazaSetari();
+  if(!S().geminiKey){ inf.textContent='Pune întâi cheia Gemini mai sus.'; return; }
+  deblocheazaAudio(); b.disabled=true; inf.textContent='Generez mostra… (folosește 1 din vocile gratuite de azi)';
+  try{ const d=await geminiTTS(instructiuneMos()+'Ei, nepoților, știți de unde vine cuvântul „ceau”? Stați așa, că o să vă mire. Hai să vă povestesc.');
+    const ctx=AC||new AudioContext({sampleRate:SR}); try{ await ctx.resume(); }catch(e){} const buf=ctx.createBuffer(1,d.length,SR); buf.copyToChannel(d,0); const src=ctx.createBufferSource(); src.buffer=buf; src.connect(ctx.destination); src.start(); inf.textContent='🔊 Ascultă…'; src.onended=()=>inf.textContent='Îți place? Apasă 💾 Salvează.'; }
+  catch(e){ inf.textContent='❌ '+e.message; } b.disabled=false; };
 $('#btnDemo').onclick=()=>{ location.href=location.pathname+'?test=1'; };
 $('#btnTestServicii').onclick=async()=>{ const o=$('#testOut'); o.classList.remove('hide'); o.textContent='Testez…\n'; salveazaSetari(); const s=S();
   const t=async(n,f)=>{ const a=Date.now(); try{ const r=await f(); o.textContent+=`✅ ${n}: ${r} (${((Date.now()-a)/1000).toFixed(1)}s)\n`; }catch(e){ o.textContent+=`❌ ${n}: ${e.message}\n`; } };
