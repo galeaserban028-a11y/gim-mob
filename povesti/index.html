@@ -770,20 +770,21 @@ async function pcmLa48k(bytes, rata){
   const ctx=new OfflineAudioContext(1, Math.ceil(n*SR/rata), SR); const b=ctx.createBuffer(1,n,rata); b.copyToChannel(f,0);
   const src=ctx.createBufferSource(); src.buffer=b; src.connect(ctx.destination); src.start(); return (await ctx.startRendering()).getChannelData(0);
 }
+let TTS_BUN=null; // modelul care a mers ultima dată (îl încerc primul)
 async function geminiTTS(text){
-  const key=S().geminiKey; let ultima='';
-  for(const m of GEMINI_TTS){
+  const key=S().geminiKey; const erori=[]; const ordine=[...new Set([TTS_BUN,...GEMINI_TTS].filter(Boolean))];
+  for(const m of ordine){
     const body={contents:[{parts:[{text}]}], generationConfig:{responseModalities:['AUDIO'], speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voceMos().nume}}}}};
     try{
       const r=await fetchTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body)},240000);
-      if(!r.ok){ ultima=`${m}: HTTP ${r.status}${r.status===429?' (limita gratuită pe azi)':''}`; continue; }
-      const j=await r.json(); const part=j.candidates?.[0]?.content?.parts?.find(p=>p.inlineData);
-      if(!part){ ultima=`${m}: fără audio`; continue; }
+      if(!r.ok){ let det=''; try{ det=(await r.json()).error?.message||''; }catch(e){} erori.push(`${m}: ${r.status===429?'limita gratuită atinsă':r.status===404?'model indisponibil':'HTTP '+r.status}${det&&r.status!==429?' ('+det.slice(0,80)+')':''}`); continue; }
+      const j=await r.json(); const cand=j.candidates?.[0]; const part=cand?.content?.parts?.find(p=>p.inlineData);
+      if(!part){ erori.push(`${m}: fără audio${cand?.finishReason?' ('+cand.finishReason+')':''}${j.promptFeedback?.blockReason?' (blocat: '+j.promptFeedback.blockReason+')':''}`); continue; }
       const rata=+((part.inlineData.mimeType||'').match(/rate=(\d+)/)?.[1]||24000);
-      return await pcmLa48k(b64LaBytes(part.inlineData.data), rata);
-    }catch(e){ ultima=`${m}: ${e.message}`; }
+      TTS_BUN=m; return await pcmLa48k(b64LaBytes(part.inlineData.data), rata);
+    }catch(e){ erori.push(`${m}: ${e.message}`); }
   }
-  throw new Error('Vocea Gemini: '+ultima);
+  const err=new Error('Vocea Gemini: '+erori.join(' | ')); err.toateLimita=erori.length&&erori.every(e=>/limita/.test(e)); throw err;
 }
 function pauze(d){ // centrele pauzelor (>=110ms de liniște)
   const w=Math.round(0.02*SR); let pk=0; for(let i=0;i<d.length;i+=7) pk=Math.max(pk,Math.abs(d[i]));
@@ -799,23 +800,39 @@ function impartePeLiniste(total, texte, pz, t0, t1){ // granițe între texte, l
     lim.push(cand?cand.t:Math.max(prev+0.3,tinta)); }
   lim.push(t1); return lim;
 }
-async function voceGeminiToate(P, cb){
-  const texte=P.scene.map(x=>curataTTS(x.text));
-  const instr=instructiuneMos();
-  cb&&cb(0.15,'Gemini citește tot scenariul…');
-  const d=await geminiTTS(instr+texte.join('\n\n'));
-  cb&&cb(0.8,'împart vocea pe scene…');
+function vocePeScene(d, texte, scene){ // împarte audio-ul unei bucăți pe scenele ei, tăind pe pauzele din vorbire
   let a=0,b=d.length-1; const prag=0.01; while(a<d.length&&Math.abs(d[a])<prag) a++; while(b>a&&Math.abs(d[b])<prag) b--;
-  const T0=a/SR, T1=(b+1)/SR, pz=pauze(d);
-  const lim=impartePeLiniste(d, texte, pz, T0, T1);
-  P.scene.forEach((sc,i)=>{
-    const s0= i===0? Math.max(0,T0-0.03) : lim[i], s1= i===P.scene.length-1? Math.min(d.length/SR,T1+0.12) : lim[i+1];
-    const ia=Math.round(s0*SR), ib=Math.round(s1*SR); // tăieturi exact pe pauzele din vorbire: vocea curge continuu, fără opriri
+  const T0=a/SR, T1=(b+1)/SR, pz=pauze(d); const lim=impartePeLiniste(d, texte, pz, T0, T1);
+  scene.forEach((sc,i)=>{
+    const s0= i===0? Math.max(0,T0-0.03) : lim[i], s1= i===scene.length-1? Math.min(d.length/SR,T1+0.12) : lim[i+1];
+    const ia=Math.round(s0*SR), ib=Math.round(s1*SR);
     const samples=d.slice(ia,Math.max(ia+1,ib)); const dur=samples.length/SR;
     const prop=propozitii(texte[i]); const pzLoc=pz.map(p=>({t:p.t-ia/SR,len:p.len})).filter(p=>p.t>0&&p.t<dur);
     const lp=impartePeLiniste(null, prop, pzLoc, 0, dur);
     sc.voce={samples, durata:dur, continua:true, segmente:prop.map((t,k)=>({text:t,start:lp[k],end:lp[k+1]}))};
   });
+}
+async function voceGeminiToate(P, cb){
+  const texte=P.scene.map(x=>curataTTS(x.text)); const instr=instructiuneMos();
+  // bucăți de ~1.200 de caractere (≈ 1 minut de voce), tăiate între scene
+  const bucati=[]; let cur=[], lung=0;
+  texte.forEach((t,i)=>{ if(cur.length && lung+t.length>(+new URLSearchParams(location.search).get('ttsbuc')||1200)){ bucati.push(cur); cur=[]; lung=0; } cur.push(i); lung+=t.length; }); if(cur.length) bucati.push(cur);
+  let gata=0;
+  const faBucata=async idx=>{
+    try{ const d=await geminiTTS(instr+idx.map(i=>texte[i]).join('\n\n')); vocePeScene(d, idx.map(i=>texte[i]), idx.map(i=>P.scene[i])); }
+    catch(e){ if(idx.length>1 && /fără audio/.test(e.message)){ const m=Math.ceil(idx.length/2); await faBucata(idx.slice(0,m)); await faBucata(idx.slice(m)); return; } throw e; } // dacă o bucată nu merge, o împart în două
+    gata+=idx.length; cb&&cb(0.1+0.85*gata/texte.length, `Gemini citește: ${gata}/${texte.length} scene`);
+  };
+  cb&&cb(0.1,`Gemini citește scenariul (${bucati.length} ${bucati.length===1?'bucată':'bucăți'})…`);
+  for(const idx of bucati) await faBucata(idx);
+}
+async function vocePuterToate(P, cb){ // rezervă: voce ElevenLabs prin contul gratuit Puter (cere logare o dată)
+  await incarcaPuter();
+  for(let i=0;i<P.scene.length;i++){ const prop=propozitii(curataTTS(P.scene[i].text)); const buc=[], seg=[]; let t=0; const pauza=Math.round(0.12*SR);
+    for(const p of prop){ let audio; try{ audio=await puter.ai.txt2speech(p,{provider:'elevenlabs',model:'eleven_multilingual_v2'}); }catch(e){ audio=await puter.ai.txt2speech(p,'ro-RO'); }
+      const buf=await decodeaza(await (await fetch(audio.src)).arrayBuffer()); const d=taieLiniste(buf); seg.push({text:p,start:t/SR,end:(t+d.length)/SR}); buc.push(d); t+=d.length+pauza; }
+    const out=new Float32Array(Math.max(1,t-pauza)); let o=0; for(const b of buc){ out.set(b,o); o+=b.length+pauza; }
+    P.scene[i].voce={samples:out, durata:out.length/SR, segmente:seg}; cb&&cb(0.1+0.9*(i+1)/P.scene.length,`Puter: ${i+1}/${P.scene.length} scene`); }
 }
 async function voceMihaiToate(P, cb){
   await voceInit(f=>cb&&cb(f*0.3,`descarc vocea Mihai (o singură dată): ${Math.round(f*100)}%`));
@@ -824,14 +841,14 @@ async function voceMihaiToate(P, cb){
 async function genereazaVocea(P){
   const s=P.setari; const cb=(f,t)=>progresPas('voce',f,t);
   let ord = s.provVoce==='gemini'? ['gemini','piper'] : s.provVoce==='piper'? ['piper','gemini'] : s.provVoce==='puter'? ['puter','gemini'] : (s.geminiKey? ['gemini','piper'] : ['piper']);
-  if(IOS) ord=ord.filter(v=>v!=='piper'); // pe iPhone, modelul Piper (63 MB) umple memoria și Safari închide pagina
+  if(IOS){ ord=ord.filter(v=>v!=='piper'); if(!ord.includes('puter')) ord.push('puter'); } // pe iPhone, Piper (63 MB) umple memoria; rezerva e Puter
   const lista=ord.filter(v=>v!=='gemini'||s.geminiKey); let erori=[];
   if(!lista.length) throw new Error('Pe iPhone vocea merge doar cu Gemini: pune cheia gratuită în Setări (aistudio.google.com/apikey).');
   for(const v of lista){
     try{
       urma('voce', v);
-      if(v==='gemini') await voceGeminiToate(P,cb); else await voceMihaiToate(P,cb);
-      pas('voce', erori.length?'warn':'ok', `${v==='gemini'?'Gemini':v==='puter'?'Puter':'Mihai'} · ${P.scene.reduce((a,x)=>a+x.voce.durata,0).toFixed(1)}s de narațiune`+(erori.length?` (prima variantă n-a mers: ${erori[0]})`:''));
+      if(v==='gemini') await voceGeminiToate(P,cb); else if(v==='puter') await vocePuterToate(P,cb); else await voceMihaiToate(P,cb);
+      pas('voce', erori.length?'warn':'ok', `${v==='gemini'?'Gemini':v==='puter'?'Puter (ElevenLabs)':'Mihai'} · ${P.scene.reduce((a,x)=>a+x.voce.durata,0).toFixed(1)}s de narațiune`+(erori.length?` (prima variantă n-a mers: ${erori[0]})`:''));
       P.vocea=v; return;
     }catch(e){ log('voce fail',v,e.message); erori.push(e.message); }
   }
@@ -2103,6 +2120,7 @@ window.__creeaza=creeaza; if(TEST) window.__MP4=MP4;
 function mediu(){ return {url:location.href.split('?')[0], protocol:location.protocol, ua:navigator.userAgent, webcodecs:'VideoEncoder' in window, offscreen:'OffscreenCanvas' in window, gemini:!!S().geminiKey, worker:!!S().workerUrl, imagini:S().provImg, ai:S().provAI, voce:S().provVoce, strategie:strategieMontaj(), cadere:(()=>{try{return localStorage.getItem('povesti_cadere')}catch(e){return null}})()}; }
 const SFATURI=[
   [/Failed to fetch|NetworkError|Load failed|rețea|CORS/i,'Un serviciu de pe internet n-a răspuns. Verifică netul și încearcă din nou. Dacă ai deschis fișierul direct din Descărcări, pune-l întâi online (tab-ul Ajutor).'],
+  [/Vocea Gemini.*limita/i,'Ai folosit vocile gratuite Gemini de azi. Încearcă mâine, sau fă clipul pe laptop (în Chrome merge vocea Mihai, nelimitată).'],
   [/Gemini/i,'Problema e la Gemini: verifică cheia în Setări (fără spații), sau ai depășit limita gratuită pe azi — aplicația trece singură pe Pollinations dacă pui „Automat”.'],
   [/incomplet|JSON Parse|JSON/i,'Serviciul gratuit de rezervă a trimis un răspuns tăiat. Apasă din nou Creează. Cel mai sigur: pune cheia Gemini în Setări (dacă folosești aplicația instalată pe ecran, trebuie pusă și acolo — iPhone-ul ține setările separat).'],
   [/Pollinations/i,'Serviciul gratuit Pollinations e aglomerat. Așteaptă un minut și apasă din nou, sau pune o cheie Gemini gratuită în Setări.'],
