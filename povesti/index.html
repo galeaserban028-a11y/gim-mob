@@ -71,8 +71,10 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
   <div class="card">
     <h2>Despre ce e clipul?</h2>
     <input id="subiect" placeholder="ex: De ce zicem „trage apa” când apăsăm pe un buton?" autocomplete="off">
+    <div class="chips" id="categorii" style="margin-top:10px"></div>
     <div class="chips" id="idei"></div>
-    <div class="btns"><button class="btn" id="btnIdei">💡 Idei noi cu AI</button><button class="btn" id="btnSurpriza">🎲 Alege tu</button></div>
+    <div class="btns"><button class="btn" id="btnIdei">💡 Idei noi cu AI</button><button class="btn" id="btnSurpriza">🎲 Alege tu</button><button class="btn" id="btnMaiMulte">🔄 Altele</button></div>
+    <p class="mut" id="ideiInfo"></p>
     <label>Pentru</label>
     <select id="platforma"><option value="facebook">📘 Facebook Reels</option><option value="yt_shorts">▶️ YouTube Shorts</option><option value="yt_lung">📺 YouTube video lung (aici sunt banii)</option></select>
     <div class="row">
@@ -1353,6 +1355,8 @@ async function creeaza(){
   $('#eta').textContent = IOS? (+s.durata>=300? '— clip lung pe iPhone: poate dura și poate pica; e mai sigur pe laptop' : '— ține Safari deschis și ecranul aprins') : '';
   const t0=Date.now();
   const P={subiect, setari:s, L:layout(s.format), seed:Math.floor(Math.random()*1e6)};
+  const repetat=eFolosit(subiect); marcheazaFolosit(subiect); if(repetat&&!TEST) $('#eta').textContent='— ai mai făcut un clip foarte asemănător';
+  try{ aratIdeiNoi(); }catch(e){}
   try{
     // 1. cercetare
     pas('cercetare','run');
@@ -1471,12 +1475,54 @@ $('#btnReia').onclick=async()=>{ if(lucreaza) return; deblocheazaAudio(); const 
   finally{ lucreaza=false; try{ wake&&wake.release(); }catch(e){} } };
 
 /* ---------------- Idei ---------------- */
-const IDEI_FIXE=['De ce zicem „trage apa” când apăsăm pe un buton?','De unde vine cuvântul „ceau”?','Mămăliga se făcea înainte de porumb?','De ce au covrigii găuri?','Cine a inventat stiloul? (Un român!)','De ce ciocnim ouăle de Paști?','De unde vine expresia „a trage la măsea”?','De ce e Dracula celebru în străinătate, dar nu la noi?','De ce mărțișorul are șnur alb-roșu?','Ce înseamnă numele „București”?','De ce bem cafea dimineața?','Ce e de fapt „ciorba de burtă”?','De ce dăm „noroc” când ciocnim paharele?','Cine a fost Ana Aslan și ce a inventat?','De unde vine sarmaua?','De ce are săptămâna 7 zile?','De ce zicem „la mulți ani”?','Prima benzinărie din lume a fost în România?','De ce nu avem voie să zâmbim în poza de buletin?','De ce sunt băncile din parc verzi?'];
+const BANCA_IDEI={
+'🗣️ Cuvinte și expresii':[
+'De unde vine cuvântul „ceau”?','De unde vine expresia „a trage la măsea”?','Ce înseamnă de fapt „a umbla cu cioara vopsită”?','De unde vine expresia „a-și lua nasul la purtare”?','De ce zicem „a da din colț în colț”?','De unde vine expresia „a fi în al nouălea cer”?','De ce zicem „la mulți ani”?','De unde vine cuvântul „mersi” în română?','De ce zicem „noroc” când ciocnim paharele?','De unde vine expresia „a pune paie pe foc”?','Ce înseamnă „a trage mâța de coadă” și de unde vine?','De unde vine expresia „a tăia frunză la câini”?','De ce zicem „a se face de râs”?','De unde vine cuvântul „șmecher”?','De unde vine cuvântul „baftă”?','De ce zicem „Doamne-ajută”?','De unde vine expresia „a-i cădea fisa”?','De ce zicem „a umbla brambura”?','De unde vine cuvântul „bacșiș”?','De unde vine expresia „a lua țeapă”?','De ce zicem „a bate apa în piuă”?','De unde vine cuvântul „mișto”?','De unde vine expresia „ca nuca în perete”?','De ce zicem „a da ortul popii”?','De unde vine cuvântul „chiul” și de ce „tragem chiulul”?','De ce zicem „a avea o mână de fier”?','De unde vine expresia „a o lua pe arătură”?','De unde vine cuvântul „naș”?','De ce zicem „a vinde castraveți grădinarului”?','De unde vin cuvintele turcești din română?'],
+'🍲 Mâncare și băutură':[
+'Mămăliga se făcea înainte de porumb?','De unde vine sarmaua?','De unde vin mititeii și de ce se numesc așa?','Ce e de fapt ciorba de burtă și de unde vine?','De ce sunt celebri covrigii de Buzău?','De unde vine cozonacul?','De unde vin papanașii?','Cine a inventat salata de boeuf?','De ce bem cafea dimineața?','De unde vine țuica?','De ce pâinea are coajă?','De unde vine borșul și ce înseamnă cuvântul?','De ce mâncăm pește de Florii?','De unde vine plăcinta?','Cine a adus cartoful în România?','De unde vine ciocolata și cum a ajuns la noi?','De ce brânza are găuri?','De unde vin murăturile și de ce punem varză la murat?','De ce ouăle sunt albe sau maro?','Cum se făcea Pepsi în România comunistă?','De ce e mujdeiul atât de românesc?','Ce înseamnă E-urile de pe etichete?','De unde vine înghețata?','De ce punem sare pe drum iarna, dar și în mâncare?','De unde vine mustul și de ce fierbe?'],
+'🎉 Obiceiuri și sărbători':[
+'De ce ciocnim ouăle de Paști?','De ce mărțișorul are șnur alb-roșu?','De unde vine bradul de Crăciun?','De ce mergem cu colindul?','De unde vine obiceiul cu Moș Nicolae și ghetele?','De ce aruncăm cu bani în fântâni?','De unde vine Dragobetele?','De ce se spune „Hristos a înviat” de Paști?','De unde vine obiceiul cu ursul de Anul Nou?','De ce se sparge farfuria la nunta românească?','De unde vine obiceiul de a fura mireasa?','De ce dăm flori în număr impar?','De unde vine Halloween și ce legătură are cu românii?','De ce punem busuioc sub pernă?','De unde vin Sânzienele?','De ce se dă de pomană?','De unde vine Black Friday?','De ce sărbătorim Ziua Națională pe 1 Decembrie?','De ce e Crăciunul pe 25 decembrie?','De unde vine obiceiul cu Capra de Anul Nou?','De ce ne punem dorințe la artificii?','De unde vine Ziua Femeii de 8 Martie?','De ce se taie porcul de Ignat?','De unde vine plugușorul?'],
+'💡 Invenții și români celebri':[
+'Cine a inventat stiloul? (Un român!)','Cine a fost Ana Aslan și ce a inventat?','Ce a inventat Henri Coandă?','Cine a fost Traian Vuia și cum a zburat?','Ce a descoperit Nicolae Paulescu?','Ce a inventat Aurel Vlaicu?','Cine a fost Gogu Constantinescu?','Ce legătură are Hermann Oberth cu rachetele?','Cine a fost Elie Carafoli?','Cine a fost Ștefan Odobleja și cibernetica?','Cine a fost Emil Racoviță și ce a făcut în Antarctica?','Ce a descoperit Victor Babeș?','Cine a fost Iuliu Hațieganu?','Ce a făcut Constantin Brâncuși la Paris?','Cine a fost Elisa Leonida Zamfirescu, prima femeie inginer?','Ce a mai inventat Petrache Poenaru pe lângă stilou?','Cine a fost Grigore Antipa?','Cine a fost Nicolae Teclu și becul care îi poartă numele?','Cine a fost Dimitrie Leonida?','Ce a inventat Justin Capră?','Cine a construit prima cale ferată din România?','Cine a fost Sarmiza Bilcescu?'],
+'🏰 Istorie și locuri':[
+'De ce e Dracula celebru în străinătate, dar nu la noi?','Ce înseamnă numele „București”?','Ce s-a întâmplat cu Ada Kaleh?','Cine a fost Pazvante Chioru?','De ce Casa Poporului e atât de mare?','Ce s-a întâmplat la cutremurul din 1977?','De ce a fost construit Canalul Dunăre–Marea Neagră?','Ce secret ascunde Castelul Bran?','Ce s-a întâmplat cu tezaurul României trimis în Rusia?','Cine a fost Vlad Țepeș cu adevărat?','De ce se numește Transilvania așa?','Ce s-a întâmplat la Revoluția din 1989 în 10 zile?','De ce Bucureștiul era numit „Micul Paris”?','Cine a construit Transfăgărășanul și de ce?','De ce Salina Turda arată ca o navă spațială?','Ce e Sarmizegetusa Regia?','De unde vine numele „România”?','De ce Constanța se numea Tomis?','Cine a fost Ștefan cel Mare și câte bătălii a câștigat?','De ce Clujul se numea Napoca?','Ce a fost Hanul lui Manuc?','Cum a apărut Delta Dunării?','De ce Sibiul a fost Capitală Culturală Europeană?','Ce s-a întâmplat cu satele scufundate sub lacuri de acumulare?','Ce e Columna lui Traian și ce arată despre daci?'],
+'🔬 Știință de zi cu zi':[
+'De ce cerul e albastru?','De ce căscăm și de ce e contagios?','De ce sughițăm?','De ce visăm?','De ce ceapa ne face să plângem?','De ce avem amprente?','De ce apa de mare e sărată?','De ce ne trosnesc degetele?','De ce simțim fluturi în stomac?','De ce ne zbârcim degetele în apă?','De ce frunzele se îngălbenesc toamna?','De ce pisicile torc?','De ce câinii dau din coadă?','De ce unii strănută la soare?','De ce iarna e frig deși Pământul e mai aproape de Soare?','De ce ora de iarnă e ora „normală”?','De ce avem febră când suntem bolnavi?','De ce mucii sunt verzi?','De ce ne doare capul când mâncăm înghețată repede?','De ce curcubeul e curbat?','De ce zăpada scârțâie?','De ce ne înroșim când ne e rușine?','De ce țânțarii preferă unii oameni?','De ce Luna arată mare la orizont?'],
+'🔧 Obiecte și lucruri':[
+'De ce zicem „trage apa” când apăsăm pe un buton?','De ce sunt băncile din parc verzi?','De ce berea e în sticle maro sau verzi?','De ce tastatura nu e în ordine alfabetică?','De ce semaforul are roșu, galben și verde?','De ce au dispărut telefoanele publice?','De ce nu avem voie să zâmbim în poza de buletin?','De ce nasturii sunt pe părți diferite la cămășile de bărbați și femei?','De ce blugii au un buzunar mic?','De ce e gaură în capacul pixului?','De ce taxiurile sunt galbene?','De ce mașinile au volanul pe stânga?','De ce plăcuțele de înmatriculare au litere de județ?','Ce înseamnă codul de pe ouă?','De ce au geamurile de avion o gaură mică?','De ce bancnotele românești sunt din plastic?','De ce prizele au forme diferite în fiecare țară?','De ce creioanele sunt galbene?','De ce ceasurile din reclame arată 10:10?','De ce Dacia 1300 a devenit mașina tuturor românilor?','De ce ușile de la toalete publice nu ajung până jos?'],
+'💰 Bani, meserii și viață':[
+'De unde vine leul românesc și de ce se numește așa?','De ce sunt pe bancnote anumite personalități?','De ce lucrăm 8 ore pe zi?','De ce are săptămâna 7 zile?','De ce weekendul are 2 zile?','De ce prețurile se termină în ,99?','De unde vine meseria de frizer și bărbier?','De ce pompierii au mașini roșii?','De ce medicii poartă halat alb?','De unde vine Loto 6/49?','De ce vânzătorii dau rest cu bomboane?','De ce cumpărăm mai mult când suntem flămânzi?','De ce taxa de drum se numește rovinietă?','De ce școala începe în septembrie?','De ce vacanța de vară e atât de lungă?','De unde vin talciocurile și bazarele?']
+};
+
+const IDEI_FIXE=Object.values(BANCA_IDEI).flat();
+/* ---- istoric: ce ai făcut deja nu se mai repetă ---- */
+function normIdee(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').split(/\s+/).filter(w=>w.length>3&&!['care','cine','unde','vine','fost','acum','este','sunt','avem','zicem','spune','despre','inventat'].includes(w)); }
+function seamana(a,b){ const A=new Set(normIdee(a)), B=new Set(normIdee(b)); if(!A.size||!B.size) return false; let c=0; for(const w of A) if(B.has(w)) c++; return c/Math.min(A.size,B.size)>=0.6; }
+function folosite(){ try{ return JSON.parse(localStorage.getItem('povesti_folosite')||'[]'); }catch(e){ return []; } }
+function marcheazaFolosit(t){ try{ const f=folosite(); if(!f.some(x=>seamana(x,t))){ f.push(t); localStorage.setItem('povesti_folosite', JSON.stringify(f.slice(-500))); } }catch(e){} }
+function eFolosit(t){ return folosite().some(x=>seamana(x,t)); }
+let categorie='Toate', ideiAI=[], ideiArataTe=new Set();
+function ideiDisponibile(){ const lista = categorie==='Toate'? [...IDEI_FIXE,...ideiAI] : categorie==='✨ De la AI'? ideiAI : (BANCA_IDEI[categorie]||[]); return lista.filter(t=>!eFolosit(t)); }
+function aratCategorii(){ const cats=['Toate',...Object.keys(BANCA_IDEI),...(ideiAI.length?['✨ De la AI']:[])];
+  $('#categorii').innerHTML=cats.map(c=>`<button class="chip" style="${c===categorie?'background:#ffd400;color:#111;border-color:#ffd400':''}">${c}</button>`).join('');
+  $('#categorii').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ categorie=b.textContent; ideiArataTe.clear(); aratCategorii(); aratIdeiNoi(); }); }
+function aratIdeiNoi(){ const d=ideiDisponibile(); let noi=d.filter(t=>!ideiArataTe.has(t)); if(noi.length<6){ ideiArataTe.clear(); noi=d; }
+  const alese=[...noi].sort(()=>Math.random()-.5).slice(0,8); alese.forEach(t=>ideiArataTe.add(t)); aratIdei(alese);
+  $('#ideiInfo').textContent=`${d.length} idei nefolosite${categorie!=='Toate'?' în „'+categorie+'”':''} · ${folosite().length} subiecte deja făcute (nu ți le mai arăt)`; }
 function aratIdei(lista){ $('#idei').innerHTML=lista.slice(0,8).map(t=>`<button class="chip">${t.replace(/</g,'&lt;')}</button>`).join(''); $('#idei').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ $('#subiect').value=b.textContent; }); }
-$('#btnSurpriza').onclick=()=>{ const r=IDEI_FIXE[Math.floor(Math.random()*IDEI_FIXE.length)]; $('#subiect').value=r; };
+$('#btnSurpriza').onclick=()=>{ const d=ideiDisponibile(); const lista=d.length?d:IDEI_FIXE; $('#subiect').value=lista[Math.floor(Math.random()*lista.length)]; };
+$('#btnMaiMulte').onclick=()=>aratIdeiNoi();
 $('#btnIdei').onclick=async()=>{ const b=$('#btnIdei'); b.disabled=true; b.textContent='💡 Mă gândesc…';
-  try{ const r=await textAI('Răspunde doar cu JSON.',`Dă-mi 10 idei de clipuri scurte pentru Facebook (România), despre originea lucrurilor de zi cu zi: cuvinte, expresii, obiceiuri, mâncăruri, invenții românești, clădiri, istorie. Fiecare idee = o întrebare care provoacă curiozitate sau contrazice ce crede lumea. Doar subiecte verificabile pe Wikipedia. Evită: ${IDEI_FIXE.slice(0,6).join('; ')}. JSON: {"idei":["...", "..."]}`); aratIdei((r.idei||[]).map(diacritice)); }
-  catch(e){ aratIdei([...IDEI_FIXE].sort(()=>Math.random()-.5)); }
+  try{ const tema = categorie==='Toate'||categorie==='✨ De la AI'? 'orice temă: cuvinte și expresii, mâncare, obiceiuri, invenții și români celebri, istorie și locuri din România, știință de zi cu zi, obiecte, bani și meserii' : categorie.replace(/^\S+\s/,'');
+    const evita=[...folosite().slice(-60), ...ideiAI.slice(0,30), ...IDEI_FIXE.filter(()=>Math.random()<0.2)].slice(0,120);
+    const r=await textAI('Răspunde doar cu JSON.',`Dă-mi 15 idei NOI de clipuri pentru o pagină românească despre originea lucrurilor, tema: ${tema}.
+Reguli: fiecare idee e o întrebare scurtă (max 12 cuvinte) care stârnește curiozitatea sau contrazice ce crede lumea; subiecte concrete (un obiect, un cuvânt, o persoană, un loc, un an), verificabile pe Wikipedia; măcar jumătate cu legătură cu România; fără politică actuală și fără tragedii recente; variază formulele (De ce / De unde vine / Cine a fost / Ce s-a întâmplat cu / Adevărul despre).
+NU repeta și nu reformula nimic din lista asta: ${evita.join(' | ')}
+JSON: {"idei":["...", "..."]}`);
+    ideiAI=[...new Set([...(r.idei||[]).map(x=>diacritice(String(x)).trim()).filter(t=>t.length>8&&!eFolosit(t)&&!IDEI_FIXE.some(f=>seamana(f,t))), ...ideiAI])].slice(0,80);
+    try{ localStorage.setItem('povesti_ideiAI', JSON.stringify(ideiAI)); }catch(e){}
+    categorie='✨ De la AI'; ideiArataTe.clear(); aratCategorii(); aratIdeiNoi(); }
+  catch(e){ aratIdeiNoi(); }
   b.disabled=false; b.textContent='💡 Idei noi cu AI'; };
 
 /* ---------------- Butoane ---------------- */
@@ -1573,7 +1619,7 @@ if(TEST){
   if(new URLSearchParams(location.search).has('tts')){ $('#geminiKey').value='TEST'; $('#provVoce').value='gemini'; }
   $('#statusServicii').textContent='🧪 Mod demo offline: scenariu, voce și imagini simulate — testează doar montajul și auditul.';
 }
-incarcaSetari(); statusServicii(); aratIdei([...IDEI_FIXE].sort(()=>Math.random()-.5));
+incarcaSetari(); statusServicii(); try{ ideiAI=JSON.parse(localStorage.getItem('povesti_ideiAI')||'[]'); }catch(e){} aratCategorii(); aratIdeiNoi();
 if(IOS&&$('#provVoce').value==='piper'){ $('#provVoce').value='auto'; salveazaSetari(); }
 verificaSalvari(); if(TEST) window.__salveaza=salveazaProiect;
 if(IOS) document.addEventListener('visibilitychange',()=>{ if(document.hidden&&lucreaza) log('pagina în fundal'); });
