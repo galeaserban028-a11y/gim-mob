@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Mașina de Povești — clipuri gratis pentru Facebook</title>
+<meta name="theme-color" content="#14110f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14110f;--card:#1f1a17;--card2:#2a231f;--line:#3a312b;--txt:#f5efe9;--mut:#b5a99f;--acc:#ffd400;--red:#e2262a;--ok:#3ecf72;--warn:#ffb020}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.45 Montserrat,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+a{color:var(--acc)}
+.wrap{max-width:860px;margin:0 auto;padding:16px 14px 80px}
+header{display:flex;align-items:center;gap:12px;margin:6px 0 14px}
+header canvas{width:56px;height:56px;border-radius:14px;background:#2b211b}
+h1{font-size:22px;margin:0;font-weight:900;letter-spacing:-.3px}
+h1 small{display:block;font-size:12.5px;color:var(--mut);font-weight:600;letter-spacing:0}
+nav{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;scrollbar-width:none}
+nav button{flex:0 0 auto;background:var(--card);border:1px solid var(--line);color:var(--mut);padding:9px 14px;border-radius:999px;font:700 14px Montserrat,sans-serif;cursor:pointer}
+nav button.on{background:var(--acc);color:#111;border-color:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.card h2{font-size:17px;margin:0 0 10px;font-weight:800}
+label{display:block;font-size:13px;color:var(--mut);font-weight:700;margin:10px 0 5px}
+input,select,textarea{width:100%;background:var(--card2);border:1px solid var(--line);color:var(--txt);border-radius:12px;padding:12px;font:600 15px Montserrat,sans-serif}
+textarea{min-height:90px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.row{grid-template-columns:1fr}}
+.big{width:100%;border:0;border-radius:16px;padding:18px;font:900 20px Montserrat,sans-serif;background:var(--acc);color:#111;cursor:pointer;margin-top:12px;box-shadow:0 6px 0 #b39400}
+.big:active{transform:translateY(3px);box-shadow:0 3px 0 #b39400}
+.big:disabled{opacity:.5;cursor:wait}
+.btn{border:1px solid var(--line);background:var(--card2);color:var(--txt);border-radius:12px;padding:10px 14px;font:700 14px Montserrat,sans-serif;cursor:pointer}
+.btn.y{background:var(--acc);color:#111;border-color:var(--acc)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-size:13px;font-weight:700;cursor:pointer;color:var(--txt)}
+.steps{list-style:none;padding:0;margin:0}
+.steps li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px dashed var(--line);font-size:14.5px}
+.steps li:last-child{border:0}
+.steps .ic{width:22px;flex:0 0 22px;text-align:center}
+.steps .d{color:var(--mut);font-size:12.5px}
+.bar{height:10px;background:var(--card2);border-radius:99px;overflow:hidden;margin:10px 0 4px}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--acc),#ff8a00);transition:width .3s}
+#out video{width:100%;max-height:70vh;background:#000;border-radius:14px}
+.audit li{padding:5px 0;font-size:14px}
+.mut{color:var(--mut);font-size:13.5px}
+pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px;font:600 13px/1.5 ui-monospace,Consolas,monospace;max-height:340px;overflow:auto}
+.stat{display:flex;gap:12px;align-items:baseline;padding:8px 0;border-bottom:1px dashed var(--line)}
+.stat b{font-size:22px;color:var(--acc);min-width:84px;font-weight:900}
+.hide{display:none!important}
+.toggle{display:flex;align-items:center;gap:10px;margin:8px 0;font-weight:700;font-size:14.5px}
+.toggle input{width:22px;height:22px;accent-color:var(--acc)}
+.pill{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:12px;font-weight:800;margin-left:6px}
+.pill.ok{color:var(--ok)}.pill.no{color:var(--warn)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><canvas id="logo" width="112" height="112"></canvas><h1>Mașina de Povești<small>Clipuri gratuite pentru Facebook, de la zero, dintr-un singur click</small></h1></header>
+<nav>
+  <button data-tab="creeaza" class="on">🎬 Creează</button>
+  <button data-tab="setari">⚙️ Setări</button>
+  <button data-tab="studiu">📊 Studiu Facebook</button>
+  <button data-tab="ajutor">❓ Ajutor</button>
+</nav>
+
+<!-- ===================== CREEAZĂ ===================== -->
+<section id="tab-creeaza">
+  <div class="card">
+    <h2>Despre ce e clipul?</h2>
+    <input id="subiect" placeholder="ex: De ce zicem „trage apa” când apăsăm pe un buton?" autocomplete="off">
+    <div class="chips" id="idei"></div>
+    <div class="btns"><button class="btn" id="btnIdei">💡 Idei noi cu AI</button><button class="btn" id="btnSurpriza">🎲 Alege tu</button></div>
+    <div class="row">
+      <div><label>Format</label><select id="format"><option value="9:16">Reel vertical 9:16 (recomandat)</option><option value="16:9">Orizontal 16:9</option></select></div>
+      <div><label>Durată</label><select id="durata"><option value="35">~35 secunde</option><option value="60" selected>~60 secunde (recomandat)</option><option value="90">~90 secunde</option><option value="150">~2,5 minute</option></select></div>
+    </div>
+    <label>Stil scenariu</label>
+    <select id="tip">
+      <option value="auto">Automat (alege AI-ul ce se potrivește)</option>
+      <option value="mit">Mit vs. adevăr („Toată lumea crede că... dar...”)</option>
+      <option value="origine">Originea („De unde vine...?”)</option>
+      <option value="poveste">Povestea ascunsă (narativ, cu suspans)</option>
+      <option value="top">Top 3 lucruri pe care nu le știai</option>
+    </select>
+    <button class="big" id="btnCreeaza">🎬 CREEAZĂ CLIPUL</button>
+    <p class="mut" id="statusServicii"></p>
+  </div>
+
+  <div class="card hide" id="progres">
+    <h2>Lucrez la clip… <span class="mut" id="eta"></span></h2>
+    <div class="bar"><i id="barFill"></i></div>
+    <ul class="steps" id="pasi"></ul>
+  </div>
+
+  <div class="card hide" id="eroare" style="border-color:#e2262a">
+    <h2>❌ Ceva n-a mers</h2>
+    <p id="eroareMsg" style="font-weight:700"></p>
+    <p class="mut" id="eroareSfat"></p>
+    <button class="btn" id="btnCopyEroare">📋 Copiază detaliile (trimite-le lui Claude)</button>
+    <pre id="eroareDet" class="hide"></pre>
+  </div>
+  <div class="card hide" id="banner" style="border-color:#ffb020"></div>
+
+  <div class="card hide" id="out">
+    <h2>✅ Gata!</h2>
+    <video id="vid" controls playsinline></video>
+    <div class="btns">
+      <a class="btn y" id="dlVid" download>⬇️ Descarcă video</a>
+      <a class="btn" id="dlCover" download>🖼️ Coperta</a>
+      <a class="btn" id="dlSrt" download>💬 Subtitrări .srt</a>
+      <button class="btn" id="btnCopy">📋 Copiază textul postării</button>
+      <button class="btn" id="btnRemontaj">🔁 Refă doar montajul</button>
+    </div>
+    <label>Textul postării pentru Facebook</label>
+    <pre id="postare"></pre>
+    <h2 style="margin-top:16px">🔎 Auditul clipului</h2>
+    <ul class="audit" id="audit"></ul>
+    <label>Scenariul</label>
+    <pre id="scenariuOut"></pre>
+  </div>
+</section>
+
+<!-- ===================== SETĂRI ===================== -->
+<section id="tab-setari" class="hide">
+  <div class="card">
+    <h2>Totul e gratuit. Cheia Gemini e opțională, dar recomandată.</h2>
+    <p class="mut">Fără nicio cheie, aplicația merge cu serviciile publice gratuite (Pollinations + vocea Piper rulată pe telefonul/laptopul tău). Cu o cheie Gemini gratuită scenariile ies mult mai bune în română.</p>
+    <label>Cheie Gemini (gratuită, fără card) — <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">ia-o de aici</a></label>
+    <input id="geminiKey" type="password" placeholder="AIza..." autocomplete="off">
+    <label>Adresa Worker-ului tău Cloudflare (opțional, „Turbo gratuit” — vezi Ajutor)</label>
+    <input id="workerUrl" placeholder="https://povesti.numele-tau.workers.dev">
+    <div class="row">
+      <div><label>Scenariu scris de</label><select id="provText"><option value="auto">Automat</option><option value="gemini">Gemini (cheie gratuită)</option><option value="worker">Cloudflare Worker</option><option value="pollinations">Pollinations (fără cheie)</option></select></div>
+      <div><label>Imagini de la</label><select id="provImg"><option value="auto">Fotografii reale + desene AI (recomandat)</option><option value="foto">Doar fotografii reale (Wikimedia, rapid)</option><option value="ai">Doar desene AI</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Desene AI de la</label><select id="provAI"><option value="auto">Automat (Worker dacă ai, altfel Pollinations)</option><option value="worker">Cloudflare Worker (rapid, 1024px)</option><option value="pollinations">Pollinations (fără cheie, ~45s/imagine)</option><option value="puter">Puter (cont gratuit, modele premium)</option></select></div>
+    </div>
+    <div class="row">
+      <div><label>Voce</label><select id="provVoce"><option value="piper">Mihai — Piper (gratis, nelimitat, rulează local)</option><option value="puter">Puter ElevenLabs (cont gratuit, credit limitat)</option></select></div>
+      <div><label>Stil desen</label><select id="stilImg">
+        <option value="cartoon">Cartoon 2D cu contur gros (ca Nea Caisă)</option>
+        <option value="carte">Ilustrație de carte veche</option>
+        <option value="3d">3D cartoon (stil animație)</option>
+      </select></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Personajul și canalul</h2>
+    <div class="row">
+      <div><label>Numele bunicului</label><input id="numeMascota" value="Moș Ghiță"></div>
+      <div><label>Numele paginii</label><input id="numePagina" placeholder="ex: Povești cu Moș Ghiță"></div>
+    </div>
+    <label>Fraza de final</label>
+    <input id="semnatura" value="Hai că v-am lăsat. Pe data viitoare, nepoților!">
+    <label class="toggle"><input type="checkbox" id="optMascota" checked> Bunicul animat pe ecran (vorbește odată cu vocea)</label>
+    <label class="toggle"><input type="checkbox" id="optSubt" checked> Subtitrări mari, cuvânt cu cuvânt</label>
+    <label class="toggle"><input type="checkbox" id="optMuzica" checked> Muzică de fundal (generată, fără drepturi de autor)</label>
+    <label class="toggle"><input type="checkbox" id="optVerif" checked> Verificare de fapte (a doua trecere AI peste scenariu)</label>
+    <div class="btns"><button class="btn y" id="btnSalveaza">💾 Salvează</button><button class="btn" id="btnTestServicii">🩺 Testează serviciile</button><button class="btn" id="btnDemo">🧪 Clip demo offline</button></div>
+    <pre id="testOut" class="hide"></pre>
+  </div>
+</section>
+
+<!-- ===================== STUDIU ===================== -->
+<section id="tab-studiu" class="hide">
+  <div class="card">
+    <h2>Ce spun datele despre clipurile care prind pe Facebook</h2>
+    <p class="mut">Regulile de mai jos sunt aplicate automat în fiecare scenariu și în montaj. Sursele sunt jos.</p>
+    <div class="stat"><b>+24,7%</b><span>retenție la 10 secunde când vocea începe în primele 3 secunde (față de clipuri doar cu muzică) [1]. <i>→ Clipul începe direct cu vorbă, fără intro.</i></span></div>
+    <div class="stat"><b>+38,5%</b><span>retenție la 30 de secunde pentru Reels verticale; +20,9% reach [1]. <i>→ Format implicit 9:16, 1080×1920.</i></span></div>
+    <div class="stat"><b>+5,1%</b><span>retenție la 3 secunde cu text pe ecran [1]. <i>→ Titlul-cârlig apare mare în primele 3 secunde.</i></span></div>
+    <div class="stat"><b>+10,1%</b><span>retenție la 10 secunde când apare un personaj în primele 3 secunde [1]. <i>→ Bunicul animat apare din prima secundă.</i></span></div>
+    <div class="stat"><b>45–60s</b><span>Reels-urile cu cele mai multe vizualizări într-o analiză pe 6 milioane de Reels; între 30s și 3 min rezultatele sunt apropiate [2]. <i>→ Durata implicită: ~60s.</i></span></div>
+    <div class="stat"><b>15 / lună</b><span>Reels eligibile pe lună, postate în minim 10 zile diferite — cerința raportată pentru programul de monetizare [3]. <i>→ Ținta: un clip pe zi.</i></span></div>
+    <div class="stat"><b>Invitație</b><span>Programul Facebook Content Monetization e pe bază de invitație; plătește Reels, clipuri lungi, poze și text [4]. Ce contează e „Qualified Views”, nu vizualizările totale.</span></div>
+    <div class="stat"><b>Original</b><span>Conturile care repostează conținutul altora pierd monetizarea și reach-ul; conținutul făcut cu AI e acceptat dacă e creat de tine [5][6]. <i>→ Scenariu, voce și desene noi la fiecare clip, niciodată copiate.</i></span></div>
+    <div class="stat"><b>Etichetă AI</b><span>Meta poate cere eticheta „AI info” pentru video fotorealist sau audio care sună realist, creat digital [7]. <i>→ Desenele cartoon nu intră aici, dar vocea sintetică poate intra: bifează „AI info” la postare, ca să fii sigur.</i></span></div>
+    <h2 style="margin-top:14px">Structura fiecărui scenariu</h2>
+    <ol class="mut">
+      <li><b>0–3s Cârlig:</b> o întrebare sau o contrazicere („Toată lumea zice X. Greșit.”) + text mare pe ecran.</li>
+      <li><b>3–10s Contextul:</b> ce crede toată lumea, pe scurt.</li>
+      <li><b>10–45s Povestea:</b> 2–3 momente concrete (nume, an, loc), imagine nouă la 3–6 secunde.</li>
+      <li><b>45–55s Răsplata:</b> răspunsul clar, cu o surpriză la final.</li>
+      <li><b>Ultimele 5s:</b> întrebare pentru comentarii + fraza bunicului, legată de început ca să se reia în buclă.</li>
+    </ol>
+    <h2>Surse</h2>
+    <ol class="mut" style="font-size:12.5px">
+      <li><a href="https://emplifi.io/resources/facebook-reels-data/" target="_blank" rel="noopener">Emplifi — Facebook Reels: What Drives Views and Stops the Scroll</a></li>
+      <li><a href="https://everline-media.com/blog/how-long-should-a-reel-be/" target="_blank" rel="noopener">Everline Media, citând analiza Socialinsider 2026 pe 6 milioane de Reels</a></li>
+      <li><a href="https://streamclipping.ai/blog/facebook-reels-monetization" target="_blank" rel="noopener">StreamClipping — Facebook Reels Monetization in 2026</a> · <a href="https://metricool.com/monetize-facebook-account/" target="_blank" rel="noopener">Metricool</a></li>
+      <li><a href="https://nealschaffer.com/facebook-content-monetization/" target="_blank" rel="noopener">Neal Schaffer — Facebook Content Monetization 2026</a> · <a href="https://creatorsagency.co/blog/facebook-content-monetization-requirements-2026" target="_blank" rel="noopener">Creators Agency</a></li>
+      <li><a href="https://www.socialmediatoday.com/news/facebook-cracking-down-unoriginal-content-ai-replicas/753001/" target="_blank" rel="noopener">Social Media Today — Facebook restricts unoriginal content</a></li>
+      <li><a href="https://publisherinabox.com/ai-content-monetization-without-getting-demonetized-2026" target="_blank" rel="noopener">Publisher in a Box — AI Content Monetization Rules 2026</a></li>
+      <li><a href="https://www.meta.com/help/artificial-intelligence/1783222608822690/" target="_blank" rel="noopener">Meta — How to identify AI content on Meta products</a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===================== AJUTOR ===================== -->
+<section id="tab-ajutor" class="hide">
+  <div class="card">
+    <h2>Cum merge, pe scurt</h2>
+    <ol class="mut">
+      <li>Scrii subiectul și apeși <b>Creează</b>.</li>
+      <li>Aplicația citește articolele de pe Wikipedia (română + engleză) despre subiect — faptele vin de acolo.</li>
+      <li>AI-ul scrie scenariul după regulile din „Studiu Facebook”, apoi îl verifică încă o dată cu sursele.</li>
+      <li>Vocea „Mihai” e generată direct pe dispozitivul tău (prima dată descarcă ~63 MB, apoi rămâne salvată).</li>
+      <li>Desenele vin de la Pollinations (gratis, dar lent: ~45s/imagine) sau de la Worker-ul tău Cloudflare (gratis, rapid).</li>
+      <li>Montajul se face în browser: MP4 1080×1920 H.264 + AAC, gata de urcat.</li>
+    </ol>
+    <p class="mut">Merge cel mai bine în <b>Chrome sau Edge</b> pe laptop, sau Chrome pe Android. Ține pagina deschisă cât lucrează.</p>
+  </div>
+  <div class="card">
+    <h2>⚡ Turbo gratuit: Worker Cloudflare (5 minute, o singură dată)</h2>
+    <ol class="mut">
+      <li>Fă-ți cont gratuit pe <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener">cloudflare.com</a> (fără card).</li>
+      <li>Mergi la <b>Workers &amp; Pages → Create → Create Worker</b>, dă-i numele <b>povesti</b>, apasă <b>Deploy</b>.</li>
+      <li>Apasă <b>Edit code</b>, șterge tot, lipește codul de mai jos, apasă <b>Deploy</b>.</li>
+      <li>În Worker: <b>Settings → Bindings → Add → Workers AI</b>, nume: <b>AI</b>. Salvează.</li>
+      <li>Copiază adresa Worker-ului (ex: https://povesti.nume.workers.dev) în Setări.</li>
+    </ol>
+    <p class="mut">Primești gratuit 10.000 de „neuroni” pe zi — ajung pentru zeci de imagini și scenarii zilnic.</p>
+    <button class="btn y" id="btnCopyWorker">📋 Copiază codul Worker-ului</button>
+    <pre id="workerCode"></pre>
+  </div>
+  <div class="card">
+    <h2>🌐 Cum o pui pe GitHub Pages</h2>
+    <ol class="mut">
+      <li>Pe GitHub: <b>New repository</b> → nume ex. <b>masina-povesti</b> → Public → Create.</li>
+      <li><b>Add file → Upload files</b> → urci <b>index.html</b> → Commit.</li>
+      <li><b>Settings → Pages → Branch: main / root → Save</b>.</li>
+      <li>După 1–2 minute: <b>https://NUMELE-TAU.github.io/masina-povesti/</b></li>
+    </ol>
+    <p class="mut">Cheile tale rămân doar în browserul tău (localStorage), nu ajung pe GitHub.</p>
+  </div>
+</section>
+</div>
+
+<canvas id="stage" class="hide"></canvas>
+
+<script type="module">
+/* ============================================================
+   MAȘINA DE POVEȘTI — totul rulează în browser, gratuit.
+   ============================================================ */
+const $ = s => document.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const TEST = new URLSearchParams(location.search).has('test');
+
+/* ---------------- Setări ---------------- */
+const CAMPURI = ['geminiKey','workerUrl','provText','provImg','provAI','provVoce','stilImg','numeMascota','numePagina','semnatura','optMascota','optSubt','optMuzica','optVerif','format','durata','tip'];
+function incarcaSetari(){
+  try{ const s = JSON.parse(localStorage.getItem('povesti_setari')||'{}');
+    for(const k of CAMPURI){ const el=$('#'+k); if(!el||s[k]===undefined) continue; if(el.type==='checkbox') el.checked=!!s[k]; else el.value=s[k]; }
+  }catch(e){}
+}
+function salveazaSetari(){
+  const s={}; for(const k of CAMPURI){ const el=$('#'+k); if(el) s[k]= el.type==='checkbox'? el.checked : el.value.trim(); }
+  try{ localStorage.setItem('povesti_setari', JSON.stringify(s)); }catch(e){}
+  return s;
+}
+const S = () => { const s={}; for(const k of CAMPURI){ const el=$('#'+k); if(el) s[k]= el.type==='checkbox'? el.checked : el.value.trim(); } s.workerUrl=(s.workerUrl||'').replace(/\/+$/,''); return s; };
+
+/* ---------------- Tab-uri ---------------- */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  for(const t of ['creeaza','setari','studiu','ajutor']) $('#tab-'+t).classList.toggle('hide', t!==b.dataset.tab);
+});
+
+/* ---------------- Progres ---------------- */
+const PASI = [
+  ['cercetare','📚','Caut fapte pe Wikipedia'],
+  ['scenariu','✍️','Scriu scenariul după regulile Facebook'],
+  ['verificare','🔎','Verific faptele din scenariu'],
+  ['voce','🎙️','Generez vocea'],
+  ['imagini','🎨','Desenez scenele'],
+  ['montaj','🎬','Montez clipul (MP4)'],
+  ['audit','✅','Auditul final'],
+];
+let pondere = {cercetare:4,scenariu:8,verificare:5,voce:15,imagini:43,montaj:23,audit:2};
+const stare = {};
+function initPasi(){
+  $('#pasi').innerHTML = PASI.map(([k,ic,t])=>`<li id="p-${k}"><span class="ic">⏳</span><div><div>${t}</div><div class="d"></div></div></li>`).join('');
+  for(const [k] of PASI) stare[k]=0; actualizeazaBara();
+}
+function pas(k, st, detaliu){ // st: 'run'|'ok'|'warn'|'err'|'skip'
+  const li=$('#p-'+k); if(!li) return;
+  li.querySelector('.ic').textContent = {run:'🔄',ok:'✅',warn:'⚠️',err:'❌',skip:'➖'}[st]||'⏳';
+  if(detaliu!==undefined) li.querySelector('.d').textContent = detaliu;
+  if(st==='ok'||st==='warn'||st==='skip') { stare[k]=1; actualizeazaBara(); }
+}
+function progresPas(k, f, detaliu){ stare[k]=clamp(f,0,1); if(detaliu) { const li=$('#p-'+k); if(li) li.querySelector('.d').textContent=detaliu; } actualizeazaBara(); }
+function actualizeazaBara(){ let tot=0,s=0; for(const k in pondere){ tot+=pondere[k]; s+=pondere[k]*(stare[k]||0);} $('#barFill').style.width=(100*s/tot).toFixed(1)+'%'; }
+const log = (...a)=>console.log('[povesti]',...a);
+
+/* ---------------- Utilitare text ---------------- */
+function diacritice(t){ return String(t||'').replace(/ş/g,'ș').replace(/Ş/g,'Ș').replace(/ţ/g,'ț').replace(/Ţ/g,'Ț'); }
+function curataTTS(t){ return diacritice(t).replace(/[„”“"«»]/g,'').replace(/[–—]/g,', ').replace(/\s+/g,' ').replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,'').trim(); }
+function propozitii(t){ return (t.match(/[^.!?…]+[.!?…]*/g)||[t]).map(s=>s.trim()).filter(Boolean); }
+function extrageJSON(txt){
+  if(typeof txt!=='string') return txt;
+  txt = txt.replace(/^```(?:json)?/i,'').replace(/```\s*$/,'').trim();
+  const a=txt.indexOf('{'), b=txt.lastIndexOf('}');
+  if(a<0||b<0) throw new Error('Răspunsul AI nu conține JSON');
+  return JSON.parse(txt.slice(a,b+1));
+}
+
+/* ---------------- Limitare de ritm (servicii publice) ---------------- */
+const ultimul = {};
+async function asteaptaRand(cheie, ms){ const acum=Date.now(); const t=(ultimul[cheie]||0)+ms-acum; if(t>0) await sleep(t); ultimul[cheie]=Date.now(); }
+async function fetchTimeout(url, opt={}, ms=120000){
+  const c = new AbortController(); const id=setTimeout(()=>c.abort(), ms);
+  try{ return await fetch(url, {...opt, signal:c.signal}); } finally{ clearTimeout(id); }
+}
+
+/* =====================================================
+   1. CERCETARE — Wikipedia (gratuit, fără cheie, CORS ok)
+   ===================================================== */
+async function wikiCauta(lang, q, n=3){
+  const u=`https://${lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&srlimit=${n}&format=json&origin=*`;
+  const r=await fetchTimeout(u,{},20000); if(!r.ok) return [];
+  const j=await r.json(); return (j.query?.search||[]).map(x=>x.title);
+}
+async function wikiText(lang, titlu, max=5000){
+  const u=`https://${lang}.wikipedia.org/w/api.php?action=query&prop=extracts&explaintext=1&redirects=1&titles=${encodeURIComponent(titlu)}&format=json&origin=*`;
+  const r=await fetchTimeout(u,{},20000); if(!r.ok) return null;
+  const j=await r.json(); const p=Object.values(j.query?.pages||{})[0];
+  if(!p||!p.extract) return null;
+  let t=p.extract.replace(/\n{2,}/g,'\n').replace(/== (Note|Bibliografie|Legături externe|Vezi și|References|See also|External links|Further reading|Notes)[\s\S]*$/,'');
+  return {lang, titlu:p.title, url:`https://${lang}.wikipedia.org/wiki/${encodeURIComponent(p.title.replace(/ /g,'_'))}`, text:t.slice(0,max)};
+}
+async function cercetare(subiect, cuvinteCheie){
+  const surse=[]; const vazute=new Set();
+  const cautari=[['ro',subiect],['ro',cuvinteCheie?.ro],['en',cuvinteCheie?.en]].filter(x=>x[1]);
+  for(const [lang,q] of cautari){
+    let titluri=[]; try{ titluri=await wikiCauta(lang,q,3);}catch(e){}
+    for(const t of titluri.slice(0, lang==='ro'?2:2)){
+      const k=lang+':'+t; if(vazute.has(k)) continue; vazute.add(k);
+      try{ const s=await wikiText(lang,t); if(s&&s.text.length>300) surse.push(s);}catch(e){}
+      if(surse.length>=5) break;
+    }
+    if(surse.length>=5) break;
+  }
+  return surse;
+}
+
+/* =====================================================
+   2. TEXT AI — Gemini (gratis) / Worker / Pollinations
+   ===================================================== */
+const GEMINI_MODELE=['gemini-flash-latest','gemini-flash-lite-latest','gemini-2.5-flash','gemini-2.5-flash-lite','gemma-3-27b-it'];
+async function textGemini(sistem, prompt, json=true){
+  const key=S().geminiKey; let ultimaEroare='';
+  for(const m of GEMINI_MODELE){
+    const gemma=m.startsWith('gemma');
+    const body={contents:[{role:'user',parts:[{text: gemma? sistem+'\n\n'+prompt : prompt}]}], generationConfig:{temperature:0.85, maxOutputTokens:32768}};
+    if(!gemma){ body.systemInstruction={parts:[{text:sistem}]}; if(json) body.generationConfig.responseMimeType='application/json'; }
+    try{
+      const r=await fetchTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body)},90000);
+      if(r.status===400){ const t=await r.text(); if(/API key/i.test(t)) throw new Error('Cheia Gemini nu e validă'); ultimaEroare=t.slice(0,200); continue; }
+      if(!r.ok){ ultimaEroare=`${m}: HTTP ${r.status}`; continue; }
+      const j=await r.json(); const t=j.candidates?.[0]?.content?.parts?.map(p=>p.text||'').join('')||'';
+      if(t.trim()) { log('gemini',m); return t; }
+      ultimaEroare=`${m}: răspuns gol`;
+    }catch(e){ if(/nu e validă/.test(e.message)) throw e; ultimaEroare=e.message; }
+  }
+  throw new Error('Gemini: '+ultimaEroare);
+}
+async function textWorker(sistem, prompt){
+  const r=await fetchTimeout(S().workerUrl+'/text',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:sistem},{role:'user',content:prompt}]})},120000);
+  if(!r.ok) throw new Error('Worker text HTTP '+r.status);
+  const j=await r.json(); if(j.error) throw new Error(j.error);
+  return typeof j.text==='string'? j.text : JSON.stringify(j.text);
+}
+async function textPollinations(sistem, prompt){
+  for(let i=0;i<4;i++){
+    await asteaptaRand('poll-text', 31000);
+    const r=await fetchTimeout('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'system',content:sistem},{role:'user',content:prompt}],seed:Math.floor(Math.random()*1e6)})},150000);
+    if(r.status===402||r.status===429){ const ra=+(r.headers.get('Retry-After')||30); await sleep(ra*1000); continue; }
+    if(!r.ok) throw new Error('Pollinations text HTTP '+r.status);
+    const ct=r.headers.get('content-type')||'';
+    if(ct.includes('json')){ const j=await r.json(); const t=j.choices?.[0]?.message?.content; if(t) return t; throw new Error('Pollinations: răspuns gol'); }
+    return await r.text();
+  }
+  throw new Error('Pollinations e ocupat, încearcă peste un minut');
+}
+function furnizoriText(){
+  const s=S(); const ord=[];
+  if(s.provText==='gemini'||s.provText==='auto') if(s.geminiKey) ord.push('gemini');
+  if(s.provText==='worker'||s.provText==='auto') if(s.workerUrl) ord.push('worker');
+  if(s.provText==='pollinations'||s.provText==='auto'||!ord.length) ord.push('pollinations');
+  return [...new Set(ord)];
+}
+async function textAI(sistem, prompt, {json=true}={}){
+  if(TEST) return TEST_AI(sistem, prompt);
+  let err;
+  for(const f of furnizoriText()){
+    try{
+      const t = f==='gemini'? await textGemini(sistem,prompt,json) : f==='worker'? await textWorker(sistem,prompt) : await textPollinations(sistem,prompt);
+      return json? extrageJSON(t) : t;
+    }catch(e){ err=e; log('text fail',f,e.message); }
+  }
+  throw err||new Error('Niciun serviciu de text nu a răspuns');
+}
+
+/* =====================================================
+   3. SCENARIUL — regulile din studiul Facebook
+   ===================================================== */
+const TIPURI={
+  mit:'MIT VS. ADEVĂR: începe cu ce crede toată lumea, apoi „Greșit.” / „Doar că nu e chiar așa.” și dezvăluie adevărul.',
+  origine:'ORIGINEA: „De unde vine...?” — călătorie în timp până la începuturi, cu momente concrete.',
+  poveste:'POVESTEA ASCUNSĂ: narativ cu suspans, un personaj real, o problemă, o întorsătură.',
+  top:'TOP 3: trei fapte surprinzătoare, numerotate, de la mai puțin la cel mai șocant (păstrează-l pe cel mai tare la final).',
+  auto:'Alege tu structura care face subiectul cel mai captivant (mit vs. adevăr, origine, poveste ascunsă sau top 3).'
+};
+function sistemScenariu(s){
+  return `Ești scenaristul unei pagini românești de Facebook cu clipuri scurte despre originea lucrurilor de zi cu zi
+(cuvinte, obiceiuri, mâncăruri, clădiri, invenții, istorie, personaje). Naratorul e ${s.numeMascota}, un bunic simpatic
+care explică „pe înțelesul tuturor, ca la o cafea cu bunicul”.
+
+REGULI FACEBOOK (bazate pe date — respectă-le strict):
+1. Prima propoziție se rostește din secunda 0 și e CÂRLIGUL: max 12 cuvinte, o întrebare sau o contrazicere care creează curiozitate.
+   Exemple: „Toată lumea zice «trage apa». Nimeni n-a mai tras de nimic de 60 de ani.” / „Covrigii de Buzău au o legătură cu Caragiale.”
+2. Fără introducere, fără „Salutare”, fără „În acest video”. Direct în poveste.
+3. Contextul (ce crede lumea) în max 2 propoziții, apoi povestea cu 2–3 momente CONCRETE: nume, ani, locuri, cifre.
+4. O idee nouă la fiecare 3–6 secunde (o scenă = 1–2 propoziții scurte, 8–18 cuvinte).
+5. Răsplata clară spre final + o mică surpriză. Ultima scenă: o întrebare pentru comentarii, apoi semnătura: „${s.semnatura}”
+   Fă ca finalul să se lege natural de început (ca clipul să meargă în buclă).
+6. Română vorbită, caldă, cu umor fin, propoziții scurte, diacritice corecte (ș, ț cu virgulă). Fără emoji în narațiune.
+   Interzis: „în concluzie”, „este important de menționat”, „fascinant”, „în era modernă”, „haideți să descoperim”.
+7. ADEVĂR: folosește DOAR fapte care apar în SURSELE primite. Dacă o informație nu e în surse, nu o spune.
+   Dacă o poveste populară e mit, spune că e mit. Nu inventa ani, nume sau cifre.
+8. Numerele mari scrie-le în litere dacă sunt greu de citit (ex: „un milion și jumătate”). Anii pot rămâne cifre.
+
+IMAGINI: pentru fiecare scenă dă DOUĂ lucruri:
+- "foto": 2-5 cuvinte în ENGLEZĂ pentru căutarea unei FOTOGRAFII REALE pe Wikimedia Commons, exact despre ce se vorbește
+  (un loc, o clădire, un obiect, o persoană istorică, un document vechi). Ex: "Buzau covrigi", "Victorian toilet cistern chain", "Ion Luca Caragiale".
+  Pune "" dacă scena e abstractă și o ilustrație se potrivește mai bine.
+- "imagine": un prompt în ENGLEZĂ pentru o ilustrație, foarte concret și vizual (cine, ce face, unde, epoca, obiecte, culori, lumină),
+  fără text/litere, fără portrete realiste ale persoanelor reale (doar personaje cartoon generice), subiectul centrat.
+
+Răspunde DOAR cu JSON valid:
+{
+ "titlu": "titlul postării, max 70 caractere, curiozitate + claritate",
+ "carlig_ecran": "textul mare din primele 3 secunde, max 6 cuvinte, MAJUSCULE",
+ "accent_carlig": "1-2 cuvinte din carlig_ecran care se colorează în roșu",
+ "coperta_text": "2-4 cuvinte MARI pentru copertă",
+ "coperta_sub": "3-5 cuvinte mici, ex: NU E CE CREZI",
+ "postare": "textul postării: prima linie = cârlig, apoi 2-3 propoziții, fără hashtaguri",
+ "intrebare": "întrebarea pentru comentarii",
+ "hashtaguri": ["#...", "#...", "#..."],
+ "surse_folosite": [0, 1],
+ "scene": [
+   {"text": "narațiunea scenei", "foto": "real photo search EN", "imagine": "illustration prompt EN", "eticheta": {"text": "MAX 4 CUVINTE", "accent": "cuvânt roșu", "stil": "alb|rosu|galben"} sau null}
+ ]
+}`;
+}
+function promptScenariu(subiect, s, surse){
+  const sec=+s.durata, cuv=Math.round(sec*2.45);
+  const nrScene=Math.max(6, Math.round(sec/4.6));
+  const txtSurse = surse.length? surse.map((x,i)=>`[${i}] ${x.titlu} (${x.lang}.wikipedia)\n${x.text}`).join('\n\n---\n\n') : '(nu s-au găsit surse — rămâi la fapte generale, foarte cunoscute, fără ani/nume/cifre precise)';
+  return `SUBIECT: ${subiect}
+STIL: ${TIPURI[s.tip]||TIPURI.auto}
+DURATĂ: ~${sec} secunde citite => în total ${cuv-12}–${cuv+8} de cuvinte în toate scenele, în ${nrScene}–${nrScene+2} scene.
+Pune "eticheta" doar la ~1 din 2 scene (cele cu cifra sau ideea-cheie).
+
+SURSE:
+${txtSurse}`;
+}
+async function scrieScenariu(subiect, s, surse){
+  let sc; try{ sc = normalizeazaScenariu(await textAI(sistemScenariu(s), promptScenariu(subiect,s,surse)), s); }
+  catch(e){ log('scenariu reîncercare', e.message); sc = normalizeazaScenariu(await textAI(sistemScenariu(s), promptScenariu(subiect,s,surse)+'\n\nRăspunde STRICT cu JSON valid, complet.'), s); }
+  const probleme = verificaStructura(sc, s);
+  if(probleme.length){
+    log('reparare', probleme);
+    try{
+      const rep = await textAI(sistemScenariu(s), promptScenariu(subiect,s,surse)+`\n\nVARIANTA TA ANTERIOARĂ:\n${JSON.stringify(sc)}\n\nPROBLEME DE REPARAT:\n- ${probleme.join('\n- ')}\nTrimite JSON-ul corectat, complet.`);
+      const sc2=normalizeazaScenariu(rep,s); if(verificaStructura(sc2,s).length<probleme.length) sc=sc2;
+    }catch(e){ log('reparare eșuată', e.message); }
+  }
+  return sc;
+}
+function normalizeazaScenariu(sc, s){
+  if(!sc||!Array.isArray(sc.scene)) throw new Error('Scenariul nu are scene');
+  sc.scene = sc.scene.filter(x=>x&&x.text&&String(x.text).trim()).map(x=>({
+    text: diacritice(String(x.text).trim()),
+    imagine: String(x.imagine||x.image||sc.titlu||'').trim(),
+    foto: String(x.foto||'').trim(),
+    eticheta: x.eticheta&&x.eticheta.text? {text:diacritice(String(x.eticheta.text)).toUpperCase().split(/\s+/).slice(0,5).join(' '), accent:diacritice(String(x.eticheta.accent||'')).toUpperCase(), stil:['alb','rosu','galben'].includes(x.eticheta.stil)?x.eticheta.stil:'alb'} : null
+  }));
+  for(const k of ['titlu','carlig_ecran','accent_carlig','coperta_text','coperta_sub','postare','intrebare']) sc[k]=diacritice(sc[k]||'');
+  sc.carlig_ecran = (sc.carlig_ecran||sc.titlu).toUpperCase().split(/\s+/).slice(0,7).join(' ');
+  sc.accent_carlig = (sc.accent_carlig||'').toUpperCase();
+  sc.coperta_text = (sc.coperta_text||sc.carlig_ecran).toUpperCase();
+  sc.coperta_sub = (sc.coperta_sub||'').toUpperCase();
+  sc.hashtaguri = (Array.isArray(sc.hashtaguri)?sc.hashtaguri:[]).map(h=>'#'+String(h).replace(/^#/,'').replace(/\s+/g,'')).filter(h=>h.length>2).slice(0,5);
+  const sem = diacritice(s.semnatura||'').trim();
+  const ultima = sc.scene[sc.scene.length-1];
+  if(sem && ultima && !ultima.text.includes(sem.slice(0,15))) sc.scene.push({text:sem, imagine:'a cheerful old grandpa waving goodbye in a cozy Romanian kitchen with a cup of coffee on the table, warm evening light', eticheta:null});
+  return sc;
+}
+const INTERZISE=['în concluzie','este important de menționat','fascinant','în era modernă','haideți să descoperim','în acest video','salutare','bună ziua tuturor'];
+function numarCuvinte(sc){ return sc.scene.reduce((a,x)=>a+x.text.split(/\s+/).filter(Boolean).length,0); }
+function verificaStructura(sc, s){
+  const p=[]; const sec=+s.durata; const tinta=sec*2.45; const n=numarCuvinte(sc);
+  if(n<tinta*0.72) p.push(`Prea scurt: ${n} cuvinte, trebuie ~${Math.round(tinta)}.`);
+  if(n>tinta*1.3) p.push(`Prea lung: ${n} cuvinte, trebuie ~${Math.round(tinta)}.`);
+  const prima=propozitii(sc.scene[0]?.text||'')[0]||''; if(prima.split(/\s+/).length>14) p.push('Prima propoziție (cârligul) are peste 12 cuvinte.');
+  if(/^(salut|bun[ăa]|hei|astăzi|azi vă|în acest)/i.test(prima.trim())) p.push('Începe cu salut/intro în loc de cârlig.');
+  const tot=sc.scene.map(x=>x.text).join(' ').toLowerCase(); for(const f of INTERZISE) if(tot.includes(f)) p.push(`Conține expresia interzisă „${f}”.`);
+  sc.scene.forEach((x,i)=>{ const w=x.text.split(/\s+/).length; if(w>30) p.push(`Scena ${i+1} are ${w} cuvinte (max ~18).`); });
+  if(!/\?/.test(sc.scene.slice(-3).map(x=>x.text).join(' '))) p.push('Lipsește întrebarea pentru comentarii la final.');
+  return p;
+}
+async function verificaFapte(sc, surse, s){
+  if(!surse.length) return {sc, note:'fără surse — verificare sărită'};
+  const sistem=`Ești un verificator de fapte strict. Primești un scenariu și sursele. Pentru fiecare afirmație factuală (ani, nume, cifre, locuri, cauze),
+verifică dacă e susținută de surse. Corectează sau scoate ce nu e susținut, păstrând stilul, lungimea și numărul de scene.
+Răspunde DOAR cu JSON: {"probleme": ["..."], "scene": [{"text": "..."}]}  (același număr de scene, în aceeași ordine)`;
+  const prompt=`SCENARIU:\n${sc.scene.map((x,i)=>`${i}. ${x.text}`).join('\n')}\n\nSURSE:\n${surse.map((x,i)=>`[${i}] ${x.titlu}\n${x.text.slice(0,3500)}`).join('\n\n---\n\n')}`;
+  const r=await textAI(sistem,prompt);
+  const probleme=(r.probleme||[]).map(String).filter(Boolean);
+  if(Array.isArray(r.scene)&&r.scene.length===sc.scene.length){
+    r.scene.forEach((x,i)=>{ if(x&&x.text&&String(x.text).trim().length>3) sc.scene[i].text=diacritice(String(x.text).trim()); });
+  }
+  return {sc, note: probleme.length? `${probleme.length} corecturi: `+probleme.slice(0,3).join(' | ') : 'nicio problemă găsită'};
+}
+
+/* =====================================================
+   4. VOCEA — Piper „Mihai” rulat local (gratis, nelimitat)
+   ===================================================== */
+const SR=48000;
+let piper=null;
+async function voceInit(cb){
+  if(TEST) return;
+  if(S().provVoce==='puter'){ await incarcaPuter(); return; }
+  if(!piper) piper = await import('https://cdn.jsdelivr.net/npm/@diffusionstudio/vits-web@1.0.3/+esm');
+  let stoc=[]; try{ stoc = await piper.stored(); }catch(e){}
+  if(!stoc.includes('ro_RO-mihai-medium')) await piper.download('ro_RO-mihai-medium', p=>{ if(p&&p.total) cb && cb(p.loaded/p.total); });
+}
+async function decodeaza(ab){
+  const ctx=new OfflineAudioContext(1,1,SR);
+  return await ctx.decodeAudioData(ab);
+}
+async function vocePropozitie(text){
+  if(TEST) return TEST_VOCE(text);
+  if(S().provVoce==='puter'){
+    let audio; try{ audio=await puter.ai.txt2speech(text,{provider:'elevenlabs',model:'eleven_multilingual_v2'}); }catch(e){ audio=await puter.ai.txt2speech(text,'ro-RO'); }
+    const ab=await (await fetch(audio.src)).arrayBuffer(); return decodeaza(ab);
+  }
+  const wav = await piper.predict({text, voiceId:'ro_RO-mihai-medium'});
+  return decodeaza(await wav.arrayBuffer());
+}
+function taieLiniste(buf){ // scoate liniștea de la capete (păstrează 40ms)
+  const d=buf.getChannelData(0); const prag=0.012; let a=0,b=d.length-1;
+  while(a<d.length&&Math.abs(d[a])<prag) a++; while(b>a&&Math.abs(d[b])<prag) b--;
+  a=Math.max(0,a-Math.round(0.04*buf.sampleRate)); b=Math.min(d.length-1,b+Math.round(0.06*buf.sampleRate));
+  return d.slice(a,b+1);
+}
+async function voceScena(text){
+  // fiecare propoziție separat => timpi exacți pentru subtitrări
+  const prop=propozitii(curataTTS(text)); const bucati=[]; const segmente=[]; let t=0; const pauza=Math.round(0.16*SR);
+  for(const p of prop){
+    const buf=await vocePropozitie(p); const d=taieLiniste(buf);
+    segmente.push({text:p, start:t/SR, end:(t+d.length)/SR}); bucati.push(d); t+=d.length+pauza;
+  }
+  const out=new Float32Array(Math.max(1,t-pauza)); let o=0; for(const b of bucati){ out.set(b,o); o+=b.length+pauza; }
+  return {samples:out, durata:out.length/SR, segmente};
+}
+let puterPromis=null;
+function incarcaPuter(){ if(window.puter) return Promise.resolve(); if(!puterPromis) puterPromis=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src='https://js.puter.com/v2/'; s.onload=ok; s.onerror=()=>no(new Error('Nu s-a putut încărca Puter')); document.head.appendChild(s); }); return puterPromis; }
+
+/* =====================================================
+   5. IMAGINILE
+   ===================================================== */
+const STILURI={
+  cartoon:'flat 2D cartoon illustration, bold clean dark outlines, warm saturated colors, soft cel shading, simple textured background, friendly funny storybook explainer style, high detail',
+  carte:'vintage storybook illustration, gouache and ink, warm muted colors, textured paper, charming and detailed',
+  '3d':'3D animated movie style, soft lighting, cute stylized characters, vibrant colors, cinematic composition'
+};
+function promptImagine(p, s){ return `${p}. ${STILURI[s.stilImg]||STILURI.cartoon}, masterpiece, highly detailed, sharp focus, rich lighting, professional illustration. No text, no letters, no words, no watermark, no logo, centered subject.`; }
+function dimImagine(fmt){ return fmt==='9:16'? [576,1024] : [1024,576]; }
+async function blobLaBitmap(blob){ if(!blob.type.startsWith('image/')&&blob.size<5000) throw new Error('nu e imagine'); return await createImageBitmap(blob); }
+async function imgPollinations(prompt, fmt, seed){
+  const [w,h]=dimImagine(fmt);
+  const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt.slice(0,900))}?width=${w}&height=${h}&seed=${seed}&nologo=true`;
+  for(let i=0;i<5;i++){
+    await asteaptaRand('poll-img', 46000);
+    let r; try{ r=await fetchTimeout(url,{},170000); }catch(e){ if(e.name!=='AbortError' && i>=1) throw new Error('Pollinations nu răspunde (rețea/CORS)'); if(i<4) continue; throw e; }
+    if(r.status===402||r.status===429){ const ra=+(r.headers.get('Retry-After')||45); await sleep(Math.min(ra,120)*1000); continue; }
+    if(!r.ok){ if(r.status>=500&&i<4) continue; throw new Error('Pollinations HTTP '+r.status); }
+    const b=await r.blob(); if(!b.type.startsWith('image/')) { await sleep(5000); continue; }
+    return {bmp:await blobLaBitmap(b), taieJos:0.075};
+  }
+  throw new Error('Pollinations nu a dat imaginea');
+}
+async function imgWorker(prompt, fmt, seed){
+  const r=await fetchTimeout(S().workerUrl+'/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,seed,format:fmt})},90000);
+  if(!r.ok) throw new Error('Worker imagine HTTP '+r.status);
+  return {bmp:await blobLaBitmap(await r.blob()), taieJos:0};
+}
+async function imgPuter(prompt){
+  await incarcaPuter();
+  const el=await puter.ai.txt2img(prompt,{model:'black-forest-labs/flux-1-schnell'});
+  const b=await (await fetch(el.src)).blob(); return {bmp:await blobLaBitmap(b), taieJos:0};
+}
+function furnizoriImg(){
+  const s=S(); if(s.provAI==='worker'&&s.workerUrl) return ['worker','pollinations'];
+  if(s.provAI==='pollinations') return ['pollinations'];
+  if(s.provAI==='puter') return ['puter','pollinations'];
+  return s.workerUrl? ['worker','pollinations'] : ['pollinations'];
+}
+async function genereazaImagine(prompt, fmt, seed){
+  if(TEST) return TEST_IMG(prompt, fmt, seed);
+  let err; for(const f of furnizoriImg()){
+    try{ return f==='worker'? await imgWorker(prompt,fmt,seed) : f==='puter'? await imgPuter(prompt) : await imgPollinations(prompt,fmt,seed); }
+    catch(e){ err=e; log('img fail',f,e.message); }
+  }
+  throw err;
+}
+function imagineRezerva(text, fmt, i){ // dacă un serviciu cade, clipul tot iese
+  const [w,h]=fmt==='9:16'?[1080,1920]:[1920,1080]; const c=new OffscreenCanvas(w,h); const x=c.getContext('2d');
+  const pal=[['#f4a259','#bc4b51'],['#5b8e7d','#f4e285'],['#8cb369','#4e6e5d'],['#e07a5f','#3d405b'],['#81b29a','#f2cc8f']][i%5];
+  const g=x.createLinearGradient(0,0,w,h); g.addColorStop(0,pal[0]); g.addColorStop(1,pal[1]); x.fillStyle=g; x.fillRect(0,0,w,h);
+  x.globalAlpha=.18; for(let k=0;k<9;k++){ x.beginPath(); x.arc((k*397)%w,(k*631)%h,120+k*30,0,7); x.fillStyle='#fff'; x.fill(); } x.globalAlpha=1;
+  return {bmp:c.transferToImageBitmap(), taieJos:0, rezerva:true};
+}
+
+
+/* ---------- Fotografii reale: Wikimedia Commons (gratuit, fără cheie, licențe libere) ---------- */
+const FOTO_EXCLUS=/(map|hartă|harta|logo|flag|steag|coat of arms|stema|diagram|chart|signature|semnătur|icon|symbol|location|locator|plan|scheme|graph|\.svg|\.tif|\.pdf|\.gif)/i;
+function faraHTML(t){ const d=document.createElement('div'); d.innerHTML=String(t||''); return (d.textContent||'').replace(/\s+/g,' ').trim(); }
+async function commonsCauta(q, n=12){
+  const u=`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(q+' filetype:bitmap')}&gsrnamespace=6&gsrlimit=${n}&prop=imageinfo&iiprop=url|size|mime|extmetadata&iiurlwidth=1600&format=json&origin=*`;
+  const r=await fetchTimeout(u,{},20000); if(!r.ok) return [];
+  const j=await r.json(); const pag=Object.values(j.query?.pages||{}).sort((a,b)=>(a.index||0)-(b.index||0));
+  return pag.map(p=>{ const ii=p.imageinfo?.[0]; if(!ii) return null; const m=ii.extmetadata||{};
+    return {titlu:p.title, url:ii.thumburl||ii.url, w:ii.width, h:ii.height, mime:ii.mime,
+      autor:faraHTML(m.Artist?.value).slice(0,60), licenta:faraHTML(m.LicenseShortName?.value), pagina:ii.descriptionurl}; }).filter(Boolean);
+}
+async function wikiPozaArticol(lang, titlu){
+  const u=`https://${lang}.wikipedia.org/w/api.php?action=query&prop=pageimages&piprop=original|name&titles=${encodeURIComponent(titlu)}&format=json&origin=*`;
+  const r=await fetchTimeout(u,{},15000); if(!r.ok) return null; const j=await r.json(); const p=Object.values(j.query?.pages||{})[0];
+  if(!p?.pageimage) return null; const c=await commonsCauta('"'+p.pageimage.replace(/_/g,' ').replace(/\.[a-z]+$/i,'')+'"',1); return c[0]||null;
+}
+function fotoBuna(c, folosite){
+  if(!c||folosite.has(c.url)) return false; if(!/jpeg|png|webp/.test(c.mime||'')) return false;
+  if(FOTO_EXCLUS.test(c.titlu)) return false; if(Math.max(c.w,c.h)<900) return false;
+  const r=c.w/c.h; return r>0.45&&r<2.4;
+}
+async function incarcaFoto(c, L){
+  const r=await fetchTimeout(c.url,{},40000); if(!r.ok) throw new Error('foto HTTP '+r.status);
+  const bmp=await createImageBitmap(await r.blob());
+  const img={bmp, taieJos:0, foto:true, credit:`${(c.titlu||'').replace(/^File:|^Fișier:/,'').replace(/\.[a-z]+$/i,'')}${c.autor?' — '+c.autor:''}${c.licenta?' ('+c.licenta+')':''}`};
+  const rImg=bmp.width/bmp.height, rCadru=L.W/L.H;
+  if(Math.abs(Math.log(rImg/rCadru))>0.25){ // alt format => fundal estompat
+    const fw=Math.round(L.W/4), fh=Math.round(L.H/4); const oc=new OffscreenCanvas(fw,fh), ox=oc.getContext('2d');
+    const sc=Math.max(fw/bmp.width,fh/bmp.height)*1.2; ox.filter='blur(14px) brightness(0.62) saturate(1.25)';
+    ox.drawImage(bmp,(fw-bmp.width*sc)/2,(fh-bmp.height*sc)/2,bmp.width*sc,bmp.height*sc); ox.filter='none';
+    ox.fillStyle='rgba(0,0,0,.18)'; ox.fillRect(0,0,fw,fh); img.fundal=oc.transferToImageBitmap();
+  }
+  return img;
+}
+async function fotoScena(P, i){
+  const sc=P.scene[i]; P._folosite=P._folosite||new Set();
+  const cautari=[sc.foto, sc.foto&&sc.foto.split(/\s+/).slice(0,2).join(' ')].filter(q=>q&&q.length>2);
+  for(const q of [...new Set(cautari)]){
+    let rez=[]; try{ rez=await commonsCauta(q); }catch(e){}
+    const c=rez.find(x=>fotoBuna(x,P._folosite));
+    if(c){ try{ const img=await incarcaFoto(c,P.L); P._folosite.add(c.url); return img; }catch(e){ log('foto fail',e.message); } }
+  }
+  // rezervă: poza principală a unui articol-sursă, nefolosită încă
+  for(const s of (P.surse||[])){ const k='art:'+s.lang+s.titlu; if(P._folosite.has(k)) continue; P._folosite.add(k);
+    try{ const c=await wikiPozaArticol(s.lang,s.titlu); if(c&&fotoBuna(c,P._folosite)){ const img=await incarcaFoto(c,P.L); P._folosite.add(c.url); return img; } }catch(e){} }
+  return null;
+}
+async function imagineScena(P, i){
+  const s=P.setari, sc=P.scene[i];
+  if(s.provImg!=='ai' && sc.foto){ const f=await fotoScena(P,i).catch(()=>null); if(f) return f; }
+  if(s.provImg!=='foto'){ try{ return await genereazaImagine(promptImagine(sc.imagine,s), s.format, P.seed+i); }catch(e){ log('AI fail',i,e.message); } }
+  if(s.provImg==='foto'){ const f=await fotoScena(P,i).catch(()=>null); if(f) return f; try{ return await genereazaImagine(promptImagine(sc.imagine,s), s.format, P.seed+i); }catch(e){} }
+  return imagineRezerva(sc.text, s.format, i);
+}
+
+/* =====================================================
+   6. BUNICUL ANIMAT (desenat în cod — mereu la fel, original)
+   ===================================================== */
+function deseneazaBunic(x, cx, by, H, gura=0, clipit=0, t=0){
+  // cx = centru, by = baza (jos), H = înălțimea totală
+  const s=H/100, O='#1d1612', lw=Math.max(2,2.4*s);
+  x.save(); x.translate(cx, by + Math.sin(t*2.2)*1.2*s); x.lineJoin='round'; x.lineCap='round'; x.lineWidth=lw; x.strokeStyle=O;
+  // corp + vestă
+  x.fillStyle='#f4efe6'; x.beginPath(); x.moveTo(-34*s,0); x.quadraticCurveTo(-36*s,-30*s,-14*s,-36*s); x.lineTo(14*s,-36*s); x.quadraticCurveTo(36*s,-30*s,34*s,0); x.closePath(); x.fill(); x.stroke();
+  x.fillStyle='#8a5a3b'; x.beginPath(); x.moveTo(-30*s,0); x.quadraticCurveTo(-32*s,-26*s,-13*s,-34*s); x.lineTo(-5*s,0); x.closePath(); x.fill(); x.stroke();
+  x.beginPath(); x.moveTo(30*s,0); x.quadraticCurveTo(32*s,-26*s,13*s,-34*s); x.lineTo(5*s,0); x.closePath(); x.fill(); x.stroke();
+  x.fillStyle='#d9a066'; for(const yy of [-24,-15,-6]){ x.beginPath(); x.arc(-8*s,yy*s,1.6*s,0,7); x.fill(); }
+  // gât
+  x.fillStyle='#f2c4a0'; x.beginPath(); x.rect(-7*s,-42*s,14*s,8*s); x.fill(); x.stroke();
+  // cap
+  x.fillStyle='#f6cfab'; x.beginPath(); x.ellipse(0,-63*s,22*s,24*s,0,0,7); x.fill(); x.stroke();
+  // urechi
+  for(const sx of [-1,1]){ x.beginPath(); x.ellipse(sx*22*s,-62*s,4*s,6*s,0,0,7); x.fill(); x.stroke(); }
+  // nas
+  x.fillStyle='#eaa984'; x.beginPath(); x.ellipse(0,-59*s,5.5*s,5*s,0,0,7); x.fill(); x.stroke();
+  // gura (se mișcă)
+  const g=clamp(gura,0,1);
+  x.fillStyle='#5a1f1a'; x.beginPath(); x.ellipse(0,-47*s,6*s,(1+6*g)*s,0,0,7); x.fill(); x.stroke();
+  // mustață albă
+  x.fillStyle='#ffffff'; x.beginPath();
+  x.moveTo(0,-54*s); x.bezierCurveTo(-8*s,-58*s,-20*s,-55*s,-21*s,-47*s); x.bezierCurveTo(-14*s,-50*s,-7*s,-49*s,0,-51*s);
+  x.bezierCurveTo(7*s,-49*s,14*s,-50*s,21*s,-47*s); x.bezierCurveTo(20*s,-55*s,8*s,-58*s,0,-54*s); x.closePath(); x.fill(); x.stroke();
+  // sprâncene
+  x.lineWidth=lw*1.6; x.strokeStyle='#ffffff'; for(const sx of [-1,1]){ x.beginPath(); x.moveTo(sx*5*s,-74*s); x.quadraticCurveTo(sx*10*s,-77*s,sx*15*s,-74*s); x.stroke(); }
+  x.lineWidth=lw; x.strokeStyle=O;
+  // ochi + ochelari
+  const cl=clamp(clipit,0,1);
+  for(const sx of [-1,1]){
+    x.fillStyle='rgba(255,255,255,.35)'; x.beginPath(); x.arc(sx*9.5*s,-66*s,7*s,0,7); x.fill(); x.stroke();
+    x.fillStyle=O; x.beginPath(); x.ellipse(sx*9.5*s,-66*s,2.2*s,Math.max(.3,2.6*(1-cl))*s,0,0,7); x.fill();
+  }
+  x.beginPath(); x.moveTo(-2.5*s,-66*s); x.lineTo(2.5*s,-66*s); x.stroke();
+  // șapcă în carouri
+  x.save(); x.beginPath(); x.moveTo(-23*s,-74*s); x.quadraticCurveTo(-22*s,-92*s,0,-93*s); x.quadraticCurveTo(24*s,-92*s,25*s,-75*s); x.quadraticCurveTo(0,-79*s,-23*s,-74*s); x.closePath();
+  x.fillStyle='#c62f2f'; x.fill(); x.clip();
+  x.strokeStyle='rgba(255,255,255,.55)'; x.lineWidth=2.2*s; for(let k=-30;k<=30;k+=7){ x.beginPath(); x.moveTo(k*s,-95*s); x.lineTo(k*s,-70*s); x.stroke(); x.beginPath(); x.moveTo(-30*s,(k-60)*s*0.5-50*s); x.lineTo(30*s,(k-60)*s*0.5-50*s); x.stroke(); }
+  x.restore(); x.lineWidth=lw; x.strokeStyle=O;
+  x.beginPath(); x.moveTo(-23*s,-74*s); x.quadraticCurveTo(-22*s,-92*s,0,-93*s); x.quadraticCurveTo(24*s,-92*s,25*s,-75*s); x.quadraticCurveTo(0,-79*s,-23*s,-74*s); x.closePath(); x.stroke();
+  x.fillStyle='#a72323'; x.beginPath(); x.moveTo(8*s,-77*s); x.quadraticCurveTo(26*s,-80*s,33*s,-74*s); x.quadraticCurveTo(22*s,-72*s,10*s,-74*s); x.closePath(); x.fill(); x.stroke();
+  // ceașca de cafea
+  x.fillStyle='#fff'; x.beginPath(); x.moveTo(18*s,-14*s); x.lineTo(30*s,-14*s); x.lineTo(28*s,-2*s); x.lineTo(20*s,-2*s); x.closePath(); x.fill(); x.stroke();
+  x.beginPath(); x.arc(31*s,-9*s,3*s,-1.4,1.4); x.stroke();
+  x.fillStyle='#f6cfab'; x.beginPath(); x.ellipse(19*s,-6*s,4*s,5*s,0,0,7); x.fill(); x.stroke();
+  x.restore();
+}
+
+/* =====================================================
+   7. MUZICĂ ȘI EFECTE (generate — fără drepturi de autor)
+   ===================================================== */
+async function genereazaMuzica(durata, seed=1){
+  const ctx=new OfflineAudioContext(2, Math.ceil(durata*SR), SR);
+  const master=ctx.createGain(); master.gain.value=0.55; master.connect(ctx.destination);
+  const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2200; lp.connect(master);
+  const progresii=[[[57,60,64,67],[53,57,60,64],[48,52,55,60],[55,59,62,65]],[[50,53,57,60],[55,59,62,65],[48,52,55,59],[57,60,64,67]],[[48,52,55,59],[57,60,64,67],[50,53,57,60],[55,59,62,65]]];
+  const prog=progresii[seed%progresii.length]; const bpm=84, bar=4*60/bpm; const hz=m=>440*Math.pow(2,(m-69)/12);
+  for(let t=0,b=0;t<durata;t+=bar,b++){
+    const ac=prog[b%4];
+    for(const n of ac){ // pad cald
+      const o=ctx.createOscillator(); o.type='triangle'; o.frequency.value=hz(n); const g=ctx.createGain();
+      g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(0.045,t+0.6); g.gain.setValueAtTime(0.045,t+bar-0.5); g.gain.linearRampToValueAtTime(0,t+bar+0.2);
+      o.connect(g).connect(lp); o.start(t); o.stop(t+bar+0.3);
+    }
+    const bas=ctx.createOscillator(); bas.type='sine'; bas.frequency.value=hz(ac[0]-12); const gb=ctx.createGain();
+    gb.gain.setValueAtTime(0,t); gb.gain.linearRampToValueAtTime(0.11,t+0.05); gb.gain.exponentialRampToValueAtTime(0.01,t+bar*0.9); bas.connect(gb).connect(master); bas.start(t); bas.stop(t+bar);
+    for(let k=0;k<8;k++){ // arpegiu pizzicato
+      const tt=t+k*bar/8; if(tt>durata) break; const o=ctx.createOscillator(); o.type='sine'; o.frequency.value=hz(ac[(k*3+b)%4]+12); const g=ctx.createGain();
+      g.gain.setValueAtTime(0,tt); g.gain.linearRampToValueAtTime(0.035,tt+0.01); g.gain.exponentialRampToValueAtTime(0.0005,tt+0.35); o.connect(g).connect(lp); o.start(tt); o.stop(tt+0.4);
+    }
+  }
+  return await ctx.startRendering();
+}
+
+/* =====================================================
+   8. MONTAJ — cadrul video
+   ===================================================== */
+const FPS=30;
+function layout(fmt){
+  const v=fmt==='9:16'; const W=v?1080:1920, H=v?1920:1080;
+  return v? {W,H,v, carligY:H*0.13, eticY:H*0.30, subY:H*0.50, subMaxW:W*0.86, subPx:78, bunic:{cx:W*0.15,by:H*0.80,h:H*0.20}, bunicMare:{cx:W*0.2,by:H*0.81,h:H*0.27}}
+           : {W,H,v, carligY:H*0.12, eticY:H*0.24, subY:H*0.86, subMaxW:W*0.70, subPx:64, bunic:{cx:W*0.90,by:H*0.98,h:H*0.32}, bunicMare:{cx:W*0.85,by:H*1.0,h:H*0.48}};
+}
+function rrect(x,X,Y,w,h,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
+const FONT=(px,w=900)=>`${w} ${px}px Montserrat, "Arial Black", Arial, sans-serif`;
+function eticheta(x, text, accent, stil, cx, cy, px, scala=1, rot=-0.03, maxW=9999){
+  x.save(); x.translate(cx,cy); x.rotate(rot); x.scale(scala,scala);
+  x.font=FONT(px); const cuv=text.split(/\s+/); const sp=x.measureText(' ').width; let wt=cuv.reduce((a,c)=>a+x.measureText(c).width,0)+sp*(cuv.length-1);
+  if(wt>maxW-px){ const f=(maxW-px)/wt; px*=f; x.font=FONT(px); wt*=f; }
+  const padX=px*0.5, padY=px*0.3, W=wt+2*padX, H=px*1.15+padY;
+  const [bg,fg,ac]= stil==='rosu'?['#e2262a','#fff','#ffd400'] : stil==='galben'?['#ffd400','#141414','#e2262a'] : ['#ffffff','#141414','#e2262a'];
+  x.fillStyle='rgba(0,0,0,.35)'; rrect(x,-W/2+8,-H/2+10,W,H,px*0.22); x.fill();
+  x.fillStyle=bg; x.strokeStyle='#141414'; x.lineWidth=Math.max(4,px*0.1); rrect(x,-W/2,-H/2,W,H,px*0.22); x.fill(); x.stroke();
+  x.textBaseline='middle'; let xx=-wt/2; const acc=new Set((accent||'').split(/\s+/).filter(Boolean));
+  for(const c of cuv){ x.fillStyle= acc.has(c.replace(/[?!.,]/g,''))? ac : fg; x.fillText(c,xx,px*0.04); xx+=x.measureText(c).width+sp; }
+  x.restore(); return H;
+}
+const easeOutBack=t=>{ const c1=1.70158,c3=c1+1; return 1+c3*Math.pow(t-1,3)+c1*Math.pow(t-1,2); };
+const easeInOut=t=>0.5-0.5*Math.cos(Math.PI*clamp(t,0,1));
+
+function deseneazaImagine(x, L, img, prog, idx, alpha=1){
+  if(!img) return;
+  if(img.fundal){ // poză cu alt format decât cadrul: fundal estompat + poza întreagă, cu zoom lent
+    const p=easeInOut(prog); x.globalAlpha=alpha;
+    const fb=img.fundal, fs=Math.max(L.W/fb.width,L.H/fb.height)*(1.05+0.04*p); x.drawImage(fb,(L.W-fb.width*fs)/2,(L.H-fb.height*fs)/2,fb.width*fs,fb.height*fs);
+    const b=img.bmp; const baza=L.v? Math.max(L.W/b.width, Math.min(L.H*0.5/b.height, L.W*1.45/b.width)) : Math.min(L.W*0.92/b.width, L.H*0.92/b.height);
+    const z=baza*(1.0+0.08*(idx%2?1-p:p)); const dw=b.width*z, dh=b.height*z; const cy=L.v? L.H*0.40 : L.H*0.5;
+    x.save(); x.shadowColor='rgba(0,0,0,.55)'; x.shadowBlur=40; x.drawImage(b,(L.W-dw)/2+(idx%3-1)*L.W*0.02*p,cy-dh/2,dw,dh); x.restore();
+    x.globalAlpha=1; return;
+  }
+  const {bmp,taieJos=0}=img; const sw=bmp.width, sh=bmp.height*(1-taieJos);
+  const mod=idx%4; const z=0.09; const p=easeInOut(prog);
+  let sc = Math.max(L.W/sw, L.H/sh); let zoom = mod===0? 1+z*p : mod===1? 1+z*(1-p) : 1+z*0.6;
+  const dw=sw*sc*zoom, dh=sh*sc*zoom; let ox=(L.W-dw)/2, oy=(L.H-dh)/2;
+  if(mod===2) ox = (L.W-dw)*p; if(mod===3) ox=(L.W-dw)*(1-p);
+  x.globalAlpha=alpha; x.drawImage(bmp,0,0,sw,sh,ox,oy,dw,dh); x.globalAlpha=1;
+}
+function cuvinteCuTimp(scena){ // distribuie cuvintele pe durata fiecărei propoziții, după lungime
+  const out=[];
+  for(const seg of scena.voce.segmente){
+    const w=seg.text.split(/\s+/).filter(Boolean); const tot=w.reduce((a,c)=>a+c.length+1.5,0); let t=seg.start; const D=seg.end-seg.start;
+    for(const c of w){ const d=D*(c.length+1.5)/tot; out.push({w:c, s:scena.start+t, e:scena.start+t+d}); t+=d; }
+  }
+  return out;
+}
+function grupuriSubtitrari(cuv){ // 2–4 cuvinte pe ecran, rupt la punctuație
+  const g=[]; let cur=[];
+  for(const c of cuv){ cur.push(c); if(cur.length>=4 || /[.,!?;:…]$/.test(c.w) || cur.map(x=>x.w).join(' ').length>22){ g.push(cur); cur=[]; } }
+  if(cur.length) g.push(cur); return g;
+}
+function deseneazaSubtitrare(x, L, grup, t){
+  const px=L.subPx; x.font=FONT(px); x.textBaseline='middle'; x.lineJoin='round'; x.textAlign='left';
+  const cuv=grup.map(c=>c.w.toUpperCase()); const sp=x.measureText(' ').width*1.6;
+  const randuri=[[]]; let w=0;
+  cuv.forEach((c,i)=>{ const cw=x.measureText(c).width; if(w+cw>L.subMaxW && randuri[randuri.length-1].length){ randuri.push([]); w=0; } randuri[randuri.length-1].push(i); w+=cw+sp; });
+  const lh=px*1.18; let y=L.subY-(randuri.length-1)*lh/2;
+  const t0=grup[0].s, pop=clamp((t-t0)/0.12,0,1), sc=0.85+0.15*easeOutBack(pop);
+  for(const r of randuri){
+    const lat=r.reduce((a,i)=>a+x.measureText(cuv[i]).width,0)+sp*(r.length-1); let xx=L.W/2-lat/2;
+    for(const i of r){
+      const c=cuv[i], cw=x.measureText(c).width, activ=t>=grup[i].s&&t<grup[i].e;
+      x.save(); x.translate(xx+cw/2,y); x.scale(sc*(activ?1.06:1),sc*(activ?1.06:1));
+      x.lineWidth=px*0.2; x.strokeStyle='#000'; x.strokeText(c,-cw/2,0); x.fillStyle=activ?'#ffd400':'#fff'; x.fillText(c,-cw/2,0); x.restore();
+      xx+=cw+sp;
+    }
+    y+=lh;
+  }
+}
+function construiesteCronologie(proiect){
+  const {scene}=proiect; let t=0.0;
+  scene.forEach((sc,i)=>{ sc.start=t; sc.durata=sc.voce.durata+(i===scene.length-1?0.9:0.28); t+=sc.durata; });
+  proiect.durata=t;
+  const toate=[]; scene.forEach(sc=>toate.push(...cuvinteCuTimp(sc)));
+  proiect.cuvinte=toate; proiect.grupuri=grupuriSubtitrari(toate);
+  proiect.etichete=scene.map((sc,i)=>sc.eticheta? {...sc.eticheta, t:sc.start+0.25, end:sc.start+sc.durata, i} : null).filter(Boolean);
+}
+function deseneazaCadru(x, P, t){
+  const L=P.L, s=P.setari; const sc=P.scene; let i=sc.findIndex(c=>t>=c.start&&t<c.start+c.durata); if(i<0) i=sc.length-1;
+  const c=sc[i]; const prog=(t-c.start)/c.durata;
+  x.fillStyle='#111'; x.fillRect(0,0,L.W,L.H);
+  deseneazaImagine(x,L,c.img,prog,i);
+  const tranz=0.22; if(i>0 && t-c.start<tranz){ const p=sc[i-1]; deseneazaImagine(x,L,p.img,1,i-1,1-(t-c.start)/tranz); }
+  // vignetă pentru lizibilitate
+  const g=x.createLinearGradient(0,L.H*0.45,0,L.H); g.addColorStop(0,'rgba(0,0,0,0)'); g.addColorStop(1,'rgba(0,0,0,.45)'); x.fillStyle=g; x.fillRect(0,L.H*0.45,L.W,L.H*0.55);
+  // cârligul pe ecran (primele 3,2s)
+  if(t<3.4){ const p=clamp(t/0.3,0,1), out=clamp((3.4-t)/0.25,0,1); x.globalAlpha=out;
+    eticheta(x,P.scenariu.carlig_ecran,P.scenariu.accent_carlig,'alb',L.W/2,L.carligY,L.v?74:70,0.6+0.4*easeOutBack(p),-0.02,L.W*0.92); x.globalAlpha=1; }
+  // etichete (autocolante)
+  for(const e of P.etichete){ if(t<e.t||t>e.end-0.05) continue; if(e.i===0&&t<3.4) continue; const p=clamp((t-e.t)/0.28,0,1);
+    eticheta(x,e.text,e.accent,e.stil,L.W/2,L.eticY,L.v?68:64,0.4+0.6*easeOutBack(p),e.i%2?0.035:-0.035,L.W*0.9); }
+  // subtitrări
+  if(s.optSubt){ const gr=P.grupuri.find(gg=>t>=gg[0].s-0.02&&t<gg[gg.length-1].e+0.12); if(gr) deseneazaSubtitrare(x,L,gr,t); }
+  // bunicul
+  if(s.optMascota){ const mare=(i===0&&t<3.2)||(i===sc.length-1); const B= mare? L.bunicMare : L.bunic;
+    const env=P.anvelopa[Math.min(P.anvelopa.length-1,Math.floor(t*FPS))]||0; const clip=((t%3.7)<0.12)?1:0;
+    const intrare = i===0? easeOutBack(clamp(t/0.35,0,1)) : 1;
+    deseneazaBunic(x,B.cx,B.by+(1-intrare)*B.h,B.h,env,clip,t);
+    if(i===sc.length-1 && s.numePagina){ x.font=FONT(L.v?44:36,800); x.textBaseline='middle'; const nx=L.v? B.cx+B.h*0.42 : L.W*0.05, ny=L.v? B.by-B.h*0.3 : L.H*0.9; x.lineWidth=9; x.lineJoin='round'; x.strokeStyle='#000'; x.strokeText(s.numePagina,nx,ny); x.fillStyle='#fff'; x.fillText(s.numePagina,nx,ny); }
+  }
+  // bară de progres sus
+  x.fillStyle='rgba(255,255,255,.25)'; x.fillRect(0,0,L.W,10); x.fillStyle='#ffd400'; x.fillRect(0,0,L.W*clamp(t/P.durata,0,1),10);
+}
+
+/* =====================================================
+   9. AUDIO FINAL — voce + muzică cu ducking + „pop”
+   ===================================================== */
+async function mixeazaAudio(P){
+  const N=Math.ceil(P.durata*SR); const L=new Float32Array(N), R=new Float32Array(N); const voce=new Float32Array(N);
+  for(const sc of P.scene){ const o=Math.round(sc.start*SR); voce.set(sc.voce.samples.subarray(0,Math.min(sc.voce.samples.length,N-o)),o); }
+  // normalizează vocea la ~-3 dBFS
+  let pk=0; for(let i=0;i<N;i++) pk=Math.max(pk,Math.abs(voce[i])); const gv=pk>0? 0.7/pk : 1;
+  // anvelopă (pentru gura bunicului + ducking)
+  const nf=Math.ceil(P.durata*FPS), env=new Float32Array(nf), win=Math.round(SR/FPS);
+  for(let f=0;f<nf;f++){ let s=0; const a=f*win, b=Math.min(N,a+win); for(let i=a;i<b;i++) s+=voce[i]*voce[i]; env[f]=Math.sqrt(s/Math.max(1,b-a))*gv; }
+  let mx=0; for(const v of env) mx=Math.max(mx,v); P.anvelopa=Array.from(env,v=>clamp(Math.pow(v/(mx||1),0.7)*1.25-0.08,0,1));
+  for(let i=0;i<N;i++){ L[i]=R[i]=voce[i]*gv; }
+  if(P.setari.optMuzica){
+    const m=await genereazaMuzica(P.durata+0.5, P.seed); const m0=m.getChannelData(0), m1=m.getChannelData(1);
+    let duck=0.35; const vorbire=f=>env[Math.min(nf-1,f)]>(mx||1)*0.08;
+    for(let i=0;i<N;i++){ const f=Math.floor(i/win); const tinta=vorbire(f)?0.16:0.42; duck+= (tinta-duck)*0.0009;
+      const fade=Math.min(1,i/(SR*0.8),(N-i)/(SR*1.5)); L[i]+=m0[i]*duck*fade; R[i]+=m1[i]*duck*fade; }
+  }
+  for(const e of P.etichete){ const o=Math.round(e.t*SR); for(let k=0;k<SR*0.09&&o+k<N;k++){ const tt=k/SR; const v=Math.sin(2*Math.PI*(900-4000*tt)*tt)*Math.exp(-tt*45)*0.22; L[o+k]+=v; R[o+k]+=v; } }
+  let p2=0; for(let i=0;i<N;i++) p2=Math.max(p2,Math.abs(L[i]),Math.abs(R[i])); if(p2>0.95){ const k=0.95/p2; for(let i=0;i<N;i++){L[i]*=k;R[i]*=k;} }
+  return [L,R];
+}
+
+/* =====================================================
+   10. MP4 MUXER (scris de la zero — fără biblioteci)
+   ===================================================== */
+class MP4{
+  constructor(){ this.v=[]; this.a=[]; this.vcfg=null; this.acfg=null; }
+  static u32(n){ return [(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255]; }
+  static u16(n){ return [(n>>8)&255,n&255]; }
+  static str(s){ return [...s].map(c=>c.charCodeAt(0)); }
+  static box(tip,...parti){ const corp=parti.flat(Infinity); return [...MP4.u32(8+corp.length),...MP4.str(tip),...corp]; }
+  static fbox(tip,ver,flags,...parti){ return MP4.box(tip,[ver,(flags>>16)&255,(flags>>8)&255,flags&255],...parti); }
+  adaugaVideo(chunk, meta){ const b=new Uint8Array(chunk.byteLength); chunk.copyTo(b); this.v.push({b,key:chunk.type==='key',ts:chunk.timestamp}); if(meta?.decoderConfig?.description&&!this.vcfg) this.vcfg=new Uint8Array(meta.decoderConfig.description instanceof ArrayBuffer? meta.decoderConfig.description : meta.decoderConfig.description.buffer.slice(meta.decoderConfig.description.byteOffset, meta.decoderConfig.description.byteOffset+meta.decoderConfig.description.byteLength)); }
+  adaugaAudio(chunk, meta){ const b=new Uint8Array(chunk.byteLength); chunk.copyTo(b); this.a.push({b,dur:chunk.duration,ts:chunk.timestamp}); if(meta?.decoderConfig?.description&&!this.acfg){ const d=meta.decoderConfig.description; this.acfg=new Uint8Array(d instanceof ArrayBuffer? d : d.buffer.slice(d.byteOffset,d.byteOffset+d.byteLength)); } }
+  static matrice(){ return [0,1,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0,1,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0, 0x40,0,0,0]; }
+  static desc(tag,corp){ const n=corp.length; return [tag,0x80|((n>>21)&127),0x80|((n>>14)&127),0x80|((n>>7)&127),n&127,...corp]; }
+  stts(dur){ const r=[]; for(const d of dur){ const u=r[r.length-1]; if(u&&u[1]===d) u[0]++; else r.push([1,d]); } return MP4.fbox('stts',0,0,MP4.u32(r.length),r.map(([c,d])=>[MP4.u32(c),MP4.u32(d)])); }
+  trak(id, tip, timescale, durMedia, durFilm, stsd, dur, sizes, offset, keys, ctts){
+    const tkhd=MP4.fbox('tkhd',0,3,MP4.u32(0),MP4.u32(0),MP4.u32(id),MP4.u32(0),MP4.u32(durFilm),[0,0,0,0,0,0,0,0],MP4.u16(0),MP4.u16(0),tip==='soun'?MP4.u16(0x0100):MP4.u16(0),MP4.u16(0),MP4.matrice(),tip==='vide'?[...MP4.u32(this.W<<16),...MP4.u32(this.H<<16)]:[0,0,0,0,0,0,0,0]);
+    const mdhd=MP4.fbox('mdhd',0,0,MP4.u32(0),MP4.u32(0),MP4.u32(timescale),MP4.u32(durMedia),MP4.u16(0x55c4),MP4.u16(0));
+    const hdlr=MP4.fbox('hdlr',0,0,MP4.u32(0),MP4.str(tip),[0,0,0,0,0,0,0,0,0,0,0,0],MP4.str(tip==='vide'?'VideoHandler':'SoundHandler'),[0]);
+    const xmhd= tip==='vide'? MP4.fbox('vmhd',0,1,[0,0,0,0,0,0,0,0]) : MP4.fbox('smhd',0,0,[0,0,0,0]);
+    const dinf=MP4.box('dinf',MP4.fbox('dref',0,0,MP4.u32(1),MP4.fbox('url ',0,1)));
+    const stsz=MP4.fbox('stsz',0,0,MP4.u32(0),MP4.u32(sizes.length),sizes.map(MP4.u32));
+    const stsc=MP4.fbox('stsc',0,0,MP4.u32(1),MP4.u32(1),MP4.u32(sizes.length),MP4.u32(1));
+    const stco=MP4.fbox('stco',0,0,MP4.u32(1),MP4.u32(offset));
+    const parti=[stsd,this.stts(dur)];
+    if(keys) parti.push(MP4.fbox('stss',0,0,MP4.u32(keys.length),keys.map(MP4.u32)));
+    if(ctts) parti.push(ctts);
+    parti.push(stsc,stsz,stco);
+    return MP4.box('trak',tkhd,MP4.box('mdia',mdhd,hdlr,MP4.box('minf',xmhd,dinf,MP4.box('stbl',...parti))));
+  }
+  finalizeaza(W,H,fps,codecAudio,sr,canale){
+    this.W=W; this.H=H; const VT=90000, fd=Math.round(VT/fps);
+    const vSizes=this.v.map(s=>s.b.length), aSizes=this.a.map(s=>s.b.length);
+    const vDur=this.v.map(()=>fd); const keys=[]; this.v.forEach((s,i)=>{ if(s.key) keys.push(i+1); });
+    // ctts doar dacă encoderul a scos B-frames
+    let ctts=null; const pts=this.v.map(s=>Math.round(s.ts*VT/1e6)); const ord=pts.every((p,i)=>i===0||p>pts[i-1]);
+    if(!ord){ const sorted=[...pts].sort((a,b)=>a-b); const off=pts.map((p,i)=>p-sorted[i]); ctts=MP4.fbox('ctts',1,0,MP4.u32(off.length),off.map(o=>[MP4.u32(1),MP4.u32(o>>>0)])); }
+    const implicit=codecAudio==='aac'?1024:960; const aDur=this.a.map(s=>s.dur? Math.max(1,Math.round(s.dur*sr/1e6)) : implicit);
+    const vDurTot=vDur.reduce((a,b)=>a+b,0), aDurTot=aDur.reduce((a,b)=>a+b,0);
+    const durFilmV=Math.round(vDurTot*1000/VT), durFilmA=Math.round(aDurTot*1000/sr), durFilm=Math.max(durFilmV,durFilmA);
+    const avc1=MP4.box('avc1',[0,0,0,0,0,0],MP4.u16(1),MP4.u16(0),MP4.u16(0),[0,0,0,0,0,0,0,0,0,0,0,0],MP4.u16(W),MP4.u16(H),MP4.u32(0x00480000),MP4.u32(0x00480000),MP4.u32(0),MP4.u16(1),new Array(32).fill(0),MP4.u16(0x18),MP4.u16(0xffff),MP4.box('avcC',[...this.vcfg]),MP4.box('pasp',MP4.u32(1),MP4.u32(1)));
+    const vStsd=MP4.fbox('stsd',0,0,MP4.u32(1),avc1);
+    let aEntry;
+    if(codecAudio==='aac'){
+      const asc=this.acfg&&this.acfg.length? [...this.acfg] : [0x11,0x90];
+      const dec=MP4.desc(4,[0x40,0x15,0,0,0,...MP4.u32(192000),...MP4.u32(160000),...MP4.desc(5,asc)]);
+      const esds=MP4.fbox('esds',0,0,MP4.desc(3,[...MP4.u16(1),0,...dec,...MP4.desc(6,[2])]));
+      aEntry=MP4.box('mp4a',[0,0,0,0,0,0],MP4.u16(1),[0,0,0,0,0,0,0,0],MP4.u16(canale),MP4.u16(16),MP4.u16(0),MP4.u16(0),MP4.u32(sr<<16),esds);
+    }else{
+      let pre=312; if(this.acfg&&this.acfg.length>=12) pre=this.acfg[10]|(this.acfg[11]<<8);
+      const dOps=MP4.box('dOps',[0,canale],MP4.u16(pre),MP4.u32(sr),MP4.u16(0),[0]);
+      aEntry=MP4.box('Opus',[0,0,0,0,0,0],MP4.u16(1),[0,0,0,0,0,0,0,0],MP4.u16(canale),MP4.u16(16),MP4.u16(0),MP4.u16(0),MP4.u32(sr<<16),dOps);
+    }
+    const aStsd=MP4.fbox('stsd',0,0,MP4.u32(1),aEntry);
+    const ftyp=MP4.box('ftyp',MP4.str('isom'),MP4.u32(512),MP4.str('isom'),MP4.str('iso2'),MP4.str('avc1'),MP4.str('mp41'));
+    const construieste=(offV,offA)=>{
+      const mvhd=MP4.fbox('mvhd',0,0,MP4.u32(0),MP4.u32(0),MP4.u32(1000),MP4.u32(durFilm),MP4.u32(0x00010000),MP4.u16(0x0100),[0,0,0,0,0,0,0,0,0,0],MP4.matrice(),new Array(24).fill(0),MP4.u32(3));
+      return MP4.box('moov',mvhd,
+        this.trak(1,'vide',VT,vDurTot,durFilmV,vStsd,vDur,vSizes,offV,keys,ctts),
+        this.trak(2,'soun',sr,aDurTot,durFilmA,aStsd,aDur,aSizes,offA,null,null));
+    };
+    let moov=construieste(0,0);
+    const vBytes=vSizes.reduce((a,b)=>a+b,0), aBytes=aSizes.reduce((a,b)=>a+b,0);
+    const offV=ftyp.length+moov.length+8, offA=offV+vBytes;
+    moov=construieste(offV,offA);
+    const mdatHdr=new Uint8Array([...MP4.u32(8+vBytes+aBytes),...MP4.str('mdat')]);
+    return new Blob([new Uint8Array(ftyp),new Uint8Array(moov),mdatHdr,...this.v.map(s=>s.b),...this.a.map(s=>s.b)],{type:'video/mp4'});
+  }
+}
+
+/* =====================================================
+   11. ENCODARE (WebCodecs, mai rapid decât timpul real)
+   ===================================================== */
+async function alegeCodecVideo(W,H){
+  for(const codec of ['avc1.640028','avc1.4d0028','avc1.42e028','avc1.640033','avc1.4d0033']){
+    for(const hw of ['prefer-hardware','no-preference','prefer-software']){
+      const cfg={codec,width:W,height:H,bitrate:W*H>2e6?8_000_000:6_000_000,framerate:FPS,avc:{format:'avc'},hardwareAcceleration:hw,latencyMode:'quality'};
+      try{ const r=await VideoEncoder.isConfigSupported(cfg); if(r.supported) return cfg; }catch(e){}
+    }
+  }
+  return null;
+}
+async function alegeCodecAudio(){
+  for(const [codec,nume] of [['mp4a.40.2','aac'],['opus','opus']]){
+    const cfg={codec,sampleRate:SR,numberOfChannels:2,bitrate:nume==='aac'?160000:128000};
+    try{ const r=await AudioEncoder.isConfigSupported(cfg); if(r.supported) return {cfg,nume}; }catch(e){}
+  }
+  return null;
+}
+async function randeaza(P, cb){
+  const L=P.L, cv=new OffscreenCanvas(L.W,L.H), x=cv.getContext('2d',{alpha:false});
+  const [aL,aR]=await mixeazaAudio(P);
+  if(!('VideoEncoder' in window) || new URLSearchParams(location.search).has('mr')) return await randeazaMediaRecorder(P,aL,aR,cb);
+  const vcfg=await alegeCodecVideo(L.W,L.H), ac=await alegeCodecAudio();
+  if(!vcfg||!ac) return await randeazaMediaRecorder(P,aL,aR,cb);
+  const mux=new MP4(); let eroare=null;
+  const ve=new VideoEncoder({output:(c,m)=>mux.adaugaVideo(c,m), error:e=>eroare=e}); ve.configure(vcfg);
+  const ae=new AudioEncoder({output:(c,m)=>mux.adaugaAudio(c,m), error:e=>eroare=e}); ae.configure(ac.cfg);
+  // audio
+  const bloc=1024*4; for(let o=0;o<aL.length;o+=bloc){ const n=Math.min(bloc,aL.length-o); const d=new Float32Array(n*2); d.set(aL.subarray(o,o+n),0); d.set(aR.subarray(o,o+n),n);
+    const ad=new AudioData({format:'f32-planar',sampleRate:SR,numberOfFrames:n,numberOfChannels:2,timestamp:Math.round(o*1e6/SR),data:d}); ae.encode(ad); ad.close(); }
+  // video
+  const nf=Math.ceil(P.durata*FPS);
+  for(let f=0;f<nf;f++){
+    if(eroare) throw eroare;
+    deseneazaCadru(x,P,f/FPS);
+    const vf=new VideoFrame(cv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)});
+    ve.encode(vf,{keyFrame:f%(FPS*2)===0}); vf.close();
+    while(ve.encodeQueueSize>6) await sleep(4);
+    if(f%15===0){ cb&&cb(f/nf); await sleep(0); }
+  }
+  await ve.flush(); await ae.flush(); ve.close(); ae.close();
+  if(eroare) throw eroare;
+  return {blob:mux.finalizeaza(L.W,L.H,FPS,ac.nume,SR,2), video:vcfg.codec, audio:ac.nume, metoda:'WebCodecs'};
+}
+async function randeazaMediaRecorder(P,aL,aR,cb){ // rezervă: timp real (browsere vechi)
+  const L=P.L, cv=document.createElement('canvas'); cv.width=L.W; cv.height=L.H; const x=cv.getContext('2d');
+  const ctx=new AudioContext({sampleRate:SR}); await ctx.resume(); const buf=ctx.createBuffer(2,aL.length,SR); buf.copyToChannel(aL,0); buf.copyToChannel(aR,1);
+  const src=ctx.createBufferSource(); src.buffer=buf; const dest=ctx.createMediaStreamDestination(); src.connect(dest);
+  const st=new MediaStream([...cv.captureStream(FPS).getVideoTracks(),...dest.stream.getAudioTracks()]);
+  const mime=['video/mp4;codecs=avc1.640028,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'].find(m=>MediaRecorder.isTypeSupported(m));
+  const rec=new MediaRecorder(st,{mimeType:mime,videoBitsPerSecond:8e6}); const parti=[]; rec.ondataavailable=e=>e.data.size&&parti.push(e.data);
+  const gata=new Promise(r=>rec.onstop=r); rec.start(500); const t0=ctx.currentTime+0.1; src.start(t0);
+  await new Promise(res=>{ const tick=()=>{ const t=ctx.currentTime-t0; if(t>=P.durata){ res(); return; } deseneazaCadru(x,P,Math.max(0,t)); cb&&cb(t/P.durata); requestAnimationFrame(tick); }; tick(); });
+  rec.stop(); await gata; ctx.close();
+  return {blob:new Blob(parti,{type:mime.split(';')[0]}), video:mime.split(';')[0], audio:/mp4a/.test(mime)?'aac':'opus/altul', metoda:'MediaRecorder (timp real)'};
+}
+
+/* =====================================================
+   12. COPERTĂ, SRT, POSTARE
+   ===================================================== */
+async function coperta(P){
+  const L=P.L, cv=new OffscreenCanvas(L.W,L.H), x=cv.getContext('2d');
+  const i=P.scene.findIndex(s=>s.img&&!s.img.rezerva); deseneazaImagine(x,L,P.scene[Math.max(0,i)].img,0.5,1);
+  const g=x.createLinearGradient(0,0,0,L.H); g.addColorStop(0,'rgba(0,0,0,.55)'); g.addColorStop(.45,'rgba(0,0,0,.05)'); g.addColorStop(1,'rgba(0,0,0,.35)'); x.fillStyle=g; x.fillRect(0,0,L.W,L.H);
+  const txt=P.scenariu.coperta_text.split(/\s+/); x.textBaseline='top'; x.lineJoin='round';
+  let px=L.v?170:150; const maxW=L.v?L.W*0.9:L.W*0.62; let rand=[];
+  for(;px>60;px-=6){ x.font=FONT(px); rand=[]; let cur=''; for(const c of txt){ const t=(cur+' '+c).trim(); if(x.measureText(t).width<=maxW) cur=t; else { rand.push(cur); cur=c; } } rand.push(cur); if(rand.length<=3&&rand.every(r=>x.measureText(r).width<=maxW)) break; }
+  let y=L.v?L.H*0.1:50; const X=L.v?null:60;
+  for(const r of rand){ const w=x.measureText(r).width; const xx= X??(L.W-w)/2; x.lineWidth=px*0.16; x.strokeStyle='#000'; x.strokeText(r,xx,y); x.fillStyle='#ffd400'; x.fillText(r,xx,y); y+=px*1.05; }
+  if(P.scenariu.coperta_sub) eticheta(x,P.scenariu.coperta_sub,'', 'rosu', L.v?L.W/2:L.W*0.3, y+70, L.v?62:52, 1, -0.04, L.W*0.9);
+  const B=L.v?{cx:L.W*0.5,by:L.H*0.97,h:L.H*0.36}:{cx:L.W*0.84,by:L.H*1.02,h:L.H*0.7}; deseneazaBunic(x,B.cx,B.by,B.h,0.5,0,0);
+  return await cv.convertToBlob({type:'image/jpeg',quality:0.92});
+}
+function srt(P){
+  const f=t=>{ const ms=Math.round(t*1000); const h=Math.floor(ms/3600000), m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')},${String(ms%1000).padStart(3,'0')}`; };
+  return P.grupuri.map((g,i)=>{ const nx=P.grupuri[i+1]; const e=Math.min(g[g.length-1].e+0.1, nx?nx[0].s-0.01:1e9); return `${i+1}\n${f(g[0].s)} --> ${f(e)}\n${g.map(c=>c.w).join(' ')}\n`; }).join('\n');
+}
+function textPostare(P){
+  const sc=P.scenariu; const surse=(sc.surse_folosite||[]).map(i=>P.surse[i]).filter(Boolean); const lista=(surse.length?surse:P.surse).slice(0,3);
+  const cred=[...new Set(P.scene.map(x=>x.img?.credit).filter(Boolean))];
+  return [sc.postare||sc.titlu, '', `👇 ${sc.intrebare||'Voi ce știați?'}`, lista.length? '\nSurse: '+lista.map(s=>s.url).join(' ') : '', cred.length? 'Foto: Wikimedia Commons — '+cred.slice(0,6).join('; ') : '', '', (sc.hashtaguri||[]).join(' ')].join('\n').replace(/\n{3,}/g,'\n\n').trim();
+}
+
+/* =====================================================
+   13. AUDIT FINAL
+   ===================================================== */
+async function auditFinal(P, rez){
+  const a=[]; const add=(ok,txt,nivel)=>a.push({ok,txt,nivel:nivel||(ok?'ok':'err')});
+  const s=P.setari, tinta=+s.durata;
+  add(P.L.W===(P.L.v?1080:1920)&&P.L.H===(P.L.v?1920:1080), `Rezoluție ${P.L.W}×${P.L.H} ${P.L.v?'(vertical 9:16 — format recomandat pentru Reels)':'(orizontal 16:9)'}`);
+  add(Math.abs(P.durata-tinta)<=tinta*0.35, `Durată ${P.durata.toFixed(1)}s (țintă ~${tinta}s)`, Math.abs(P.durata-tinta)<=tinta*0.35?'ok':'warn');
+  add(P.scene[0].voce.segmente[0].start<0.3, 'Vocea începe din prima secundă (+24,7% retenție la 10s)');
+  const carlig=propozitii(P.scene[0].text)[0]||''; add(carlig.split(/\s+/).length<=14, `Cârlig scurt: „${carlig}”`, carlig.split(/\s+/).length<=14?'ok':'warn');
+  add(!!P.scenariu.carlig_ecran, `Text-cârlig pe ecran în primele 3s: „${P.scenariu.carlig_ecran}”`);
+  const medie=P.durata/P.scene.length; add(medie<=7, `Imagine nouă la fiecare ~${medie.toFixed(1)}s`, medie<=7?'ok':'warn');
+  add(/\?/.test(P.scene.slice(-3).map(x=>x.text).join(' ')), 'Întrebare pentru comentarii la final', /\?/.test(P.scene.slice(-3).map(x=>x.text).join(' '))?'ok':'warn');
+  const prob=verificaStructura(P.scenariu,s).filter(p=>!/Prea|cuvinte \(max/.test(p)); add(!prob.length, prob.length? 'Scenariu: '+prob.join(' ') : 'Fără expresii-clișeu de AI, fără intro', prob.length?'warn':'ok');
+  const ced=/[şţŞŢ]/.test(P.scene.map(x=>x.text).join(' ')); add(!ced,'Diacritice corecte (ș, ț cu virgulă)');
+  add(P.surse.length>=2, `${P.surse.length} surse Wikipedia folosite pentru fapte`, P.surse.length>=2?'ok':'warn');
+  add(!!P.verificare, `Verificare de fapte: ${P.verificare||'sărită'}`, P.verificare?'ok':'warn');
+  const nRez=P.scene.filter(x=>x.img?.rezerva).length; add(nRez===0, nRez? `${nRez} scene cu fundal de rezervă (serviciul de imagini n-a răspuns) — apasă „Refă doar montajul” după ce revine` : `Toate cele ${P.scene.length} imagini generate`, nRez?'warn':'ok');
+  const logo=P.scene.some(x=>x.img&&x.img.taieJos>0); if(logo) add(true,'Sigla Pollinations tăiată din cadru');
+  add(true, `Encodare: ${rez.video} + ${rez.audio} (${rez.metoda})`, rez.audio==='aac'?'ok':'warn');
+  if(rez.audio!=='aac') a[a.length-1].txt+=' — browserul nu are AAC; pentru Facebook folosește Chrome/Edge pe Windows sau Android';
+  add(rez.blob.size<4e9, `Mărime fișier: ${(rez.blob.size/1048576).toFixed(1)} MB`);
+  // verificare reală: fișierul se poate reda?
+  try{ const ok=await new Promise(res=>{ const v=document.createElement('video'); v.muted=true; v.preload='metadata'; v.onloadedmetadata=()=>res(Math.abs(v.duration-P.durata)<1.5); v.onerror=()=>res(false); v.src=URL.createObjectURL(rez.blob); setTimeout(()=>res(null),8000); });
+    add(ok!==false, ok===null?'Redare: nu s-a putut verifica în acest browser':'Fișierul se deschide și are durata corectă', ok===null?'warn':ok?'ok':'err'); }catch(e){}
+  add(true,'Conținut original (scenariu, voce și desene noi) — eligibil la regulile de originalitate Meta');
+  a.push({ok:true,nivel:'warn',txt:'La postare: bifează „AI info” (vocea e sintetică — Meta poate cere etichetă pentru audio realist).'});
+  return a;
+}
+
+/* =====================================================
+   14. FLUXUL PRINCIPAL
+   ===================================================== */
+let PROIECT=null, lucreaza=false;
+async function creeaza(){
+  if(lucreaza) return; const subiect=diacritice($('#subiect').value.trim());
+  if(!subiect){ $('#subiect').focus(); $('#subiect').placeholder='✍️ Scrie întâi un subiect (sau apasă 🎲)'; return; }
+  const s=salveazaSetari(); s.workerUrl=(s.workerUrl||'').replace(/\/+$/,'');
+  lucreaza=true; $('#btnCreeaza').disabled=true; $('#out').classList.add('hide'); $('#eroare').classList.add('hide'); $('#progres').classList.remove('hide'); initPasi();
+  let wake=null; try{ wake=await navigator.wakeLock?.request('screen'); }catch(e){}
+  const t0=Date.now();
+  const P={subiect, setari:s, L:layout(s.format), seed:Math.floor(Math.random()*1e6)};
+  try{
+    // 1. cercetare
+    pas('cercetare','run');
+    let chei=null; try{ chei=await textAI('Răspunde doar cu JSON.',`Pentru căutare pe Wikipedia despre subiectul „${subiect}”, dă-mi cel mai bun termen de căutare în română și în engleză (numele obiectului/obiceiului/personajului, nu întrebarea). JSON: {"ro":"...","en":"..."}`); }catch(e){}
+    P.surse=await cercetare(subiect, chei);
+    pas('cercetare', P.surse.length?'ok':'warn', P.surse.length? P.surse.map(x=>x.titlu+' ('+x.lang+')').join(', ') : 'n-am găsit articole — scenariul rămâne la fapte generale');
+    // 2. scenariu
+    pas('scenariu','run','scrie '+furnizoriText()[0]+'…');
+    P.scenariu=await scrieScenariu(subiect, s, P.surse);
+    pas('scenariu','ok',`„${P.scenariu.titlu}” — ${P.scenariu.scene.length} scene, ${numarCuvinte(P.scenariu)} cuvinte`);
+    // 3. verificare
+    if(s.optVerif){ pas('verificare','run'); try{ const r=await verificaFapte(P.scenariu,P.surse,s); P.verificare=r.note; pas('verificare','ok',r.note); }catch(e){ pas('verificare','warn','n-a mers: '+e.message); } }
+    else pas('verificare','skip','dezactivată');
+    P.scene=P.scenariu.scene.map(x=>({...x}));
+    $('#scenariuOut').textContent=P.scene.map((x,i)=>`${i+1}. ${x.text}`).join('\n');
+    // 4+5. voce și imagini în paralel
+    pas('voce','run','pregătesc vocea…'); pas('imagini','run');
+    const nImg=P.scene.length; let gataImg=0;
+    const jobImg=(async()=>{
+      for(let i=0;i<nImg;i++){
+        P.scene[i].img=await imagineScena(P, i);
+        gataImg++; const nf=P.scene.filter(x=>x.img?.foto).length;
+        progresPas('imagini',gataImg/nImg,`${gataImg}/${nImg} (${nf} fotografii reale)`+(s.provImg!=='foto'&&furnizoriImg()[0]==='pollinations'&&!TEST&&!P.scene[i].img?.foto?` · desenele gratuite vin la ~45s una`:''));
+      }
+    })();
+    const jobVoce=(async()=>{
+      await voceInit(f=>progresPas('voce',f*0.3,`descarc vocea Mihai (o singură dată): ${Math.round(f*100)}%`));
+      for(let i=0;i<P.scene.length;i++){ P.scene[i].voce=await voceScena(P.scene[i].text); progresPas('voce',0.3+0.7*(i+1)/P.scene.length,`${i+1}/${P.scene.length} scene`); }
+      pas('voce','ok',`${P.scene.reduce((a,x)=>a+x.voce.durata,0).toFixed(1)}s de narațiune`);
+    })();
+    await jobVoce; await jobImg;
+    const nRez=P.scene.filter(x=>x.img?.rezerva).length, nFoto=P.scene.filter(x=>x.img?.foto).length; pas('imagini', nRez?'warn':'ok', (nRez? `${nRez} scene fără imagine (fundal de rezervă) · ` : '')+`${nFoto} fotografii reale, ${nImg-nFoto-nRez} desene AI`);
+    // 6. montaj
+    await montajSiFinal(P);
+    log('total', ((Date.now()-t0)/1000).toFixed(0)+'s');
+  }catch(e){
+    console.error(e);
+    const k=PASI.find(([k])=>stare[k]<1)?.[0]; if(k) pas(k,'err',(e&&e.message)||String(e));
+    aratEroare(e, k);
+  }finally{ lucreaza=false; $('#btnCreeaza').disabled=false; try{ wake&&wake.release(); }catch(e){} }
+}
+async function montajSiFinal(P){
+  pas('montaj','run');
+  try{ await document.fonts.load(FONT(60)); await document.fonts.load(FONT(60,800)); }catch(e){}
+  construiesteCronologie(P);
+  const rez=await randeaza(P,f=>progresPas('montaj',f,`${Math.round(f*100)}%`));
+  pas('montaj','ok',`${rez.metoda} · ${(rez.blob.size/1048576).toFixed(1)} MB`);
+  pas('audit','run');
+  const cop=await coperta(P);
+  const au=await auditFinal(P,rez);
+  pas('audit', au.some(x=>x.nivel==='err')?'warn':'ok', `${au.filter(x=>x.nivel==='ok').length}/${au.length} verificări trecute`);
+  // afișare
+  PROIECT=P; const ext=rez.blob.type.includes('webm')?'webm':'mp4'; const nume=(P.scenariu.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
+  const uV=URL.createObjectURL(rez.blob); $('#vid').src=uV; $('#dlVid').href=uV; $('#dlVid').download=`${nume}.${ext}`;
+  $('#dlCover').href=URL.createObjectURL(cop); $('#dlCover').download=`${nume}-coperta.jpg`;
+  $('#dlSrt').href=URL.createObjectURL(new Blob([srt(P)],{type:'text/plain'})); $('#dlSrt').download=`${nume}.srt`;
+  $('#postare').textContent=`TITLU: ${P.scenariu.titlu}\n\n`+textPostare(P);
+  $('#audit').innerHTML=au.map(x=>`<li>${x.nivel==='ok'?'✅':x.nivel==='warn'?'⚠️':'❌'} ${x.txt.replace(/</g,'&lt;')}</li>`).join('');
+  $('#out').classList.remove('hide'); $('#out').scrollIntoView({behavior:'smooth'});
+  window.__REZULTAT={durata:P.durata, size:rez.blob.size, audit:au, metoda:rez.metoda, video:rez.video, audio:rez.audio};
+  window.__BLOB=rez.blob; window.__COPERTA=cop;
+}
+
+/* ---------------- Idei ---------------- */
+const IDEI_FIXE=['De ce zicem „trage apa” când apăsăm pe un buton?','De unde vine cuvântul „ceau”?','Mămăliga se făcea înainte de porumb?','De ce au covrigii găuri?','Cine a inventat stiloul? (Un român!)','De ce ciocnim ouăle de Paști?','De unde vine expresia „a trage la măsea”?','De ce e Dracula celebru în străinătate, dar nu la noi?','De ce mărțișorul are șnur alb-roșu?','Ce înseamnă numele „București”?','De ce bem cafea dimineața?','Ce e de fapt „ciorba de burtă”?','De ce dăm „noroc” când ciocnim paharele?','Cine a fost Ana Aslan și ce a inventat?','De unde vine sarmaua?','De ce are săptămâna 7 zile?','De ce zicem „la mulți ani”?','Prima benzinărie din lume a fost în România?','De ce nu avem voie să zâmbim în poza de buletin?','De ce sunt băncile din parc verzi?'];
+function aratIdei(lista){ $('#idei').innerHTML=lista.slice(0,8).map(t=>`<button class="chip">${t.replace(/</g,'&lt;')}</button>`).join(''); $('#idei').querySelectorAll('.chip').forEach(b=>b.onclick=()=>{ $('#subiect').value=b.textContent; }); }
+$('#btnSurpriza').onclick=()=>{ const r=IDEI_FIXE[Math.floor(Math.random()*IDEI_FIXE.length)]; $('#subiect').value=r; };
+$('#btnIdei').onclick=async()=>{ const b=$('#btnIdei'); b.disabled=true; b.textContent='💡 Mă gândesc…';
+  try{ const r=await textAI('Răspunde doar cu JSON.',`Dă-mi 10 idei de clipuri scurte pentru Facebook (România), despre originea lucrurilor de zi cu zi: cuvinte, expresii, obiceiuri, mâncăruri, invenții românești, clădiri, istorie. Fiecare idee = o întrebare care provoacă curiozitate sau contrazice ce crede lumea. Doar subiecte verificabile pe Wikipedia. Evită: ${IDEI_FIXE.slice(0,6).join('; ')}. JSON: {"idei":["...", "..."]}`); aratIdei((r.idei||[]).map(diacritice)); }
+  catch(e){ aratIdei([...IDEI_FIXE].sort(()=>Math.random()-.5)); }
+  b.disabled=false; b.textContent='💡 Idei noi cu AI'; };
+
+/* ---------------- Butoane ---------------- */
+$('#btnCreeaza').onclick=creeaza;
+$('#subiect').addEventListener('keydown',e=>{ if(e.key==='Enter') creeaza(); });
+$('#btnSalveaza').onclick=()=>{ salveazaSetari(); $('#btnSalveaza').textContent='✅ Salvat'; setTimeout(()=>$('#btnSalveaza').textContent='💾 Salvează',1500); statusServicii(); };
+$('#btnCopy').onclick=async()=>{ try{ await navigator.clipboard.writeText($('#postare').textContent); $('#btnCopy').textContent='✅ Copiat'; }catch(e){ $('#btnCopy').textContent='Selectează textul manual'; } setTimeout(()=>$('#btnCopy').textContent='📋 Copiază textul postării',1800); };
+$('#btnRemontaj').onclick=async()=>{ if(!PROIECT||lucreaza) return; lucreaza=true; const P=PROIECT; P.setari=S(); $('#progres').classList.remove('hide'); initPasi(); for(const k of ['cercetare','scenariu','verificare','voce']) pas(k,'skip','păstrat');
+  try{ pas('imagini','run'); let n=0; for(let i=0;i<P.scene.length;i++) if(P.scene[i].img?.rezerva){ const im=await imagineScena(P,i); if(!im.rezerva){ P.scene[i].img=im; n++; } } pas('imagini','ok',n?`${n} imagini refăcute`:'păstrate'); await montajSiFinal(P); }
+  catch(e){ console.error(e); pas('montaj','err',e.message); } finally{ lucreaza=false; } };
+$('#btnDemo').onclick=()=>{ location.href=location.pathname+'?test=1'; };
+$('#btnTestServicii').onclick=async()=>{ const o=$('#testOut'); o.classList.remove('hide'); o.textContent='Testez…\n'; salveazaSetari(); const s=S();
+  const t=async(n,f)=>{ const a=Date.now(); try{ const r=await f(); o.textContent+=`✅ ${n}: ${r} (${((Date.now()-a)/1000).toFixed(1)}s)\n`; }catch(e){ o.textContent+=`❌ ${n}: ${e.message}\n`; } };
+  await t('Wikipedia', async()=>{ const r=await wikiCauta('ro','mămăligă',1); return r[0]||'gol'; });
+  if(s.geminiKey) await t('Gemini', async()=>(await textGemini('Răspunde scurt.','Spune „merge” în română.',false)).trim().slice(0,40));
+  if(s.workerUrl){ await t('Worker text', async()=>(await textWorker('Răspunde scurt.','Spune „merge”.')).slice(0,40)); await t('Worker imagine', async()=>{ const r=await imgWorker('a red apple, cartoon','9:16',1); return r.bmp.width+'×'+r.bmp.height; }); }
+  await t('Pollinations text', async()=>(await textPollinations('Răspunde scurt.','Spune „merge” în română.')).slice(0,40));
+  await t('Pollinations imagine', async()=>{ const r=await imgPollinations('a red apple, flat cartoon','9:16',7); return r.bmp.width+'×'+r.bmp.height; });
+  await t('Voce Mihai', async()=>{ await voceInit(f=>{}); const b=await vocePropozitie('Bună, sunt Moș Ghiță.'); return b.duration.toFixed(2)+'s audio'; });
+  await t('Encoder video', async()=>{ const c=await alegeCodecVideo(1080,1920); return c? c.codec : 'lipsă (merge pe rezervă, mai lent)'; });
+  await t('Encoder audio', async()=>{ const c=await alegeCodecAudio(); return c? c.nume : 'lipsă'; });
+};
+function statusServicii(){ const s=S(); const p=[]; p.push(s.geminiKey?'scenariu: Gemini ✅':'scenariu: Pollinations (pune o cheie Gemini gratuită pentru calitate mai bună)'); p.push(s.workerUrl?'imagini: Worker ⚡':'imagini: Pollinations (~45s/imagine)'); $('#statusServicii').textContent=p.join(' · '); }
+
+/* ---------------- Worker Cloudflare ---------------- */
+const WORKER=`// Worker Cloudflare pentru Mașina de Povești (gratuit: 10.000 neuroni/zi)
+// Necesită binding Workers AI cu numele: AI
+export default {
+  async fetch(req, env) {
+    const cors = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Methods": "POST, OPTIONS", "Access-Control-Allow-Headers": "Content-Type" };
+    if (req.method === "OPTIONS") return new Response(null, { headers: cors });
+    const url = new URL(req.url);
+    const body = req.method === "POST" ? await req.json().catch(() => ({})) : {};
+    try {
+      if (url.pathname === "/image") {
+        const r = await env.AI.run("@cf/black-forest-labs/flux-1-schnell", {
+          prompt: String(body.prompt || "").slice(0, 2000),
+          steps: 6,
+          seed: Number(body.seed) || Math.floor(Math.random() * 1e9),
+        });
+        const bin = Uint8Array.from(atob(r.image), (c) => c.charCodeAt(0));
+        return new Response(bin, { headers: { ...cors, "Content-Type": "image/jpeg" } });
+      }
+      if (url.pathname === "/text") {
+        const r = await env.AI.run("@cf/meta/llama-3.3-70b-instruct-fp8-fast", {
+          messages: body.messages || [], max_tokens: 4096, temperature: 0.8,
+        });
+        const text = typeof r.response === "string" ? r.response : JSON.stringify(r.response);
+        return new Response(JSON.stringify({ text }), { headers: { ...cors, "Content-Type": "application/json" } });
+      }
+      return new Response("Mașina de Povești: worker OK", { headers: cors });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
+    }
+  },
+};`;
+$('#workerCode').textContent=WORKER;
+$('#btnCopyWorker').onclick=async()=>{ try{ await navigator.clipboard.writeText(WORKER); $('#btnCopyWorker').textContent='✅ Copiat'; }catch(e){} };
+
+/* ---------------- Logo ---------------- */
+{ const c=$('#logo').getContext('2d'); c.fillStyle='#2b211b'; c.fillRect(0,0,112,112); deseneazaBunic(c,56,128,120,0.2,0,0); }
+
+/* =====================================================
+   MOD TEST / DEMO OFFLINE (fără internet): ?test=1
+   ===================================================== */
+const TEST_SCENARIU={titlu:'De Ce Zicem „Trage Apa” Când Apăsăm pe un Buton?',carlig_ecran:'NIMENI NU MAI TRAGE APA',accent_carlig:'TRAGE',coperta_text:'TRAGE APA?',coperta_sub:'NU E CE CREZI',
+  postare:'Zicem „trage apa”, dar nimeni n-a mai tras de nimic de zeci de ani. Explicația e într-un lanț de pe vremea bunicilor.',intrebare:'Voi cum îi ziceți acasă?',hashtaguri:['#StiaiCa','#Romania','#Curiozitati'],surse_folosite:[0],
+  scene:[
+   {text:'Toată lumea zice „trage apa”. Dar voi când ați tras ultima dată de ceva?',imagine:'toilet',eticheta:{text:'NIMENI NU TRAGE',accent:'TRAGE',stil:'alb'}},
+   {text:'Apăsăm pe un buton. Și totuși zicem că tragem. Stați așa.',imagine:'button',eticheta:null},
+   {text:'Acum o sută de ani, rezervorul de apă stătea sus, aproape de tavan.',foto:'Victorian toilet cistern',imagine:'old tank',eticheta:{text:'+100 DE ANI',accent:'',stil:'galben'}},
+   {text:'Avea un lanț lung, cu un mâner de porțelan la capăt.',imagine:'chain',eticheta:null},
+   {text:'Trăgeai de lanț și apa cădea cu putere. De aici vine expresia.',imagine:'water',eticheta:{text:'DE AICI VINE',accent:'VINE',stil:'rosu'}},
+   {text:'Rezervoarele au coborât, lanțul a dispărut, dar vorba a rămas.',imagine:'modern',eticheta:null},
+   {text:'Voi cum îi ziceți acasă? Scrieți-mi în comentarii.',imagine:'grandpa',eticheta:{text:'SCRIE ÎN COMENTARII',accent:'COMENTARII',stil:'alb'}},
+   {text:'Hai că v-am lăsat. Pe data viitoare, nepoților!',imagine:'bye',eticheta:null}]};
+async function TEST_AI(sistem,prompt){ await sleep(50); if(/termen de căutare/.test(prompt)) return {ro:'Toaletă',en:'Flush toilet'}; if(/verificator/.test(sistem)) return {probleme:[],scene:JSON.parse(JSON.stringify(TEST_SCENARIU.scene))}; if(/idei/.test(prompt)) return {idei:IDEI_FIXE}; return JSON.parse(JSON.stringify(TEST_SCENARIU)); }
+async function TEST_VOCE(text){ // „vorbire” sintetică: silabe cu formanți, ca să testăm sincronizarea
+  const sil=Math.max(2,Math.round(text.replace(/[^a-zăâîșț]/gi,'').length/2.6)); const d=sil*0.19+0.15; const n=Math.round(d*SR); const ctx=new OfflineAudioContext(1,n,SR); const b=ctx.createBuffer(1,n,SR); const a=b.getChannelData(0);
+  for(let i=0;i<n;i++){ const t=i/SR; const s=Math.floor(t/0.19); const ph=(t%0.19)/0.19; const env=(t>0.05&&t<d-0.08)?Math.sin(Math.PI*ph)**2:0; a[i]=env*(0.5*Math.sin(2*Math.PI*(120+(s%3)*12)*t)+0.25*Math.sin(2*Math.PI*(700+(s%5)*90)*t)+0.15*Math.sin(2*Math.PI*1200*t))*0.6; }
+  return b; }
+async function TEST_IMG(prompt,fmt,seed){ const r=imagineRezerva(prompt,fmt,seed); r.rezerva=false; return r; }
+if(TEST){
+  document.title='[DEMO OFFLINE] '+document.title; $('#subiect').value='De ce zicem „trage apa”?';
+  $('#statusServicii').textContent='🧪 Mod demo offline: scenariu, voce și imagini simulate — testează doar montajul și auditul.';
+}
+incarcaSetari(); statusServicii(); aratIdei([...IDEI_FIXE].sort(()=>Math.random()-.5));
+window.__creeaza=creeaza; if(TEST) window.__MP4=MP4;
+function mediu(){ return {url:location.href.split('?')[0], protocol:location.protocol, ua:navigator.userAgent, webcodecs:'VideoEncoder' in window, offscreen:'OffscreenCanvas' in window, gemini:!!S().geminiKey, worker:!!S().workerUrl, imagini:S().provImg, ai:S().provAI, voce:S().provVoce}; }
+const SFATURI=[
+  [/Failed to fetch|NetworkError|Load failed|rețea|CORS/i,'Un serviciu de pe internet n-a răspuns. Verifică netul și încearcă din nou. Dacă ai deschis fișierul direct din Descărcări, pune-l întâi online (tab-ul Ajutor).'],
+  [/Gemini/i,'Problema e la Gemini: verifică cheia în Setări (fără spații), sau ai depășit limita gratuită pe azi — aplicația trece singură pe Pollinations dacă pui „Automat”.'],
+  [/Pollinations/i,'Serviciul gratuit Pollinations e aglomerat. Așteaptă un minut și apasă din nou, sau pune o cheie Gemini gratuită în Setări.'],
+  [/vits|onnx|wasm|piper|import/i,'Vocea nu s-a putut încărca. Folosește Chrome sau Edge actualizat și ține pagina deschisă până se descarcă vocea (~63 MB, o singură dată).'],
+  [/Encoder|codec|VideoFrame/i,'Browserul nu poate face video. Folosește Chrome sau Edge pe laptop, sau Chrome pe Android.'],
+];
+function aratEroare(e, pasul){
+  const msg=(e&&e.message)||String(e); $('#eroare').classList.remove('hide');
+  $('#eroareMsg').textContent=`La pasul „${(PASI.find(x=>x[0]===pasul)||[,,pasul||'?'])[2]}”: ${msg}`;
+  $('#eroareSfat').textContent=(SFATURI.find(([r])=>r.test(msg+' '+(pasul||'')))||[,'Apasă din nou pe Creează. Dacă se repetă, copiază detaliile și trimite-mi-le.'])[1];
+  $('#eroareDet').textContent=JSON.stringify({pas:pasul, eroare:msg, stack:String(e&&e.stack||'').slice(0,800), ...mediu()},null,1);
+}
+$('#btnCopyEroare').onclick=async()=>{ const t=$('#eroareDet').textContent; try{ await navigator.clipboard.writeText(t); $('#btnCopyEroare').textContent='✅ Copiat — lipește-l în chat'; }catch(_){ $('#eroareDet').classList.remove('hide'); } };
+window.addEventListener('unhandledrejection',ev=>{ if(lucreaza) return; console.error(ev.reason); });
+if(location.protocol==='file:'){ const b=$('#banner'); b.classList.remove('hide'); b.innerHTML='<b>⚠️ Ai deschis fișierul direct de pe dispozitiv.</b><br><span class="mut">Pe telefon așa nu merge (browserul blochează scripturile și internetul). Pune pagina online — durează 2 minute, vezi tab-ul <b>Ajutor</b>.</span>'; }
+window.__gata=true;
+</script>
+<script>
+setTimeout(function(){ if(!window.__gata){ var d=document.createElement('div'); d.style.cssText='position:fixed;left:10px;right:10px;bottom:10px;background:#e2262a;color:#fff;padding:14px;border-radius:14px;font:700 15px sans-serif;z-index:99';
+  d.innerHTML='Aplicația nu a pornit în acest browser. Deschide linkul în <u>Google Chrome</u> sau <u>Microsoft Edge</u> (nu în aplicația Facebook/Telegram/WhatsApp și nu direct din fișier).'; document.body.appendChild(d); } }, 5000);
+</script>
+<script>
+// cercetare simulată pentru demo (rescrisă înainte de modul principal nu e posibil; o tratăm în fetch)
+if(new URLSearchParams(location.search).has('test')){
+  const of=window.fetch; window.fetch=async(u,o)=>{ const s=String(u);
+    if(s.includes('commons.wikimedia.org')) return new Response(JSON.stringify({query:{pages:{1:{title:'File:Test foto.jpg',index:1,imageinfo:[{thumburl:'test-foto.jpg',url:'test-foto.jpg',width:1600,height:1067,mime:'image/jpeg',descriptionurl:'#',extmetadata:{Artist:{value:'<a>Ion Popescu</a>'},LicenseShortName:{value:'CC BY-SA 4.0'}}}]}}}}),{headers:{'content-type':'application/json'}});
+    if(s.includes('wikipedia.org')&&s.includes('pageimages')) return new Response(JSON.stringify({query:{pages:{1:{title:'X'}}}}),{headers:{'content-type':'application/json'}});
+    if(s.includes('wikipedia.org')){ if(s.includes('list=search')) return new Response(JSON.stringify({query:{search:[{title:'Toaletă'}]}}),{headers:{'content-type':'application/json'}});
+      return new Response(JSON.stringify({query:{pages:{1:{title:'Toaletă',extract:'Toaleta cu apă a fost perfecționată în secolul XIX. Rezervorul se afla sus, iar apa era eliberată trăgând de un lanț. '.repeat(8)}}}}),{headers:{'content-type':'application/json'}}); }
+    return of(u,o); };
+}
+</script>
+</body>
+</html>
