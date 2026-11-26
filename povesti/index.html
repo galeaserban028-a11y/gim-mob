@@ -140,7 +140,7 @@ pre{white-space:pre-wrap;background:var(--card2);border-radius:12px;padding:12px
       <div><label>Desene AI de la</label><select id="provAI"><option value="auto">Automat (Worker dacă ai, altfel Pollinations)</option><option value="worker">Cloudflare Worker (rapid, 1024px)</option><option value="pollinations">Pollinations (fără cheie, ~45s/imagine)</option><option value="puter">Puter (cont gratuit, modele premium)</option></select></div>
     </div>
     <div class="row">
-      <div><label>Voce</label><select id="provVoce"><option value="piper">Mihai — Piper (gratis, nelimitat, rulează local)</option><option value="puter">Puter ElevenLabs (cont gratuit, credit limitat)</option></select></div>
+      <div><label>Voce</label><select id="provVoce"><option value="auto">Automat (Gemini dacă ai cheie, altfel Mihai)</option><option value="gemini">Gemini — voce naturală (cheie gratuită)</option><option value="piper">Mihai — Piper (gratis, rulează local; pe iPhone poate să nu meargă)</option><option value="puter">Puter ElevenLabs (cont gratuit, credit limitat)</option></select></div>
       <div><label>Stil desen</label><select id="stilImg">
         <option value="cartoon">Cartoon 2D cu contur gros (ca Nea Caisă)</option>
         <option value="carte">Ilustrație de carte veche</option>
@@ -547,9 +547,11 @@ let piper=null;
 async function voceInit(cb){
   if(TEST) return;
   if(S().provVoce==='puter'){ await incarcaPuter(); return; }
-  if(!piper) piper = await import('https://cdn.jsdelivr.net/npm/@diffusionstudio/vits-web@1.0.3/+esm');
+  try{ if(!piper) piper = await import('https://cdn.jsdelivr.net/npm/@diffusionstudio/vits-web@1.0.3/+esm'); }
+  catch(e){ throw new Error('Mihai (Piper): nu s-a încărcat biblioteca — '+e.message); }
   let stoc=[]; try{ stoc = await piper.stored(); }catch(e){}
-  if(!stoc.includes('ro_RO-mihai-medium')) await piper.download('ro_RO-mihai-medium', p=>{ if(p&&p.total) cb && cb(p.loaded/p.total); });
+  if(!stoc.includes('ro_RO-mihai-medium')){ try{ await piper.download('ro_RO-mihai-medium', p=>{ if(p&&p.total) cb && cb(p.loaded/p.total); }); }
+    catch(e){ throw new Error('Mihai (Piper): descărcarea vocii a eșuat — '+e.message); } }
 }
 async function decodeaza(ab){
   const ctx=new OfflineAudioContext(1,1,SR);
@@ -579,6 +581,82 @@ async function voceScena(text){
   }
   const out=new Float32Array(Math.max(1,t-pauza)); let o=0; for(const b of bucati){ out.set(b,o); o+=b.length+pauza; }
   return {samples:out, durata:out.length/SR, segmente};
+}
+
+/* ---------- Vocea Gemini (gratuită cu cheia ta; merge pe orice telefon) ---------- */
+const GEMINI_TTS=['gemini-2.5-flash-preview-tts','gemini-2.5-flash-tts','gemini-3.1-flash-tts-preview'];
+const VOCI_GEMINI=['Algenib','Charon','Iapetus'];
+function b64LaBytes(b){ const s=atob(b); const u=new Uint8Array(s.length); for(let i=0;i<s.length;i++) u[i]=s.charCodeAt(i); return u; }
+async function pcmLa48k(bytes, rata){
+  const n=Math.floor(bytes.length/2), dv=new DataView(bytes.buffer, bytes.byteOffset, n*2), f=new Float32Array(n);
+  for(let i=0;i<n;i++) f[i]=dv.getInt16(i*2,true)/32768;
+  if(rata===SR) return f;
+  const ctx=new OfflineAudioContext(1, Math.ceil(n*SR/rata), SR); const b=ctx.createBuffer(1,n,rata); b.copyToChannel(f,0);
+  const src=ctx.createBufferSource(); src.buffer=b; src.connect(ctx.destination); src.start(); return (await ctx.startRendering()).getChannelData(0);
+}
+async function geminiTTS(text){
+  const key=S().geminiKey; let ultima='';
+  for(const m of GEMINI_TTS){
+    const body={contents:[{parts:[{text}]}], generationConfig:{responseModalities:['AUDIO'], speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:VOCI_GEMINI[0]}}}}};
+    try{
+      const r=await fetchTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body)},240000);
+      if(!r.ok){ ultima=`${m}: HTTP ${r.status}${r.status===429?' (limita gratuită pe azi)':''}`; continue; }
+      const j=await r.json(); const part=j.candidates?.[0]?.content?.parts?.find(p=>p.inlineData);
+      if(!part){ ultima=`${m}: fără audio`; continue; }
+      const rata=+((part.inlineData.mimeType||'').match(/rate=(\d+)/)?.[1]||24000);
+      return await pcmLa48k(b64LaBytes(part.inlineData.data), rata);
+    }catch(e){ ultima=`${m}: ${e.message}`; }
+  }
+  throw new Error('Vocea Gemini: '+ultima);
+}
+function pauze(d){ // centrele pauzelor (>=110ms de liniște)
+  const w=Math.round(0.02*SR); let pk=0; for(let i=0;i<d.length;i+=7) pk=Math.max(pk,Math.abs(d[i]));
+  const prag=pk*0.04, out=[]; let start=-1;
+  for(let i=0;i*w<d.length;i++){ let e=0; const a=i*w, b=Math.min(d.length,a+w); for(let k=a;k<b;k+=2) e=Math.max(e,Math.abs(d[k]));
+    if(e<prag){ if(start<0) start=i; } else if(start>=0){ if(i-start>=6) out.push({t:(start+i)/2*w/SR, len:(i-start)*w/SR}); start=-1; } }
+  return out;
+}
+function impartePeLiniste(total, texte, pz, t0, t1){ // granițe între texte, lipite de cea mai apropiată pauză
+  const lung=texte.map(t=>t.length+2), sum=lung.reduce((a,b)=>a+b,0); const lim=[t0]; let cum=0;
+  for(let i=0;i<texte.length-1;i++){ cum+=lung[i]; const tinta=t0+(t1-t0)*cum/sum; const prev=lim[lim.length-1];
+    const cand=pz.filter(p=>p.t>prev+0.3&&p.t<t1-0.3&&Math.abs(p.t-tinta)<2.2).sort((a,b)=>Math.abs(a.t-tinta)/(0.5+a.len)-Math.abs(b.t-tinta)/(0.5+b.len))[0];
+    lim.push(cand?cand.t:Math.max(prev+0.3,tinta)); }
+  lim.push(t1); return lim;
+}
+async function voceGeminiToate(P, cb){
+  const texte=P.scene.map(x=>curataTTS(x.text));
+  const instr=`Citește textul de mai jos în limba română, ca un bunic simpatic care povestește la o cafea: voce caldă, zâmbitoare, ritm vioi și natural, accent pe cuvintele-cheie. Fă o pauză scurtă între paragrafe. Citește DOAR textul, fără nimic în plus.\n\n`;
+  cb&&cb(0.15,'Gemini citește tot scenariul…');
+  const d=await geminiTTS(instr+texte.join('\n\n'));
+  cb&&cb(0.8,'împart vocea pe scene…');
+  let a=0,b=d.length-1; const prag=0.01; while(a<d.length&&Math.abs(d[a])<prag) a++; while(b>a&&Math.abs(d[b])<prag) b--;
+  const T0=a/SR, T1=(b+1)/SR, pz=pauze(d);
+  const lim=impartePeLiniste(d, texte, pz, T0, T1);
+  P.scene.forEach((sc,i)=>{
+    const s0=lim[i], s1=lim[i+1]; let ia=Math.round(s0*SR), ib=Math.round(s1*SR);
+    let x=ia; while(x<ib&&Math.abs(d[x])<prag) x++; ia=Math.max(ia,x-Math.round(0.03*SR)); let y=ib-1; while(y>ia&&Math.abs(d[y])<prag) y--; ib=Math.min(ib,y+Math.round(0.08*SR));
+    const samples=d.slice(ia,Math.max(ia+1,ib)); const dur=samples.length/SR;
+    const prop=propozitii(texte[i]); const pzLoc=pz.map(p=>({t:p.t-ia/SR,len:p.len})).filter(p=>p.t>0&&p.t<dur);
+    const lp=impartePeLiniste(null, prop, pzLoc, 0, dur);
+    sc.voce={samples, durata:dur, segmente:prop.map((t,k)=>({text:t,start:lp[k],end:lp[k+1]}))};
+  });
+}
+async function voceMihaiToate(P, cb){
+  await voceInit(f=>cb&&cb(f*0.3,`descarc vocea Mihai (o singură dată): ${Math.round(f*100)}%`));
+  for(let i=0;i<P.scene.length;i++){ P.scene[i].voce=await voceScena(P.scene[i].text); cb&&cb(0.3+0.7*(i+1)/P.scene.length,`${i+1}/${P.scene.length} scene`); }
+}
+async function genereazaVocea(P){
+  const s=P.setari; const cb=(f,t)=>progresPas('voce',f,t);
+  const ord = s.provVoce==='gemini'? ['gemini','piper'] : s.provVoce==='piper'? ['piper','gemini'] : s.provVoce==='puter'? ['puter','gemini'] : (s.geminiKey? ['gemini','piper'] : ['piper']);
+  const lista=ord.filter(v=>v!=='gemini'||s.geminiKey); let erori=[];
+  for(const v of lista){
+    try{
+      if(v==='gemini') await voceGeminiToate(P,cb); else await voceMihaiToate(P,cb);
+      pas('voce', erori.length?'warn':'ok', `${v==='gemini'?'Gemini':v==='puter'?'Puter':'Mihai'} · ${P.scene.reduce((a,x)=>a+x.voce.durata,0).toFixed(1)}s de narațiune`+(erori.length?` (prima variantă n-a mers: ${erori[0]})`:''));
+      P.vocea=v; return;
+    }catch(e){ log('voce fail',v,e.message); erori.push(e.message); }
+  }
+  throw new Error(erori.join(' | ')+(s.geminiKey?'':' — pune o cheie Gemini gratuită în Setări pentru vocea Gemini'));
 }
 let puterPromis=null;
 function incarcaPuter(){ if(window.puter) return Promise.resolve(); if(!puterPromis) puterPromis=new Promise((ok,no)=>{ const s=document.createElement('script'); s.src='https://js.puter.com/v2/'; s.onload=ok; s.onerror=()=>no(new Error('Nu s-a putut încărca Puter')); document.head.appendChild(s); }); return puterPromis; }
@@ -1128,11 +1206,7 @@ async function creeaza(){
         progresPas('imagini',gataImg/nImg,`${gataImg}/${nImg} (${nf} fotografii reale)`+(s.provImg!=='foto'&&furnizoriImg()[0]==='pollinations'&&!TEST&&!P.scene[i].img?.foto?` · desenele gratuite vin la ~45s una`:''));
       }
     })();
-    const jobVoce=(async()=>{
-      await voceInit(f=>progresPas('voce',f*0.3,`descarc vocea Mihai (o singură dată): ${Math.round(f*100)}%`));
-      for(let i=0;i<P.scene.length;i++){ P.scene[i].voce=await voceScena(P.scene[i].text); progresPas('voce',0.3+0.7*(i+1)/P.scene.length,`${i+1}/${P.scene.length} scene`); }
-      pas('voce','ok',`${P.scene.reduce((a,x)=>a+x.voce.durata,0).toFixed(1)}s de narațiune`);
-    })();
+    const jobVoce=genereazaVocea(P);
     await jobVoce; await jobImg;
     const nRez=P.scene.filter(x=>x.img?.rezerva).length, nFoto=P.scene.filter(x=>x.img?.foto).length; pas('imagini', nRez?'warn':'ok', (nRez? `${nRez} scene fără imagine (fundal de rezervă) · ` : '')+`${nFoto} fotografii reale, ${nImg-nFoto-nRez} desene AI`);
     // 6. montaj
@@ -1155,7 +1229,7 @@ async function montajSiFinal(P){
   const au=await auditFinal(P,rez);
   pas('audit', au.some(x=>x.nivel==='err')?'warn':'ok', `${au.filter(x=>x.nivel==='ok').length}/${au.length} verificări trecute`);
   // afișare
-  PROIECT=P; const ext=rez.blob.type.includes('webm')?'webm':'mp4'; const nume=(P.scenariu.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
+  PROIECT=P; if(TEST) window.__P=P; const ext=rez.blob.type.includes('webm')?'webm':'mp4'; const nume=(P.scenariu.titlu||'clip').normalize('NFKD').replace(/[^\w\s-]/g,'').trim().replace(/\s+/g,'-').toLowerCase().slice(0,60)||'clip';
   const uV=URL.createObjectURL(rez.blob); $('#vid').src=uV; $('#dlVid').href=uV; $('#dlVid').download=`${nume}.${ext}`;
   $('#dlCover').href=URL.createObjectURL(cop); $('#dlCover').download=`${nume}-coperta.jpg`;
   $('#dlSrt').href=URL.createObjectURL(new Blob([srt(P)],{type:'text/plain'})); $('#dlSrt').download=`${nume}.srt`;
@@ -1257,6 +1331,7 @@ async function TEST_VOCE(text){ // „vorbire” sintetică: silabe cu formanți
 async function TEST_IMG(prompt,fmt,seed){ const r=imagineRezerva(prompt,fmt,seed); r.rezerva=false; return r; }
 if(TEST){
   document.title='[DEMO OFFLINE] '+document.title; $('#subiect').value='De ce zicem „trage apa”?';
+  if(new URLSearchParams(location.search).has('tts')){ $('#geminiKey').value='TEST'; $('#provVoce').value='gemini'; }
   $('#statusServicii').textContent='🧪 Mod demo offline: scenariu, voce și imagini simulate — testează doar montajul și auditul.';
 }
 incarcaSetari(); statusServicii(); aratIdei([...IDEI_FIXE].sort(()=>Math.random()-.5));
@@ -1288,6 +1363,14 @@ setTimeout(function(){ if(!window.__gata){ var d=document.createElement('div'); 
 // cercetare simulată pentru demo (rescrisă înainte de modul principal nu e posibil; o tratăm în fetch)
 if(new URLSearchParams(location.search).has('test')){
   const of=window.fetch; window.fetch=async(u,o)=>{ const s=String(u);
+    if(s.includes('generativelanguage')&&o&&o.body&&o.body.includes('AUDIO')){
+      const txt=JSON.parse(o.body).contents[0].parts[0].text; const par=txt.split('\n\n').slice(1); const R=24000; const out=[];
+      const sil=sec=>{ for(let i=0;i<sec*R;i++) out.push(0); };
+      sil(0.2); par.forEach(pp=>{ (pp.match(/[^.!?]+[.!?]*/g)||[pp]).forEach(se=>{ const n=Math.max(2,Math.round(se.replace(/[^a-zăâîșț]/gi,'').length/2.6)); const d=n*0.17;
+        for(let i=0;i<d*R;i++){ const t=i/R, ph=(t%0.17)/0.17; out.push(Math.round(9000*Math.sin(Math.PI*ph)**2*Math.sin(2*Math.PI*(130+40*Math.sin(t*3))*t))); } sil(0.22); }); sil(0.45); });
+      const u=new Uint8Array(out.length*2); const dv=new DataView(u.buffer); out.forEach((v,i)=>dv.setInt16(i*2,v,true));
+      let bin=''; for(let i=0;i<u.length;i+=32768) bin+=String.fromCharCode.apply(null,u.subarray(i,i+32768));
+      return new Response(JSON.stringify({candidates:[{content:{parts:[{inlineData:{mimeType:'audio/L16;codec=pcm;rate=24000',data:btoa(bin)}}]}}]}),{headers:{'content-type':'application/json'}}); }
     if(s.includes('commons.wikimedia.org')) return new Response(JSON.stringify({query:{pages:{1:{title:'File:Test foto.jpg',index:1,imageinfo:[{thumburl:'test-foto.jpg',url:'test-foto.jpg',width:1600,height:1067,mime:'image/jpeg',descriptionurl:'#',extmetadata:{Artist:{value:'<a>Ion Popescu</a>'},LicenseShortName:{value:'CC BY-SA 4.0'}}}]}}}}),{headers:{'content-type':'application/json'}});
     if(s.includes('wikipedia.org')&&s.includes('pageimages')) return new Response(JSON.stringify({query:{pages:{1:{title:'X'}}}}),{headers:{'content-type':'application/json'}});
     if(s.includes('wikipedia.org')){ if(s.includes('list=search')) return new Response(JSON.stringify({query:{search:[{title:'Toaletă'}]}}),{headers:{'content-type':'application/json'}});
