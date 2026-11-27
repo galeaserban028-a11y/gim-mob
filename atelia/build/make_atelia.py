@@ -203,7 +203,7 @@ must("setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
 
 # ---------- module Atelia (src/*.js) ----------
 SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(dst)), 'src')
-MODS = ['i18n.js', 'profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js', 'hardening.js', 'windows.js']
+MODS = ['i18n.js', 'profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js', 'hardening.js', 'currency.js', 'windows.js']
 mods_code = '\n'.join(f'/* ---- src/{m} ---- */\n' + open(os.path.join(SRC_DIR, m), encoding='utf-8').read() for m in MODS)
 if '</script>' in mods_code: raise SystemExit('src contains </script>')
 must("\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
@@ -222,6 +222,11 @@ must('<meta name="theme-color" content="#0b0b0b">', f'<meta http-equiv="Content-
 s = re.sub(r'(<link rel="apple-touch-icon" href=")[^"]+', r'\g<1>icons/apple-touch-icon.png', s, count=1)
 must("\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
      "\nif('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);", count=1)
+
+# ---------- monedă configurabilă (lei / €) ----------
+must("const lei=v=>Math.round(v).toLocaleString('ro-RO')+' lei',", "const lei=v=>money(v),", count=1)
+s, nu = re.subn(r"'lei/(m²|buc|ml|set|foaie)'", r"CUR()+'/\1'", s)
+assert nu == 12, nu
 
 # leftover personal text must be gone
 for bad in ('GIMMOB', 'gimmob', '100 de lei', "'gmob."):

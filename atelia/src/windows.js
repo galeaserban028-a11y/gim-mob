@@ -4,7 +4,7 @@
    Deducțiile de sistem sunt generice și se ajustează în „Sistem” după profilul folosit. */
 const WL = (ro, en) => LANG === 'en' ? en : ro;
 const WIN_DEF_RATES = {pvc: 650, al: 1350, osc: 260, bat: 190, door: 900, slide: 1400, g3: 140, color: 18, sill: 70, net: 160, roller: 380, mount: 220};
-const WIN_DEF_SYS = {F: 70, M: 84, S: 78, ov: 8, gl: 5, bar: 6500, kerf: 4, miter: 10};
+const WIN_DEF_SYS = {F: 70, M: 84, S: 78, ov: 8, gl: 5, bar: 6500, kerf: 4, miter: 10, Ug2: 1.1, Ug3: 0.6, UfP: 1.3, UfA: 1.8, psi: 0.04, Up: 1.2};
 const WIN_KINDS = {
  win1: {n: WL('Fereastră 1 canat', 'Window, 1 sash'), w: 900, h: 1200, sash: ['osc-r']},
  win2: {n: WL('Fereastră 2 canate', 'Window, 2 sashes'), w: 1400, h: 1400, sash: ['bat-l', 'osc-r']},
@@ -72,6 +72,17 @@ function winChecks(it) {
  if (it.kind === 'door' || it.kind === 'balc' || it.kind === 'slide') out.push(['info', WL('Geam de siguranță (securizat/laminat) recomandat la uși și zonele joase', 'Safety glass (toughened/laminated) recommended for doors and low zones')]);
  if (it.h > 1800 && it.kind.startsWith('win')) out.push(['info', WL('Verifică înălțimea parapetului și siguranța la cădere conform normelor locale', 'Check sill height and fall protection against local regulations')]);
  return out;
+}
+/* ---- Uw: transfer termic al ferestrei, metoda simplificată EN ISO 10077-1 ----
+   Uw = (Ag·Ug + Af·Uf + Ap·Up + lg·Ψg) / (Ag + Af + Ap); valori Ug/Uf/Ψ editabile în „Sistem”. */
+function winUw(it) {
+ const s = WS.sys, g = winGeom(it), A = it.w * it.h / 1e6, Ug = it.glass == 3 ? s.Ug3 : s.Ug2, Uf = it.mat === 'al' ? s.UfA : s.UfP;
+ let Ag = 0, Ap = 0, lg = 0;
+ const cells = (g.top ? [Object.assign({op: 'fix'}, g.top)] : []).concat(g.cells);
+ cells.forEach(c => { const inset = c.op === 'fix' ? 0 : s.S - s.ov, w = Math.max(0, c.w - 2 * inset) / 1000, h = Math.max(0, c.h - 2 * inset) / 1000;
+  if (c.op.startsWith('door')) Ap += w * h; else { Ag += w * h; lg += 2 * (w + h); } });
+ const Af = Math.max(0, A - Ag - Ap);
+ return {Uw: (Ag * Ug + Af * Uf + Ap * s.Up + lg * s.psi) / A, Ug, Uf, Ag, Af, glassShare: Ag / A};
 }
 /* ---- preț ---- */
 function winPrice(it) {
@@ -145,7 +156,7 @@ function winEditor(it) {
  <div class="wacc"><label class="chk"><input type="checkbox" data-wb="sill"${it.sill ? ' checked' : ''}><span>${WL('Glaf exterior', 'External sill')}</span></label><label class="chk"><input type="checkbox" data-wb="roller"${it.roller ? ' checked' : ''}><span>${WL('Rulou exterior', 'External roller shutter')}</span></label>
  <label class="pf" style="max-width:160px"><span>${WL('Plase insecte (buc)', 'Insect screens (pcs)')}</span><input class="inp" type="number" data-wf="net" value="${it.net || 0}"></label></div>
  ${chk.length ? `<div class="plist" style="margin-top:10px">${chk.map(([l, m]) => `<div class="pitem"><i style="width:10px;height:10px;border-radius:50%;background:${col[l]};flex:none"></i><span>${esc(m)}</span></div>`).join('')}</div>` : ''}
- <div class="sec" style="margin-top:10px"><div class="tog"><span>${WL('Suprafață', 'Area')}</span><b>${p.area.toFixed(2).replace('.', ',')} m²</b></div><div class="tog"><span>${WL('Preț / buc (fără TVA)', 'Price / pc (excl. VAT)')}</span><b>${lei(p.one)}</b></div><div class="tog"><span style="color:var(--gold)">${WL('Total poziție', 'Position total')}</span><b style="color:var(--gold)">${lei(p.total)}</b></div></div>
+ <div class="sec" style="margin-top:10px"><div class="tog"><span>${WL('Suprafață', 'Area')}</span><b>${p.area.toFixed(2).replace('.', ',')} m²</b></div><div class="tog"><span title="EN ISO 10077-1">${WL('Uw estimat (izolare termică)', 'Estimated Uw (thermal)')}</span><b>${winUw(it).Uw.toFixed(2).replace('.', LANG === 'en' ? '.' : ',')} W/m²K</b></div><div class="tog"><span>${WL('Preț / buc (fără TVA)', 'Price / pc (excl. VAT)')}</span><b>${lei(p.one)}</b></div><div class="tog"><span style="color:var(--gold)">${WL('Total poziție', 'Position total')}</span><b style="color:var(--gold)">${lei(p.total)}</b></div></div>
  <div class="ckbtns" style="margin-top:10px"><button class="ckb" id="wDup">${WL('Duplică', 'Duplicate')}</button><button class="ckb" id="wDel">${WL('Șterge poziția', 'Delete position')}</button></div>`;
 }
 function winBindEditor(it) {
@@ -167,11 +178,12 @@ function winSettings() {
  const f = (o, k, l) => `<label class="pf"><span>${l}</span><input class="inp" type="number" data-${o}="${k}" value="${(o === 'wr' ? r : s)[k]}"></label>`;
  modalState = {winset: 1};
  openModal(`${mhead(WL('Prețuri & sistem', 'Prices & system'), WL('Valorile implicite sunt exemple — pune-le pe ale tale', 'Defaults are examples — enter your own'))}
- <div class="lab">${WL('Prețuri (lei, fără TVA)', 'Prices (RON, excl. VAT)')}</div><div class="pfgrid">${f('wr', 'pvc', WL('PVC / m²', 'PVC / m²'))}${f('wr', 'al', WL('Aluminiu / m²', 'Aluminium / m²'))}${f('wr', 'osc', WL('Canat oscilobatant / buc', 'Tilt & turn sash / pc'))}${f('wr', 'bat', WL('Canat batant / buc', 'Side-hung sash / pc'))}${f('wr', 'door', WL('Ușă (feronerie, prag) / buc', 'Door (hardware, threshold) / pc'))}${f('wr', 'slide', WL('Canat glisant / buc', 'Sliding sash / pc'))}${f('wr', 'g3', WL('Supliment geam triplu / m²', 'Triple glazing extra / m²'))}${f('wr', 'color', WL('Supliment culoare (%)', 'Colour surcharge (%)'))}${f('wr', 'sill', WL('Glaf / ml', 'Sill / m'))}${f('wr', 'net', WL('Plasă insecte / buc', 'Insect screen / pc'))}${f('wr', 'roller', WL('Rulou / m²', 'Roller shutter / m²'))}${f('wr', 'mount', WL('Montaj / element', 'Installation / element'))}</div>
+ <div class="lab">${WL('Prețuri', 'Prices')} (${CUR()}, ${WL('fără TVA', 'excl. VAT')})</div><div class="pfgrid">${f('wr', 'pvc', WL('PVC / m²', 'PVC / m²'))}${f('wr', 'al', WL('Aluminiu / m²', 'Aluminium / m²'))}${f('wr', 'osc', WL('Canat oscilobatant / buc', 'Tilt & turn sash / pc'))}${f('wr', 'bat', WL('Canat batant / buc', 'Side-hung sash / pc'))}${f('wr', 'door', WL('Ușă (feronerie, prag) / buc', 'Door (hardware, threshold) / pc'))}${f('wr', 'slide', WL('Canat glisant / buc', 'Sliding sash / pc'))}${f('wr', 'g3', WL('Supliment geam triplu / m²', 'Triple glazing extra / m²'))}${f('wr', 'color', WL('Supliment culoare (%)', 'Colour surcharge (%)'))}${f('wr', 'sill', WL('Glaf / ml', 'Sill / m'))}${f('wr', 'net', WL('Plasă insecte / buc', 'Insect screen / pc'))}${f('wr', 'roller', WL('Rulou / m²', 'Roller shutter / m²'))}${f('wr', 'mount', WL('Montaj / element', 'Installation / element'))}</div>
  <div class="lab" style="margin-top:12px">${WL('Sistem de profile (mm) — după fișa tehnică a profilului tău', 'Profile system (mm) — from your profile data sheet')}</div><div class="pfgrid">${f('ws', 'F', WL('Lățime vizibilă toc', 'Frame face width'))}${f('ws', 'M', WL('Lățime montant', 'Mullion width'))}${f('ws', 'S', WL('Lățime vizibilă cercevea', 'Sash face width'))}${f('ws', 'ov', WL('Suprapunere cercevea pe toc', 'Sash overlap'))}${f('ws', 'gl', WL('Joc geam (pe latură)', 'Glass clearance (per side)'))}${f('ws', 'bar', WL('Lungime bară', 'Bar length'))}${f('ws', 'kerf', WL('Tăietură', 'Kerf'))}${f('ws', 'miter', WL('Adaos tăiere 45°', '45° cut allowance'))}</div>
+ <div class="lab" style="margin-top:12px">${WL('Valori termice (W/m²K) — din fișele producătorilor de profil și geam', 'Thermal values (W/m²K) — from profile and glass data sheets')}</div><div class="pfgrid">${f('ws', 'Ug2', 'Ug ' + WL('geam dublu', 'double glazing'))}${f('ws', 'Ug3', 'Ug ' + WL('geam triplu', 'triple glazing'))}${f('ws', 'UfP', 'Uf PVC')}${f('ws', 'UfA', 'Uf ' + WL('aluminiu', 'aluminium'))}${f('ws', 'psi', WL('Ψ distanțier (W/mK)', 'Ψ spacer (W/mK)'))}${f('ws', 'Up', 'Up ' + WL('panou ușă', 'door panel'))}</div>
  <div class="note" style="margin-top:10px">${WL('Deducțiile diferă de la un sistem la altul (Rehau, Salamander, Veka, Schüco etc.). Verifică-le pe fișa producătorului înainte de debitare.', 'Deductions differ between systems (Rehau, Salamander, Veka, Schüco, etc.). Check them against the manufacturer data sheet before cutting.')}</div>
  <button class="btn gold wide" id="wsOk" style="margin-top:10px">${WL('Salvează', 'Save')}</button>`, true);
- $('#wsOk').onclick = () => { $$('[data-wr]').forEach(e => r[e.dataset.wr] = Math.max(0, +e.value || 0)); $$('[data-ws]').forEach(e => s[e.dataset.ws] = Math.max(0, +e.value || 0)); winSave(); closeModal(true); winRender(); toast(WL('Salvat', 'Saved')); };
+ $('#wsOk').onclick = () => { $$('[data-wr]').forEach(e => r[e.dataset.wr] = Math.max(0, +e.value || 0)); $$('[data-ws]').forEach(e => s[e.dataset.ws] = Math.max(0, parseFloat(String(e.value).replace(',', '.')) || 0)); winSave(); closeModal(true); winRender(); toast(WL('Salvat', 'Saved')); };
 }
 function winCutView() {
  if (!WS.items.length) { toast(WL('Adaugă întâi o poziție', 'Add a position first')); return; }
@@ -209,7 +221,7 @@ async function winOfferPDF() {
   drawWin(x, it, m(20) + (box - it.w * k) / 2, y + m(4), k);
   x.fillStyle = '#111'; x.font = `700 ${m(4.2)}px Inter,Arial`; x.fillText(`${it.name} · ${WIN_KINDS[it.kind].n}`, m(75), y + m(9));
   x.font = `400 ${m(3.3)}px Inter,Arial`; x.fillStyle = '#333';
-  [`${it.w} × ${it.h} mm · ${it.qty} ${WL('buc', 'pcs')} · ${it.mat === 'al' ? WL('Aluminiu cu rupere termică', 'Thermally broken aluminium') : 'PVC'}`, `${WL('Geam', 'Glazing')}: ${GLASS[it.glass]}`, `${WL('Culoare', 'Colour')}: ${COLORS[it.color][0]}`,
+  [`${it.w} × ${it.h} mm · ${it.qty} ${WL('buc', 'pcs')} · ${it.mat === 'al' ? WL('Aluminiu cu rupere termică', 'Thermally broken aluminium') : 'PVC'}`, `${WL('Geam', 'Glazing')}: ${GLASS[it.glass]}`, `${WL('Culoare', 'Colour')}: ${COLORS[it.color][0]} · Uw ≈ ${winUw(it).Uw.toFixed(2)} W/m²K`,
    it.sash.map(o => OPS[o]).join(' | '), [it.sill && WL('glaf', 'sill'), it.roller && WL('rulou', 'roller shutter'), it.net && `${it.net} ${WL('plase', 'screens')}`, WL('montaj inclus', 'installation included')].filter(Boolean).join(' · ')]
    .forEach((t, i) => x.fillText(t, m(75), y + m(16 + 6 * i)));
   x.font = `700 ${m(4.2)}px Inter,Arial`; x.fillStyle = '#111'; x.textAlign = 'right'; x.fillText(lei(p.total), W - m(20), y + m(9)); x.textAlign = 'left';
@@ -222,7 +234,7 @@ async function winOfferPDF() {
  x.textAlign = 'left'; y += m(16 + 8 * rows.length);
  x.font = `400 ${m(3)}px Inter,Arial`; x.fillStyle = '#666';
  [WL('Dimensiunile sunt de toc și se confirmă după măsurătorile la fața locului. Desenele sunt văzute din interior.', 'Sizes are frame sizes, confirmed after on-site measurement. Drawings are viewed from inside.'),
-  WL('Simboluri: triunghiul indică partea balamalelor; F = fix.', 'Symbols: the triangle points to the hinge side; F = fixed.')].forEach(t => { x.fillText(t, m(15), y); y += m(4.6); });
+  WL('Simboluri: triunghiul indică partea balamalelor; F = fix.', 'Symbols: the triangle points to the hinge side; F = fixed.'), WL('Uw: valoare estimată prin metoda simplificată EN ISO 10077-1, din datele de catalog; valoarea certificată este cea din declarația de performanță a producătorului.', 'Uw: estimated with the simplified EN ISO 10077-1 method from catalogue data; the certified value is the one in the manufacturer declaration of performance.')].forEach(t => { x.fillText(t, m(15), y); y += m(4.6); });
  y = Math.max(y + m(10), pg.c.height - m(35));
  x.strokeStyle = '#999'; x.beginPath(); x.moveTo(m(15), y); x.lineTo(m(85), y); x.moveTo(W - m(85), y); x.lineTo(W - m(15), y); x.stroke();
  x.fillStyle = '#555'; x.font = `400 ${m(3.2)}px Inter,Arial`; x.fillText(`${WL('Ofertant', 'Supplier')}: ${firm}`, m(15), y + m(5)); x.fillText(WL('Client — semnătură și dată (accept oferta)', 'Client — signature and date (quote accepted)'), W - m(85), y + m(5));

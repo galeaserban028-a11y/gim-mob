@@ -34,13 +34,13 @@ async function cloudSignIn(email, password) {
 async function cloudSignOut() { try { await sbFetch('/auth/v1/logout', {method: 'POST'}); } catch (e) {} saveSession(null); }
 async function cloudPushProfile(p) {
  if (!cloudOn() || !cloudUser()) return;
- const row = {id: cloudUser().id, role: p.role, name: p.name, company: p.company, cui: p.cui, phone: p.phone, email: p.email, city: p.city, logo: p.logo, mode: p.mode, vat: p.vat, updated_at: new Date().toISOString()};
+ const row = {id: cloudUser().id, role: p.role, name: p.name, company: p.company, cui: p.cui, phone: p.phone, email: p.email, city: p.city, logo: p.logo, mode: p.mode, vat: p.vat, currency: p.currency, updated_at: new Date().toISOString()};
  await sbFetch('/rest/v1/profiles', {method: 'POST', headers: {Prefer: 'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(row)});
 }
 async function cloudPullProfile() {
  if (!cloudUser()) return;
  const rows = await sbFetch(`/rest/v1/profiles?id=eq.${encodeURIComponent(cloudUser().id)}&select=*`);
- if (rows && rows[0]) { const r = rows[0]; const p = {role: r.role, name: r.name, company: r.company, cui: r.cui, phone: r.phone, email: r.email, city: r.city, logo: r.logo, mode: r.mode, vat: r.vat};
+ if (rows && rows[0]) { const r = rows[0]; const p = {role: r.role, name: r.name, company: r.company, cui: r.cui, phone: r.phone, email: r.email, city: r.city, logo: r.logo, mode: r.mode, vat: r.vat, currency: r.currency};
   LS.set('atelia.profile', JSON.stringify(p)); applyMode(); }
  else { const p = getProfile(); if (p) await cloudPushProfile(p); }
 }

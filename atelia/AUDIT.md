@@ -26,7 +26,7 @@
 ## Ce urmează (în ordinea impactului)
 1. **Link de proiect pentru client** (aprobare + semnătură online) — după activarea Supabase.
 2. **Bibliotecile 3D/PDF găzduite local** (fără CDN extern) — cer descărcarea fișierelor de pe un calculator cu internet.
-3. ~~Versiune în engleză~~ — **făcut**: interfață, generator, ofertă PDF, documente legale EN. Rămân în română: desenele tehnice și etichetele PDF; moneda e încă lei (de adăugat EUR).
-4. ~~Modulul Ferestre & uși~~ — **făcut**: configurator PVC/aluminiu, simboluri de deschidere, verificări, preț, ofertă PDF, debitare profile pe bare, listă geamuri și feronerie. De adăugat: Uw (performanță termică), plan 3D, sincronizare în cont.
+3. ~~Versiune în engleză~~ — **făcut**: interfață, generator, ofertă PDF, documente legale EN. Rămân în română: desenele tehnice și etichetele PDF. **Monedă lei / € făcută** (cu conversie la cursul introdus de utilizator).
+4. ~~Modulul Ferestre & uși~~ — **făcut**: configurator PVC/aluminiu, simboluri de deschidere, verificări, preț, ofertă PDF, debitare profile pe bare, listă geamuri și feronerie. **Uw estimat făcut** (EN ISO 10077-1 simplificat, valori editabile). De adăugat: plan 3D, sincronizare în cont.
 5. **Plăți** (Stripe) — doar după ce firma și documentele legale sunt finalizate și verificate de avocat.
 6. **Teste pe dispozitive reale** (iPhone, Android, Windows) cu tatăl tău, ca utilizator-pilot.

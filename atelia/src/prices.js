@@ -64,7 +64,7 @@ function openPrices() {
  <input class="inp" id="plName" placeholder="Numele furnizorului (ex: Egger – depozit Cluj, nov. 2026)" style="width:100%">
  <textarea class="inp" id="plTxt" rows="7" style="width:100%;margin-top:8px;font:13px/1.4 ui-monospace,Menlo,monospace" placeholder="${esc(PRICE_EX)}"></textarea>
  <div class="ckbtns" style="margin-top:8px"><label class="ckb" style="text-align:center">Încarcă CSV<input type="file" id="plFile" accept=".csv,.txt" hidden></label><button class="ckb" id="plEx">Pune exemplul</button><button class="btn gold" id="plSave">Salvează lista</button></div>
- <div class="note" style="margin-top:8px">Format: o linie = <code>cod;preț</code>. Coduri: decor Egger (ex. <code>H1145</code>, lei/m²; adaugă <code>;blat</code> pentru blat) sau tip general (${Object.keys(RATE_KEYS).join(', ')}). Din Excel: Salvează ca → CSV.</div>
+ <div class="note" style="margin-top:8px">Format: o linie = <code>cod;preț</code>. Coduri: decor Egger (ex. <code>H1145</code>, ${CUR()}/m²; adaugă <code>;blat</code> pentru blat) sau tip general (${Object.keys(RATE_KEYS).join(', ')}). Din Excel: Salvează ca → CSV.</div>
  <div id="plMsg"></div></div>
  <div class="legal-links">Prețurile sunt cele introduse de tine. Verifică-le la furnizor înainte de ofertare.</div>`, true);
  $$('[data-pa]').forEach(b => b.onclick = () => { applyPriceList(priceLists().find(l => l.id === b.dataset.pa)); openPrices(); });

@@ -4,7 +4,7 @@
 create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   role text, name text, company text, cui text, phone text, email text, city text,
-  logo text, mode text, vat text,
+  logo text, mode text, vat text, currency text,
   updated_at timestamptz default now()
 );
 
@@ -46,3 +46,4 @@ grant execute on function public.delete_my_account() to authenticated;
 
 -- dacă tabelul exista deja dintr-o versiune mai veche:
 alter table public.profiles add column if not exists vat text;
+alter table public.profiles add column if not exists currency text;

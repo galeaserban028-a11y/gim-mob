@@ -1604,7 +1604,7 @@ function buildCNC(P){
  return makeZip(files);
 }
 
-const lei=v=>Math.round(v).toLocaleString('ro-RO')+' lei',m2=v=>v.toFixed(2).replace('.',',')+' m²';
+const lei=v=>money(v),m2=v=>v.toFixed(2).replace('.',',')+' m²';
 let prodTab='cut',prodFilter=null,prodCache=null;
 function openProduction(filterId){prodFilter=filterId||null;prodTab='cut';modalState={prod:1};prodCache=null;drawProd();}
 function drawProd(){
@@ -1644,7 +1644,7 @@ function drawProd(){
   const R=S.rates,f=(k,l,u)=>`<label class="fld"><span>${l}</span><input type="number" inputmode="decimal" data-rate="${k}" value="${R[k]}"><i>${u}</i></label>`;
   body=`<div class="note" style="margin-bottom:10px">Prețurile tale — modifică-le și oferta se recalculează. Valorile implicite sunt un exemplu.</div>
   <div class="lab">Calcul PAL</div><div class="seg" id="rMode"><button data-v="m2" class="${R.mode!=='foaie'?'on':''}">pe m²</button><button data-v="foaie" class="${R.mode==='foaie'?'on':''}">pe foaie (după optimizare)</button></div>
-  <div class="g3">${R.mode==='foaie'?f('foaie','Foaie PAL','lei/foaie'):f('pal','PAL corp','lei/m²')+f('front','Fronturi','lei/m²')}${f('hdf','HDF','lei/m²')}${f('blat','Blat','lei/m²')}${f('cant','Cant','lei/ml')}${f('bal','Balama','lei/buc')}${f('glis','Glisiere','lei/set')}${f('man','Mâner','lei/buc')}${f('pic','Picior','lei/buc')}${f('rab','Rabatabil','lei/set')}${f('bara','Bară umeraș','lei/buc')}${f('manop','Manoperă','%')}</div>
+  <div class="g3">${R.mode==='foaie'?f('foaie','Foaie PAL',CUR()+'/foaie'):f('pal','PAL corp',CUR()+'/m²')+f('front','Fronturi',CUR()+'/m²')}${f('hdf','HDF',CUR()+'/m²')}${f('blat','Blat',CUR()+'/m²')}${f('cant','Cant',CUR()+'/ml')}${f('bal','Balama',CUR()+'/buc')}${f('glis','Glisiere',CUR()+'/set')}${f('man','Mâner',CUR()+'/buc')}${f('pic','Picior',CUR()+'/buc')}${f('rab','Rabatabil',CUR()+'/set')}${f('bara','Bară umeraș',CUR()+'/buc')}${f('manop','Manoperă','%')}</div>
   <div class="sec"><div class="tog"><span>Materiale</span><b>${lei(P.mat)}</b></div><div class="tog"><span>Accesorii</span><b>${lei(P.hw)}</b></div><div class="tog"><span>Manoperă (${R.manop}%)</span><b>${lei(P.man)}</b></div><div class="tog" style="font-size:16px"><span style="color:var(--gold)">TOTAL estimat</span><b style="color:var(--gold)">${lei(P.total)}</b></div></div>
   <button class="btn wide" id="cpOffer">Copiază oferta (text)</button>`;
  }
@@ -1946,7 +1946,7 @@ const EN = {
  'Prețul este estimativ și se confirmă după măsurătorile la fața locului. Culorile pot diferi față de mostrele fizice.': 'The price is an estimate, confirmed after on-site measurement. Colours may differ from physical samples.', 'Montajul, transportul și instalațiile se ofertează separat, dacă nu sunt menționate.': 'Installation, delivery and services are quoted separately unless stated.',
  'Ofertant': 'Supplier', 'Client — semnătură și dată (accept oferta)': 'Client — signature and date (quote accepted)', 'Generat cu Atelia Build': 'Generated with Atelia Build',
  // ---- verificări (texte fixe)
- 'Spațiu albastru netransformat': 'Unconverted blue space', 'Am înțeles': 'Got it', '⚠ Bucătăria pe două rânduri paralele nu e încă suportată — am făcut un singur rând.': '⚠ Galley (two parallel runs) is not supported yet — I made a single run.', '⚠ Insula nu e încă suportată — o poți adăuga manual cu unealta Spațiu.': '⚠ Islands are not supported yet — add one manually with the Space tool.', '⚠ AI-ul nu a răspuns, am folosit interpretorul local.': '⚠ The AI did not respond, I used the local interpreter.', 'Bucătărie demo': 'Demo kitchen',
+ 'Spațiu albastru netransformat': 'Unconverted blue space', 'Am înțeles': 'Got it', 'RON/buc': 'RON/pc', '€/buc': '€/pc', 'RON/ml': 'RON/m', '€/ml': '€/m', 'RON/foaie': 'RON/sheet', '€/foaie': '€/sheet', '⚠ Bucătăria pe două rânduri paralele nu e încă suportată — am făcut un singur rând.': '⚠ Galley (two parallel runs) is not supported yet — I made a single run.', '⚠ Insula nu e încă suportată — o poți adăuga manual cu unealta Spațiu.': '⚠ Islands are not supported yet — add one manually with the Space tool.', '⚠ AI-ul nu a răspuns, am folosit interpretorul local.': '⚠ The AI did not respond, I used the local interpreter.', 'Bucătărie demo': 'Demo kitchen',
  'Bucătărie liniară': 'Straight kitchen', 'Bucătărie în L': 'L-shaped kitchen', 'Bucătărie în U': 'U-shaped kitchen', 'Dulap generat': 'Generated wardrobe', 'Sursă: interpretor local': 'Source: local interpreter', 'Sursă: AI (Cloudflare Workers AI)': 'Source: AI (Cloudflare Workers AI)',
 };
 /* texte cu numere sau nume */
@@ -2143,13 +2143,13 @@ async function cloudSignIn(email, password) {
 async function cloudSignOut() { try { await sbFetch('/auth/v1/logout', {method: 'POST'}); } catch (e) {} saveSession(null); }
 async function cloudPushProfile(p) {
  if (!cloudOn() || !cloudUser()) return;
- const row = {id: cloudUser().id, role: p.role, name: p.name, company: p.company, cui: p.cui, phone: p.phone, email: p.email, city: p.city, logo: p.logo, mode: p.mode, vat: p.vat, updated_at: new Date().toISOString()};
+ const row = {id: cloudUser().id, role: p.role, name: p.name, company: p.company, cui: p.cui, phone: p.phone, email: p.email, city: p.city, logo: p.logo, mode: p.mode, vat: p.vat, currency: p.currency, updated_at: new Date().toISOString()};
  await sbFetch('/rest/v1/profiles', {method: 'POST', headers: {Prefer: 'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(row)});
 }
 async function cloudPullProfile() {
  if (!cloudUser()) return;
  const rows = await sbFetch(`/rest/v1/profiles?id=eq.${encodeURIComponent(cloudUser().id)}&select=*`);
- if (rows && rows[0]) { const r = rows[0]; const p = {role: r.role, name: r.name, company: r.company, cui: r.cui, phone: r.phone, email: r.email, city: r.city, logo: r.logo, mode: r.mode, vat: r.vat};
+ if (rows && rows[0]) { const r = rows[0]; const p = {role: r.role, name: r.name, company: r.company, cui: r.cui, phone: r.phone, email: r.email, city: r.city, logo: r.logo, mode: r.mode, vat: r.vat, currency: r.currency};
   LS.set('atelia.profile', JSON.stringify(p)); applyMode(); }
  else { const p = getProfile(); if (p) await cloudPushProfile(p); }
 }
@@ -2731,7 +2731,7 @@ function openPrices() {
  <input class="inp" id="plName" placeholder="Numele furnizorului (ex: Egger – depozit Cluj, nov. 2026)" style="width:100%">
  <textarea class="inp" id="plTxt" rows="7" style="width:100%;margin-top:8px;font:13px/1.4 ui-monospace,Menlo,monospace" placeholder="${esc(PRICE_EX)}"></textarea>
  <div class="ckbtns" style="margin-top:8px"><label class="ckb" style="text-align:center">Încarcă CSV<input type="file" id="plFile" accept=".csv,.txt" hidden></label><button class="ckb" id="plEx">Pune exemplul</button><button class="btn gold" id="plSave">Salvează lista</button></div>
- <div class="note" style="margin-top:8px">Format: o linie = <code>cod;preț</code>. Coduri: decor Egger (ex. <code>H1145</code>, lei/m²; adaugă <code>;blat</code> pentru blat) sau tip general (${Object.keys(RATE_KEYS).join(', ')}). Din Excel: Salvează ca → CSV.</div>
+ <div class="note" style="margin-top:8px">Format: o linie = <code>cod;preț</code>. Coduri: decor Egger (ex. <code>H1145</code>, ${CUR()}/m²; adaugă <code>;blat</code> pentru blat) sau tip general (${Object.keys(RATE_KEYS).join(', ')}). Din Excel: Salvează ca → CSV.</div>
  <div id="plMsg"></div></div>
  <div class="legal-links">Prețurile sunt cele introduse de tine. Verifică-le la furnizor înainte de ofertare.</div>`, true);
  $$('[data-pa]').forEach(b => b.onclick = () => { applyPriceList(priceLists().find(l => l.id === b.dataset.pa)); openPrices(); });
@@ -2795,6 +2795,66 @@ function vatInfo(total) {
  };
 }
 
+/* ---- src/currency.js ---- */
+/* ================== MONEDĂ: LEI / EURO (Atelia) ==================
+   Moneda e eticheta tuturor prețurilor (fără conversie automată în fundal).
+   La schimbare, utilizatorul poate converti prețurile salvate la cursul pe care îl introduce el. */
+function CUR_CODE() { const p = getProfile(); return (p && p.currency === 'EUR') ? 'EUR' : 'RON'; }
+function CUR() { return CUR_CODE() === 'EUR' ? '€' : (LANG === 'en' ? 'RON' : 'lei'); }
+function money(v) {
+ const n = Math.round(v || 0).toLocaleString(LANG === 'en' ? 'en-GB' : 'ro-RO');
+ if (CUR_CODE() === 'EUR') return LANG === 'en' ? '€' + n : n + ' €';
+ return LANG === 'en' ? n + ' RON' : n + ' lei';
+}
+/* câmpuri prețuri convertibile (procentele rămân la fel) */
+const MONEY_KEYS = ['pal', 'front', 'hdf', 'blat', 'cant', 'bal', 'glis', 'man', 'pic', 'rab', 'bara', 'foaie'];
+const WIN_MONEY_KEYS = ['pvc', 'al', 'osc', 'bat', 'door', 'slide', 'g3', 'sill', 'net', 'roller', 'mount'];
+function convertPrices(factor) {
+ const r2 = v => Math.round(v * factor * 100) / 100;
+ mutate(() => { for (const k of MONEY_KEYS) if (S.rates[k] != null) S.rates[k] = r2(S.rates[k]);
+  if (S.priceList && S.priceList.decors) for (const d of Object.values(S.priceList.decors)) { if (d.m2 != null) d.m2 = r2(d.m2); if (d.blat != null) d.blat = r2(d.blat); } });
+ try { const w = JSON.parse(LS.get('atelia.win') || 'null'); if (w && w.rates) { for (const k of WIN_MONEY_KEYS) if (w.rates[k] != null) w.rates[k] = r2(w.rates[k]); LS.set('atelia.win', JSON.stringify(w)); } } catch (e) {}
+ const lists = priceLists(); lists.forEach(l => { for (const k of MONEY_KEYS) if (l.rates[k] != null) l.rates[k] = r2(l.rates[k]); for (const d of Object.values(l.decors)) { if (d.m2 != null) d.m2 = r2(d.m2); if (d.blat != null) d.blat = r2(d.blat); } }); savePriceLists(lists);
+ if (typeof prodCache !== 'undefined') prodCache = null;
+}
+/* valorile implicite (exemplele) sunt în lei — în modul EUR le împărțim la cursul salvat, ca proiectele noi să aibă ordinul de mărime corect */
+function defaultsFactor() { const p = getProfile(); return CUR_CODE() === 'EUR' ? 1 / ((p && p.fx) || 5) : 1; }
+let _defScaled = 1;
+function scaleDefaults() { const f = defaultsFactor(), k = f / _defScaled; if (Math.abs(k - 1) < 1e-9) return;
+ for (const key of MONEY_KEYS) if (DEFAULT_RATES[key] != null) DEFAULT_RATES[key] = Math.round(DEFAULT_RATES[key] * k * 100) / 100;
+ if (typeof WIN_DEF_RATES !== 'undefined') for (const key of WIN_MONEY_KEYS) if (WIN_DEF_RATES[key] != null) WIN_DEF_RATES[key] = Math.round(WIN_DEF_RATES[key] * k * 100) / 100;
+ _defScaled = f; }
+setTimeout(scaleDefaults, 0);
+/* câmp monedă în profil */
+{
+ const _open = openProfile;
+ openProfile = function (opt = {}) {
+  _open(opt);
+  const grid = $('.pfgrid'); if (!grid) return;
+  const p = getProfile() || {}, cur = p.currency === 'EUR' ? 'EUR' : 'RON';
+  const w = document.createElement('label'); w.className = 'pf';
+  w.innerHTML = `<span>${LANG === 'en' ? 'Currency' : 'Monedă'}</span><select class="inp" id="pf_cur"><option value="RON"${cur === 'RON' ? ' selected' : ''}>${LANG === 'en' ? 'Romanian leu (RON)' : 'Lei (RON)'}</option><option value="EUR"${cur === 'EUR' ? ' selected' : ''}>Euro (EUR)</option></select>`;
+  grid.appendChild(w);
+  const box = document.createElement('div'); box.id = 'curConv'; box.style.display = 'none'; box.className = 'legalbox'; box.style.marginTop = '8px';
+  box.innerHTML = `<div>${LANG === 'en' ? 'Convert the prices you have already saved?' : 'Convertești prețurile deja salvate?'}</div>
+  <label class="pf" style="max-width:240px;margin-top:6px"><span>${LANG === 'en' ? '1 EUR = … RON (use the current official rate)' : '1 EUR = … lei (folosește cursul oficial BNR al zilei)'}</span><input class="inp" type="number" step="0.0001" id="pf_fx" placeholder="ex: 5.0"></label>
+  <label class="chk"><input type="checkbox" id="pf_conv" checked><span>${LANG === 'en' ? 'Convert project, windows and supplier prices' : 'Convertește prețurile din proiect, ferestre și listele furnizorilor'}</span></label>`;
+  grid.parentNode.insertBefore(box, grid.nextSibling);
+  $('#pf_cur').onchange = () => { box.style.display = $('#pf_cur').value !== cur ? 'block' : 'none'; };
+  const save = $('#pfSave'), orig = save.onclick;
+  save.onclick = () => {
+   const nc = $('#pf_cur').value, fx = parseFloat(String($('#pf_fx').value).replace(',', '.')), conv = $('#pf_conv').checked;
+   if (nc !== cur && conv && !(fx > 0.5 && fx < 50)) { toast(LANG === 'en' ? 'Enter the exchange rate (e.g. 5.0) or untick conversion' : 'Scrie cursul (ex. 5,0) sau debifează conversia'); return; }
+   orig();
+   const np = getProfile(); if (!np) return;
+   if (np.currency !== nc || (fx > 0 && conv)) { np.currency = nc; if (fx > 0 && conv) np.fx = fx; LS.set('atelia.profile', JSON.stringify(np)); if (typeof cloudPushProfile === 'function') cloudPushProfile(np).catch(() => {}); }
+   scaleDefaults();
+   if (nc !== cur && conv) { convertPrices(nc === 'EUR' ? 1 / fx : fx); toast((LANG === 'en' ? 'Prices converted to ' : 'Prețuri convertite în ') + nc); }
+   if (typeof updateTop === 'function') updateTop();
+  };
+ };
+}
+
 /* ---- src/windows.js ---- */
 /* ================== DOMENIUL 2: FERESTRE & UȘI (PVC / aluminiu) ==================
    Configurator de poziții → desen cu simboluri de deschidere, verificări, preț,
@@ -2802,7 +2862,7 @@ function vatInfo(total) {
    Deducțiile de sistem sunt generice și se ajustează în „Sistem” după profilul folosit. */
 const WL = (ro, en) => LANG === 'en' ? en : ro;
 const WIN_DEF_RATES = {pvc: 650, al: 1350, osc: 260, bat: 190, door: 900, slide: 1400, g3: 140, color: 18, sill: 70, net: 160, roller: 380, mount: 220};
-const WIN_DEF_SYS = {F: 70, M: 84, S: 78, ov: 8, gl: 5, bar: 6500, kerf: 4, miter: 10};
+const WIN_DEF_SYS = {F: 70, M: 84, S: 78, ov: 8, gl: 5, bar: 6500, kerf: 4, miter: 10, Ug2: 1.1, Ug3: 0.6, UfP: 1.3, UfA: 1.8, psi: 0.04, Up: 1.2};
 const WIN_KINDS = {
  win1: {n: WL('Fereastră 1 canat', 'Window, 1 sash'), w: 900, h: 1200, sash: ['osc-r']},
  win2: {n: WL('Fereastră 2 canate', 'Window, 2 sashes'), w: 1400, h: 1400, sash: ['bat-l', 'osc-r']},
@@ -2870,6 +2930,17 @@ function winChecks(it) {
  if (it.kind === 'door' || it.kind === 'balc' || it.kind === 'slide') out.push(['info', WL('Geam de siguranță (securizat/laminat) recomandat la uși și zonele joase', 'Safety glass (toughened/laminated) recommended for doors and low zones')]);
  if (it.h > 1800 && it.kind.startsWith('win')) out.push(['info', WL('Verifică înălțimea parapetului și siguranța la cădere conform normelor locale', 'Check sill height and fall protection against local regulations')]);
  return out;
+}
+/* ---- Uw: transfer termic al ferestrei, metoda simplificată EN ISO 10077-1 ----
+   Uw = (Ag·Ug + Af·Uf + Ap·Up + lg·Ψg) / (Ag + Af + Ap); valori Ug/Uf/Ψ editabile în „Sistem”. */
+function winUw(it) {
+ const s = WS.sys, g = winGeom(it), A = it.w * it.h / 1e6, Ug = it.glass == 3 ? s.Ug3 : s.Ug2, Uf = it.mat === 'al' ? s.UfA : s.UfP;
+ let Ag = 0, Ap = 0, lg = 0;
+ const cells = (g.top ? [Object.assign({op: 'fix'}, g.top)] : []).concat(g.cells);
+ cells.forEach(c => { const inset = c.op === 'fix' ? 0 : s.S - s.ov, w = Math.max(0, c.w - 2 * inset) / 1000, h = Math.max(0, c.h - 2 * inset) / 1000;
+  if (c.op.startsWith('door')) Ap += w * h; else { Ag += w * h; lg += 2 * (w + h); } });
+ const Af = Math.max(0, A - Ag - Ap);
+ return {Uw: (Ag * Ug + Af * Uf + Ap * s.Up + lg * s.psi) / A, Ug, Uf, Ag, Af, glassShare: Ag / A};
 }
 /* ---- preț ---- */
 function winPrice(it) {
@@ -2943,7 +3014,7 @@ function winEditor(it) {
  <div class="wacc"><label class="chk"><input type="checkbox" data-wb="sill"${it.sill ? ' checked' : ''}><span>${WL('Glaf exterior', 'External sill')}</span></label><label class="chk"><input type="checkbox" data-wb="roller"${it.roller ? ' checked' : ''}><span>${WL('Rulou exterior', 'External roller shutter')}</span></label>
  <label class="pf" style="max-width:160px"><span>${WL('Plase insecte (buc)', 'Insect screens (pcs)')}</span><input class="inp" type="number" data-wf="net" value="${it.net || 0}"></label></div>
  ${chk.length ? `<div class="plist" style="margin-top:10px">${chk.map(([l, m]) => `<div class="pitem"><i style="width:10px;height:10px;border-radius:50%;background:${col[l]};flex:none"></i><span>${esc(m)}</span></div>`).join('')}</div>` : ''}
- <div class="sec" style="margin-top:10px"><div class="tog"><span>${WL('Suprafață', 'Area')}</span><b>${p.area.toFixed(2).replace('.', ',')} m²</b></div><div class="tog"><span>${WL('Preț / buc (fără TVA)', 'Price / pc (excl. VAT)')}</span><b>${lei(p.one)}</b></div><div class="tog"><span style="color:var(--gold)">${WL('Total poziție', 'Position total')}</span><b style="color:var(--gold)">${lei(p.total)}</b></div></div>
+ <div class="sec" style="margin-top:10px"><div class="tog"><span>${WL('Suprafață', 'Area')}</span><b>${p.area.toFixed(2).replace('.', ',')} m²</b></div><div class="tog"><span title="EN ISO 10077-1">${WL('Uw estimat (izolare termică)', 'Estimated Uw (thermal)')}</span><b>${winUw(it).Uw.toFixed(2).replace('.', LANG === 'en' ? '.' : ',')} W/m²K</b></div><div class="tog"><span>${WL('Preț / buc (fără TVA)', 'Price / pc (excl. VAT)')}</span><b>${lei(p.one)}</b></div><div class="tog"><span style="color:var(--gold)">${WL('Total poziție', 'Position total')}</span><b style="color:var(--gold)">${lei(p.total)}</b></div></div>
  <div class="ckbtns" style="margin-top:10px"><button class="ckb" id="wDup">${WL('Duplică', 'Duplicate')}</button><button class="ckb" id="wDel">${WL('Șterge poziția', 'Delete position')}</button></div>`;
 }
 function winBindEditor(it) {
@@ -2965,11 +3036,12 @@ function winSettings() {
  const f = (o, k, l) => `<label class="pf"><span>${l}</span><input class="inp" type="number" data-${o}="${k}" value="${(o === 'wr' ? r : s)[k]}"></label>`;
  modalState = {winset: 1};
  openModal(`${mhead(WL('Prețuri & sistem', 'Prices & system'), WL('Valorile implicite sunt exemple — pune-le pe ale tale', 'Defaults are examples — enter your own'))}
- <div class="lab">${WL('Prețuri (lei, fără TVA)', 'Prices (RON, excl. VAT)')}</div><div class="pfgrid">${f('wr', 'pvc', WL('PVC / m²', 'PVC / m²'))}${f('wr', 'al', WL('Aluminiu / m²', 'Aluminium / m²'))}${f('wr', 'osc', WL('Canat oscilobatant / buc', 'Tilt & turn sash / pc'))}${f('wr', 'bat', WL('Canat batant / buc', 'Side-hung sash / pc'))}${f('wr', 'door', WL('Ușă (feronerie, prag) / buc', 'Door (hardware, threshold) / pc'))}${f('wr', 'slide', WL('Canat glisant / buc', 'Sliding sash / pc'))}${f('wr', 'g3', WL('Supliment geam triplu / m²', 'Triple glazing extra / m²'))}${f('wr', 'color', WL('Supliment culoare (%)', 'Colour surcharge (%)'))}${f('wr', 'sill', WL('Glaf / ml', 'Sill / m'))}${f('wr', 'net', WL('Plasă insecte / buc', 'Insect screen / pc'))}${f('wr', 'roller', WL('Rulou / m²', 'Roller shutter / m²'))}${f('wr', 'mount', WL('Montaj / element', 'Installation / element'))}</div>
+ <div class="lab">${WL('Prețuri', 'Prices')} (${CUR()}, ${WL('fără TVA', 'excl. VAT')})</div><div class="pfgrid">${f('wr', 'pvc', WL('PVC / m²', 'PVC / m²'))}${f('wr', 'al', WL('Aluminiu / m²', 'Aluminium / m²'))}${f('wr', 'osc', WL('Canat oscilobatant / buc', 'Tilt & turn sash / pc'))}${f('wr', 'bat', WL('Canat batant / buc', 'Side-hung sash / pc'))}${f('wr', 'door', WL('Ușă (feronerie, prag) / buc', 'Door (hardware, threshold) / pc'))}${f('wr', 'slide', WL('Canat glisant / buc', 'Sliding sash / pc'))}${f('wr', 'g3', WL('Supliment geam triplu / m²', 'Triple glazing extra / m²'))}${f('wr', 'color', WL('Supliment culoare (%)', 'Colour surcharge (%)'))}${f('wr', 'sill', WL('Glaf / ml', 'Sill / m'))}${f('wr', 'net', WL('Plasă insecte / buc', 'Insect screen / pc'))}${f('wr', 'roller', WL('Rulou / m²', 'Roller shutter / m²'))}${f('wr', 'mount', WL('Montaj / element', 'Installation / element'))}</div>
  <div class="lab" style="margin-top:12px">${WL('Sistem de profile (mm) — după fișa tehnică a profilului tău', 'Profile system (mm) — from your profile data sheet')}</div><div class="pfgrid">${f('ws', 'F', WL('Lățime vizibilă toc', 'Frame face width'))}${f('ws', 'M', WL('Lățime montant', 'Mullion width'))}${f('ws', 'S', WL('Lățime vizibilă cercevea', 'Sash face width'))}${f('ws', 'ov', WL('Suprapunere cercevea pe toc', 'Sash overlap'))}${f('ws', 'gl', WL('Joc geam (pe latură)', 'Glass clearance (per side)'))}${f('ws', 'bar', WL('Lungime bară', 'Bar length'))}${f('ws', 'kerf', WL('Tăietură', 'Kerf'))}${f('ws', 'miter', WL('Adaos tăiere 45°', '45° cut allowance'))}</div>
+ <div class="lab" style="margin-top:12px">${WL('Valori termice (W/m²K) — din fișele producătorilor de profil și geam', 'Thermal values (W/m²K) — from profile and glass data sheets')}</div><div class="pfgrid">${f('ws', 'Ug2', 'Ug ' + WL('geam dublu', 'double glazing'))}${f('ws', 'Ug3', 'Ug ' + WL('geam triplu', 'triple glazing'))}${f('ws', 'UfP', 'Uf PVC')}${f('ws', 'UfA', 'Uf ' + WL('aluminiu', 'aluminium'))}${f('ws', 'psi', WL('Ψ distanțier (W/mK)', 'Ψ spacer (W/mK)'))}${f('ws', 'Up', 'Up ' + WL('panou ușă', 'door panel'))}</div>
  <div class="note" style="margin-top:10px">${WL('Deducțiile diferă de la un sistem la altul (Rehau, Salamander, Veka, Schüco etc.). Verifică-le pe fișa producătorului înainte de debitare.', 'Deductions differ between systems (Rehau, Salamander, Veka, Schüco, etc.). Check them against the manufacturer data sheet before cutting.')}</div>
  <button class="btn gold wide" id="wsOk" style="margin-top:10px">${WL('Salvează', 'Save')}</button>`, true);
- $('#wsOk').onclick = () => { $$('[data-wr]').forEach(e => r[e.dataset.wr] = Math.max(0, +e.value || 0)); $$('[data-ws]').forEach(e => s[e.dataset.ws] = Math.max(0, +e.value || 0)); winSave(); closeModal(true); winRender(); toast(WL('Salvat', 'Saved')); };
+ $('#wsOk').onclick = () => { $$('[data-wr]').forEach(e => r[e.dataset.wr] = Math.max(0, +e.value || 0)); $$('[data-ws]').forEach(e => s[e.dataset.ws] = Math.max(0, parseFloat(String(e.value).replace(',', '.')) || 0)); winSave(); closeModal(true); winRender(); toast(WL('Salvat', 'Saved')); };
 }
 function winCutView() {
  if (!WS.items.length) { toast(WL('Adaugă întâi o poziție', 'Add a position first')); return; }
@@ -3007,7 +3079,7 @@ async function winOfferPDF() {
   drawWin(x, it, m(20) + (box - it.w * k) / 2, y + m(4), k);
   x.fillStyle = '#111'; x.font = `700 ${m(4.2)}px Inter,Arial`; x.fillText(`${it.name} · ${WIN_KINDS[it.kind].n}`, m(75), y + m(9));
   x.font = `400 ${m(3.3)}px Inter,Arial`; x.fillStyle = '#333';
-  [`${it.w} × ${it.h} mm · ${it.qty} ${WL('buc', 'pcs')} · ${it.mat === 'al' ? WL('Aluminiu cu rupere termică', 'Thermally broken aluminium') : 'PVC'}`, `${WL('Geam', 'Glazing')}: ${GLASS[it.glass]}`, `${WL('Culoare', 'Colour')}: ${COLORS[it.color][0]}`,
+  [`${it.w} × ${it.h} mm · ${it.qty} ${WL('buc', 'pcs')} · ${it.mat === 'al' ? WL('Aluminiu cu rupere termică', 'Thermally broken aluminium') : 'PVC'}`, `${WL('Geam', 'Glazing')}: ${GLASS[it.glass]}`, `${WL('Culoare', 'Colour')}: ${COLORS[it.color][0]} · Uw ≈ ${winUw(it).Uw.toFixed(2)} W/m²K`,
    it.sash.map(o => OPS[o]).join(' | '), [it.sill && WL('glaf', 'sill'), it.roller && WL('rulou', 'roller shutter'), it.net && `${it.net} ${WL('plase', 'screens')}`, WL('montaj inclus', 'installation included')].filter(Boolean).join(' · ')]
    .forEach((t, i) => x.fillText(t, m(75), y + m(16 + 6 * i)));
   x.font = `700 ${m(4.2)}px Inter,Arial`; x.fillStyle = '#111'; x.textAlign = 'right'; x.fillText(lei(p.total), W - m(20), y + m(9)); x.textAlign = 'left';
@@ -3020,7 +3092,7 @@ async function winOfferPDF() {
  x.textAlign = 'left'; y += m(16 + 8 * rows.length);
  x.font = `400 ${m(3)}px Inter,Arial`; x.fillStyle = '#666';
  [WL('Dimensiunile sunt de toc și se confirmă după măsurătorile la fața locului. Desenele sunt văzute din interior.', 'Sizes are frame sizes, confirmed after on-site measurement. Drawings are viewed from inside.'),
-  WL('Simboluri: triunghiul indică partea balamalelor; F = fix.', 'Symbols: the triangle points to the hinge side; F = fixed.')].forEach(t => { x.fillText(t, m(15), y); y += m(4.6); });
+  WL('Simboluri: triunghiul indică partea balamalelor; F = fix.', 'Symbols: the triangle points to the hinge side; F = fixed.'), WL('Uw: valoare estimată prin metoda simplificată EN ISO 10077-1, din datele de catalog; valoarea certificată este cea din declarația de performanță a producătorului.', 'Uw: estimated with the simplified EN ISO 10077-1 method from catalogue data; the certified value is the one in the manufacturer declaration of performance.')].forEach(t => { x.fillText(t, m(15), y); y += m(4.6); });
  y = Math.max(y + m(10), pg.c.height - m(35));
  x.strokeStyle = '#999'; x.beginPath(); x.moveTo(m(15), y); x.lineTo(m(85), y); x.moveTo(W - m(85), y); x.lineTo(W - m(15), y); x.stroke();
  x.fillStyle = '#555'; x.font = `400 ${m(3.2)}px Inter,Arial`; x.fillText(`${WL('Ofertant', 'Supplier')}: ${firm}`, m(15), y + m(5)); x.fillText(WL('Client — semnătură și dată (accept oferta)', 'Client — signature and date (quote accepted)'), W - m(85), y + m(5));
