@@ -1,5 +1,33 @@
 # Atelia Build — audit și plan (27 noiembrie 2026)
 
+## Audit complet #2 (seara, 27.11.2026) — rezultate
+| Zonă | Verificat | Rezultat | Acțiune |
+|---|---|---|---|
+| Securitate | CSP, scripturi externe, eval, linkuri `_blank`, date injectate | ✅ CSP strict, 0 servere externe, 0 eval, toate linkurile cu `noopener` | — |
+| Securitate | Fișiere CSV trimise la terți (centre de debitare) | ❌ formule Excel (`=…`) executabile | ✅ neutralizate automat în toate CSV-urile |
+| Securitate | Nume cu cod HTML, proiecte importate | ✅ curățate, nu se execută | — |
+| GDPR / cookies | Chei de stocare folosite vs. documentate (RO + EN) | ✅ 100% documentate | — |
+| Legal | Preț pentru consumatori fără „TVA inclus” pe site | ❌ | ✅ corectat |
+| Legal | Date firmă lipsă | ⚠️ [paranteze] în 9 pagini | de completat de tine + avocat |
+| Baterie | 3D redesenat continuu (60 fps) și în repaus | ❌ | ✅ 2 fps în repaus (~97% mai puțin) |
+| Accesibilitate | Butoane fără nume, câmpuri fără etichetă, imagini fără alt | ❌ 2 butoane „închide” fără nume | ✅ etichetate |
+| Accesibilitate | Zoom blocat pe telefon (`user-scalable=no`) | ❌ încalcă WCAG 1.4.4 | ✅ zoom permis, fără zoom accidental la dublu-tap / câmpuri |
+| Accesibilitate | Ținte de atingere | ✅ toate ≥ 24 px (WCAG 2.2 AA); antetul mărit la 40 px | — |
+| Accesibilitate | Escape închide ferestrele, focus vizibil | ✅ | — |
+| Funcțional | Salvare / reîncărcare identică, cameră 12×9 m, proiect gol, nume cu diacritice și simboluri | ✅ | — |
+| Funcțional | 7 seturi de teste (desktop + telefon, RO + EN, 3D real) | ✅ 0 erori | — |
+| Linkuri | Toate paginile, imaginile, iconițele, cache-ul offline | ✅ 0 rupte | — |
+| Viteză | Prima încărcare ~690 KB (≈ 200 KB comprimat), interactiv < 3 s | ✅ | — |
+| Site | Titlu, descriere, un singur H1, alt la imagini, canonical, sitemap | ✅ (canonical + sitemap adăugate) | — |
+
+### Rămase (nu se pot rezolva din cod)
+- Plăți Stripe, conturi Supabase, AI Cloudflare — sesiunea de pe laptop.
+- Testul de 7 zile e ținut doar în browser până la conturi + Stripe.
+- Pentru firme cu cont online: contract de prelucrare a datelor (DPA), pentru că firmele își pun în proiecte datele clienților lor.
+- Datele firmei și verificarea juridică înainte de prima încasare.
+- Test real cu un atelier pe un proiect complet.
+
+
 ## Rezolvat în această rundă
 | Zonă | Problemă găsită | Rezolvare |
 |---|---|---|

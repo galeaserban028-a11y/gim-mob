@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://*.workers.dev https://*.supabase.co; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="theme-color" content="#0b0b0b">
 <link rel="manifest" href="manifest.webmanifest">
@@ -1020,7 +1020,7 @@ function renderPanel(){if(pDown){pend.add(renderPanel);return;}try{renderQbar();
  const it=getSel(),P=$('#panel');let h='<div class="grab"></div>';
  if(!it){
   const hid=S.items.filter(i=>i.hidden).length;
-  h+=`<div class="ph"><div class="ic" style="background:#1d1a14;color:var(--gold)">${I('<path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18"/>').replace('<svg','<svg style="width:28px;height:28px"')}</div><div><h3>Cameră & proiect</h3><small>Atinge un corp pentru a-l edita · ține apăsat pentru meniu</small></div>${isMobile()?`<button class="ib x" data-act="closep">${IC.x}</button>`:''}</div>
+  h+=`<div class="ph"><div class="ic" style="background:#1d1a14;color:var(--gold)">${I('<path d="M3 21V9l9-6 9 6v12"/><path d="M3 21h18"/>').replace('<svg','<svg style="width:28px;height:28px"')}</div><div><h3>Cameră & proiect</h3><small>Atinge un corp pentru a-l edita · ține apăsat pentru meniu</small></div>${isMobile()?`<button class="ib x" data-act="closep" aria-label="Închide" title="Închide">${IC.x}</button>`:''}</div>
   <div class="sec"><h4>Proiect</h4><label class="fld"><span>Nume proiect / client</span><input class="inp" data-k="name" value="${esc(S.name)}"></label></div>
   <div class="acts"><button class="btn gold" data-act="scan">${IC.scan} Scanează camera</button><button class="btn" data-act="std">${IC.gear} Standarde fabrică</button>${hid?`<button class="btn full" data-act="showall">${IC.eye} Arată ${hid} ascunse</button>`:''}</div>
   <div class="sec"><h4>Dimensiuni cameră</h4><div class="g3">${num('room.w','Lățime',S.room.w)}${num('room.d','Adâncime',S.room.d)}${num('room.h','Înălțime',S.room.h)}</div>
@@ -1221,7 +1221,7 @@ let modalState=null;
 function openModal(html,wide){const M=$('#modal');M.innerHTML=`<div class="card ${wide?'wide':''}">${html}</div>`;M.hidden=false;}
 function closeModal(force){if(modalState&&modalState.welcome&&!force)return;$('#modal').hidden=true;modalState=null;}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.closest('[data-mclose]'))closeModal();});
-const mhead=(t,sub)=>`<div class="mh"><div><h2>${t}</h2>${sub?`<div class="sub">${sub}</div>`:''}</div><button class="ib" data-mclose="1">${IC.x}</button></div>`;
+const mhead=(t,sub)=>`<div class="mh"><div><h2>${t}</h2>${sub?`<div class="sub">${sub}</div>`:''}</div><button class="ib" data-mclose="1" aria-label="Închide" title="Închide">${IC.x}</button></div>`;
 
 /* ---- Înlocuire (Replace) ---- */
 function openReplace(sp,type){const t=TYPES[type];modalState={sp,type,tab:'b',mode:'space',code:'',split:!/panel|decor/.test(t.cat)&&sp.w>t.w*1.45,counter:t.cat==='base'&&sp.e<100&&sp.h>700,il:0,ir:0,it:0,ib:0,id:0,face:'front',o:defOpts(type)};drawReplace();}
@@ -3496,6 +3496,38 @@ function openObstacles() {
  b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8v4M13 10h4M7 17h10"/></svg><span>' + WL('Perete', 'Wall') + '</span>';
  b.onclick = openObstacles; nav.insertBefore(b, ref);
 })();
+
+/* ---- src/quality.js ---- */
+/* ================== AUDIT: CALITATE, BATERIE, SECURITATE CSV ================== */
+/* 1) Baterie: când nu atingi nimic (3 s) și nu rulează animații, 3D-ul se redesenează de 2 ori pe secundă în loc de 60. */
+{
+ let lastInput = performance.now(), lastRender = 0;
+ const poke = () => { lastInput = performance.now(); };
+ ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart', 'touchmove', 'resize', 'visibilitychange'].forEach(ev => addEventListener(ev, poke, {passive: true}));
+ new MutationObserver(poke).observe(document.body, {childList: true, subtree: true});
+ const _render = renderer.render.bind(renderer);
+ renderer.render = (sc, cam) => {
+  const now = performance.now(), busy = now - lastInput < 3000 || camAnim || Math.abs(openT - openTarget) > .001;
+  if (!busy && now - lastRender < 500) return;
+  lastRender = now; _render(sc, cam);
+ };
+ window.__ateliaPoke = poke;
+}
+/* 2) Securitate CSV: o celulă care începe cu = + @ (sau - urmat de text) ar fi executată ca formulă în Excel.
+      O prefixăm cu apostrof — textul rămâne la fel, formula nu mai rulează. Numerele negative nu sunt atinse. */
+function csvSafe(txt) {
+ return String(txt).split('\n').map(line => line.replace(/(^|[;,\t])("?)([=+@]|-(?=[^\d.\s"]))/g, (m, sep, q, ch) => `${sep}${q}'${ch}`)).join('\n');
+}
+{
+ const _save = saveFile;
+ saveFile = (fn, data) => _save(fn, /\.csv$/i.test(fn) && typeof data === 'string' ? csvSafe(data) : data);
+}
+/* 3) Telefon: ținte de atingere mai mari, fără zoom automat la câmpuri, dublu-tap fără zoom accidental */
+(() => { const st = document.createElement('style'); st.textContent = `
+body{touch-action:manipulation}
+@media(max-width:860px){#top .ib{width:40px;height:40px}.inp,select.inp,textarea.inp{font-size:16px!important}}
+@media(max-width:420px){.brand>div{display:none}}
+.fld i{color:#aaa49a}`; document.head.appendChild(st); })();
 
 if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);

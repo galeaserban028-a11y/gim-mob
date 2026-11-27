@@ -203,7 +203,7 @@ must("setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
 
 # ---------- module Atelia (src/*.js) ----------
 SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(dst)), 'src')
-MODS = ['i18n.js', 'profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js', 'hardening.js', 'currency.js', 'windows.js', 'assembly.js', 'cutting.js', 'share.js', 'obstacles.js']
+MODS = ['i18n.js', 'profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js', 'hardening.js', 'currency.js', 'windows.js', 'assembly.js', 'cutting.js', 'share.js', 'obstacles.js', 'quality.js']
 mods_code = '\n'.join(f'/* ---- src/{m} ---- */\n' + open(os.path.join(SRC_DIR, m), encoding='utf-8').read() for m in MODS)
 if '</script>' in mods_code: raise SystemExit('src contains </script>')
 must("\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
@@ -230,6 +230,11 @@ must("\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
 must("const lei=v=>Math.round(v).toLocaleString('ro-RO')+' lei',", "const lei=v=>money(v),", count=1)
 s, nu = re.subn(r"'lei/(m²|buc|ml|set|foaie)'", r"CUR()+'/\1'", s)
 assert nu == 12, nu
+
+# ---------- audit: accesibilitate ----------
+must('<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">', '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">', count=1)
+s = s.replace('class="ib x" data-act="closep"', 'class="ib x" data-act="closep" aria-label="Închide" title="Închide"')
+must('<button class="ib" data-mclose="1">${IC.x}</button>', '<button class="ib" data-mclose="1" aria-label="Închide" title="Închide">${IC.x}</button>', count=1)
 
 # leftover personal text must be gone
 for bad in ('GIMMOB', 'gimmob', '100 de lei', "'gmob."):
