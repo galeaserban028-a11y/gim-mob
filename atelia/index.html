@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; connect-src 'self' https://*.workers.dev https://*.supabase.co https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="theme-color" content="#0b0b0b">
+<link rel="manifest" href="manifest.webmanifest">
 <meta name="description" content="Atelia Build — proiectare 3D, ofertă și producție CNC într-un singur loc.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Atelia Build</title>
@@ -13,7 +15,7 @@
 </style>
 
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjNkY2EyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjM4NDNmIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiByeD0iMzYiIGZpbGw9IiMwZDBkMGQiLz4KPHBhdGggZD0iTTEwMCAzNCBMMTU2IDE2NiBIMTMwIEwxMTkgMTM4IEg4MSBMNzAgMTY2IEg0NCBaIE0xMDAgNzggTDg4IDExNCBIMTEyIFoiIGZpbGw9InVybCgjZykiLz4KPHJlY3QgeD0iNDAiIHk9IjE3MiIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI1IiByeD0iMi41IiBmaWxsPSJ1cmwoI2cpIiBvcGFjaXR5PSIuNyIvPgo8L3N2Zz4=">
-<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjNkY2EyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjM4NDNmIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiByeD0iMzYiIGZpbGw9IiMwZDBkMGQiLz4KPHBhdGggZD0iTTEwMCAzNCBMMTU2IDE2NiBIMTMwIEwxMTkgMTM4IEg4MSBMNzAgMTY2IEg0NCBaIE0xMDAgNzggTDg4IDExNCBIMTEyIFoiIGZpbGw9InVybCgjZykiLz4KPHJlY3QgeD0iNDAiIHk9IjE3MiIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI1IiByeD0iMi41IiBmaWxsPSJ1cmwoI2cpIiBvcGFjaXR5PSIuNyIvPgo8L3N2Zz4=">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="application-name" content="Atelia Build">
 <meta name="apple-mobile-web-app-title" content="Atelia Build">
 <style>
@@ -1993,13 +1995,13 @@ async function cloudSignIn(email, password) {
 async function cloudSignOut() { try { await sbFetch('/auth/v1/logout', {method: 'POST'}); } catch (e) {} saveSession(null); }
 async function cloudPushProfile(p) {
  if (!cloudOn() || !cloudUser()) return;
- const row = {id: cloudUser().id, role: p.role, name: p.name, company: p.company, cui: p.cui, phone: p.phone, email: p.email, city: p.city, logo: p.logo, mode: p.mode, updated_at: new Date().toISOString()};
+ const row = {id: cloudUser().id, role: p.role, name: p.name, company: p.company, cui: p.cui, phone: p.phone, email: p.email, city: p.city, logo: p.logo, mode: p.mode, vat: p.vat, updated_at: new Date().toISOString()};
  await sbFetch('/rest/v1/profiles', {method: 'POST', headers: {Prefer: 'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(row)});
 }
 async function cloudPullProfile() {
  if (!cloudUser()) return;
  const rows = await sbFetch(`/rest/v1/profiles?id=eq.${encodeURIComponent(cloudUser().id)}&select=*`);
- if (rows && rows[0]) { const r = rows[0]; const p = {role: r.role, name: r.name, company: r.company, cui: r.cui, phone: r.phone, email: r.email, city: r.city, logo: r.logo, mode: r.mode};
+ if (rows && rows[0]) { const r = rows[0]; const p = {role: r.role, name: r.name, company: r.company, cui: r.cui, phone: r.phone, email: r.email, city: r.city, logo: r.logo, mode: r.mode, vat: r.vat};
   LS.set('atelia.profile', JSON.stringify(p)); applyMode(); }
  else { const p = getProfile(); if (p) await cloudPushProfile(p); }
 }
@@ -2370,8 +2372,11 @@ async function exportClientPDF() {
  x.fillStyle = '#111'; x.font = `700 ${m(4.6)}px Inter,Arial`; x.fillText('Materiale', m(15), y); y += m(7);
  x.font = `400 ${m(3.6)}px Inter,Arial`; x.fillStyle = '#333';
  [['Fronturi', S.mat.front], ['Corp', S.mat.body], ['Blat', S.mat.counter]].forEach(([l, c]) => { const d = DEC[c]; x.fillStyle = d.c || '#ccc'; x.fillRect(m(15), y - m(3.4), m(5), m(5)); x.strokeStyle = '#999'; x.strokeRect(m(15), y - m(3.4), m(5), m(5)); x.fillStyle = '#333'; x.fillText(`${l}: ${d.n}`, m(23), y); y += m(6.5); });
- y += m(4); x.fillStyle = '#f6f1e6'; x.fillRect(m(15), y, W - m(30), m(16)); x.fillStyle = '#111'; x.font = `700 ${m(5.5)}px Inter,Arial`;
- x.fillText('Preț estimat', m(20), y + m(10)); x.textAlign = 'right'; x.fillText(lei(P.total), W - m(20), y + m(10)); x.textAlign = 'left'; y += m(24);
+ y += m(4); const V = vatInfo(P.total), rowsV = V.payer ? [['Preț estimat fără TVA', V.net, 0], [`TVA ${VAT_RATE}%`, V.vat, 0], ['Total estimat cu TVA', V.gross, 1]] : [['Preț estimat (neplătitor de TVA)', V.gross, 1]];
+ x.fillStyle = '#f6f1e6'; x.fillRect(m(15), y, W - m(30), m(8 + 8 * rowsV.length));
+ rowsV.forEach(([l, v, big], i) => { x.fillStyle = big ? '#111' : '#444'; x.font = `${big ? 700 : 400} ${m(big ? 5.5 : 4.2)}px Inter,Arial`; const yy = y + m(10 + 8 * i);
+  x.textAlign = 'left'; x.fillText(l, m(20), yy); x.textAlign = 'right'; x.fillText(lei(v), W - m(20), yy); });
+ x.textAlign = 'left'; y += m(16 + 8 * rowsV.length);
  x.font = `400 ${m(3)}px Inter,Arial`; x.fillStyle = '#666';
  ['Prețul este estimativ și se confirmă după măsurătorile la fața locului. Culorile pot diferi față de mostrele fizice.', 'Montajul, transportul și instalațiile se ofertează separat, dacă nu sunt menționate.'].forEach(t => { x.fillText(t, m(15), y); y += m(4.6); });
  y = Math.max(y + m(10), pg.c.height - m(40));
@@ -2448,7 +2453,7 @@ function applyUnderlay(st) {
  if (ulMesh) { scene.remove(ulMesh); ulMesh.geometry && ulMesh.geometry.dispose && ulMesh.geometry.dispose(); ulMesh.material && ulMesh.material.dispose && ulMesh.material.dispose(); ulMesh = null; }
  ulState = st || null;
  if (!st) { try { localStorage.removeItem(ulKey()); } catch (e) {} return; }
- try { LS.set(ulKey(), JSON.stringify(st)); } catch (e) {}
+ try { localStorage.setItem(ulKey(), JSON.stringify(st)); } catch (e) { toast('Planul e prea mare ca să rămână salvat după reîncărcare — folosește o imagine mai mică'); }
  const tex = new THREE.TextureLoader().load(st.url); tex.colorSpace = THREE.SRGBColorSpace;
  const mat = new THREE.MeshBasicMaterial({map: tex, transparent: true, opacity: st.op ?? 0.8, depthWrite: false});
  ulMesh = new THREE.Mesh(new THREE.PlaneGeometry(st.w * MM, st.d * MM), mat);
@@ -2485,7 +2490,10 @@ function openUnderlay() {
     $('#ulPut').onclick = () => put(false); $('#ulPutRoom').onclick = () => put(true);
    } else {
     if (f.size > 12e6) throw new Error('Imagine prea mare (max 12 MB)');
-    const url = await readAs(f, 'readAsDataURL'); const [iw, ih] = await imageSize(url);
+    let url = await readAs(f, 'readAsDataURL'); const [iw, ih] = await imageSize(url);
+    /* micșorăm la max 2400 px ca să încapă în memoria browserului și să se încarce repede */
+    if (Math.max(iw, ih) > 2400 || url.length > 1.5e6) { const k = Math.min(1, 2400 / Math.max(iw, ih)), c = document.createElement('canvas'); c.width = Math.round(iw * k); c.height = Math.round(ih * k);
+     const im = new Image(); im.src = url; await im.decode(); const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height); url = c.toDataURL('image/jpeg', 0.85); }
     $('#ulCfg').innerHTML = `<label class="fld" style="margin-top:10px"><span>Lățimea reală a imaginii</span><input type="number" id="ulW" value="${S.room.w}"><i>mm</i></label><div class="note">Sfat: decupează imaginea exact pe pereții camerei, apoi scrie lățimea camerei.</div><button class="btn gold wide" id="ulPutImg" style="margin-top:8px">Pune sub proiect</button>`;
     $('#ulPutImg').onclick = () => { const w = Math.round(+$('#ulW').value); if (!(w >= 300 && w <= 100000)) { toast('Lățime invalidă'); return; }
      const d = Math.round(w * ih / iw); applyUnderlay({url, w, d, x: 0, z: 0, op: 0.8}); setCam('top'); closeModal(true); toast(`Plan pus: ${w} × ${d} mm`); };
@@ -2597,6 +2605,42 @@ function openPrices() {
 }
 EXPORTS.push({id: 'prices', ic: '🏷️', n: 'Liste de prețuri furnizori', d: 'Importă prețurile furnizorului (CSV/Excel) și aplică-le pe proiect — pe decor și pe accesorii.', roles: ['mobila', 'designer', 'constructor', 'arhitect'], fn: openPrices, pro: 1});
 
+/* ---- src/hardening.js ---- */
+/* ================== AUDIT: SECURITATE + TVA (Atelia) ================== */
+/* 1) Proiectele importate (fișier primit de la altcineva, link, cloud) sunt curățate:
+      niciun text nu poate conține < > → nu se poate injecta cod în pagină (XSS). */
+{
+ const _load = load;
+ const clean = v => typeof v === 'string' ? v.replace(/[<>]/g, '').slice(0, 2000)
+  : Array.isArray(v) ? v.map(clean) : (v && typeof v === 'object') ? Object.fromEntries(Object.entries(v).filter(([k]) => !/^__proto__|constructor|prototype$/.test(k)).map(([k, x]) => [k, clean(x)])) : v;
+ load = function (str, silent) {
+  let o; try { o = JSON.parse(str); } catch (e) { return _load(str, silent); }
+  return _load(JSON.stringify(clean(o)), silent);
+ };
+}
+/* 2) TVA pe oferte — cota standard în România: 21% */
+const VAT_RATE = 21;
+function vatInfo(total) {
+ const p = getProfile() || {};
+ if (p.vat === 'da') return {payer: true, net: total, vat: total * VAT_RATE / 100, gross: total * (1 + VAT_RATE / 100)};
+ return {payer: false, net: total, vat: 0, gross: total};
+}
+/* câmp TVA în profil */
+{
+ const _open = openProfile;
+ openProfile = function (opt = {}) {
+  _open(opt);
+  const grid = $('.pfgrid'); if (!grid) return;
+  const p = getProfile() || {};
+  const w = document.createElement('label'); w.className = 'pf';
+  w.innerHTML = `<span>TVA</span><select class="inp" id="pf_vat"><option value="nu"${p.vat !== 'da' ? ' selected' : ''}>Neplătitor de TVA / persoană fizică</option><option value="da"${p.vat === 'da' ? ' selected' : ''}>Plătitor de TVA (${VAT_RATE}%)</option></select>`;
+  grid.appendChild(w);
+  const save = $('#pfSave'), orig = save.onclick;
+  save.onclick = () => { const v = $('#pf_vat').value; orig(); const np = getProfile(); if (np && np.vat !== v) { np.vat = v; LS.set('atelia.profile', JSON.stringify(np)); if (typeof cloudPushProfile === 'function') cloudPushProfile(np).catch(() => {}); } };
+ };
+}
+
+if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
 setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);
 </script>
 </body>

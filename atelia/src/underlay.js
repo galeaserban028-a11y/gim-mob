@@ -42,7 +42,7 @@ function applyUnderlay(st) {
  if (ulMesh) { scene.remove(ulMesh); ulMesh.geometry && ulMesh.geometry.dispose && ulMesh.geometry.dispose(); ulMesh.material && ulMesh.material.dispose && ulMesh.material.dispose(); ulMesh = null; }
  ulState = st || null;
  if (!st) { try { localStorage.removeItem(ulKey()); } catch (e) {} return; }
- try { LS.set(ulKey(), JSON.stringify(st)); } catch (e) {}
+ try { localStorage.setItem(ulKey(), JSON.stringify(st)); } catch (e) { toast('Planul e prea mare ca să rămână salvat după reîncărcare — folosește o imagine mai mică'); }
  const tex = new THREE.TextureLoader().load(st.url); tex.colorSpace = THREE.SRGBColorSpace;
  const mat = new THREE.MeshBasicMaterial({map: tex, transparent: true, opacity: st.op ?? 0.8, depthWrite: false});
  ulMesh = new THREE.Mesh(new THREE.PlaneGeometry(st.w * MM, st.d * MM), mat);
@@ -79,7 +79,10 @@ function openUnderlay() {
     $('#ulPut').onclick = () => put(false); $('#ulPutRoom').onclick = () => put(true);
    } else {
     if (f.size > 12e6) throw new Error('Imagine prea mare (max 12 MB)');
-    const url = await readAs(f, 'readAsDataURL'); const [iw, ih] = await imageSize(url);
+    let url = await readAs(f, 'readAsDataURL'); const [iw, ih] = await imageSize(url);
+    /* micșorăm la max 2400 px ca să încapă în memoria browserului și să se încarce repede */
+    if (Math.max(iw, ih) > 2400 || url.length > 1.5e6) { const k = Math.min(1, 2400 / Math.max(iw, ih)), c = document.createElement('canvas'); c.width = Math.round(iw * k); c.height = Math.round(ih * k);
+     const im = new Image(); im.src = url; await im.decode(); const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height); url = c.toDataURL('image/jpeg', 0.85); }
     $('#ulCfg').innerHTML = `<label class="fld" style="margin-top:10px"><span>Lățimea reală a imaginii</span><input type="number" id="ulW" value="${S.room.w}"><i>mm</i></label><div class="note">Sfat: decupează imaginea exact pe pereții camerei, apoi scrie lățimea camerei.</div><button class="btn gold wide" id="ulPutImg" style="margin-top:8px">Pune sub proiect</button>`;
     $('#ulPutImg').onclick = () => { const w = Math.round(+$('#ulW').value); if (!(w >= 300 && w <= 100000)) { toast('Lățime invalidă'); return; }
      const d = Math.round(w * ih / iw); applyUnderlay({url, w, d, x: 0, z: 0, op: 0.8}); setCam('top'); closeModal(true); toast(`Plan pus: ${w} × ${d} mm`); };

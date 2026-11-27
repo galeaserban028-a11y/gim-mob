@@ -100,8 +100,11 @@ async function exportClientPDF() {
  x.fillStyle = '#111'; x.font = `700 ${m(4.6)}px Inter,Arial`; x.fillText('Materiale', m(15), y); y += m(7);
  x.font = `400 ${m(3.6)}px Inter,Arial`; x.fillStyle = '#333';
  [['Fronturi', S.mat.front], ['Corp', S.mat.body], ['Blat', S.mat.counter]].forEach(([l, c]) => { const d = DEC[c]; x.fillStyle = d.c || '#ccc'; x.fillRect(m(15), y - m(3.4), m(5), m(5)); x.strokeStyle = '#999'; x.strokeRect(m(15), y - m(3.4), m(5), m(5)); x.fillStyle = '#333'; x.fillText(`${l}: ${d.n}`, m(23), y); y += m(6.5); });
- y += m(4); x.fillStyle = '#f6f1e6'; x.fillRect(m(15), y, W - m(30), m(16)); x.fillStyle = '#111'; x.font = `700 ${m(5.5)}px Inter,Arial`;
- x.fillText('Preț estimat', m(20), y + m(10)); x.textAlign = 'right'; x.fillText(lei(P.total), W - m(20), y + m(10)); x.textAlign = 'left'; y += m(24);
+ y += m(4); const V = vatInfo(P.total), rowsV = V.payer ? [['Preț estimat fără TVA', V.net, 0], [`TVA ${VAT_RATE}%`, V.vat, 0], ['Total estimat cu TVA', V.gross, 1]] : [['Preț estimat (neplătitor de TVA)', V.gross, 1]];
+ x.fillStyle = '#f6f1e6'; x.fillRect(m(15), y, W - m(30), m(8 + 8 * rowsV.length));
+ rowsV.forEach(([l, v, big], i) => { x.fillStyle = big ? '#111' : '#444'; x.font = `${big ? 700 : 400} ${m(big ? 5.5 : 4.2)}px Inter,Arial`; const yy = y + m(10 + 8 * i);
+  x.textAlign = 'left'; x.fillText(l, m(20), yy); x.textAlign = 'right'; x.fillText(lei(v), W - m(20), yy); });
+ x.textAlign = 'left'; y += m(16 + 8 * rowsV.length);
  x.font = `400 ${m(3)}px Inter,Arial`; x.fillStyle = '#666';
  ['Prețul este estimativ și se confirmă după măsurătorile la fața locului. Culorile pot diferi față de mostrele fizice.', 'Montajul, transportul și instalațiile se ofertează separat, dacă nu sunt menționate.'].forEach(t => { x.fillText(t, m(15), y); y += m(4.6); });
  y = Math.max(y + m(10), pg.c.height - m(40));

@@ -203,7 +203,7 @@ must("setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
 
 # ---------- module Atelia (src/*.js) ----------
 SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(dst)), 'src')
-MODS = ['profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js']
+MODS = ['profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js', 'hardening.js']
 mods_code = '\n'.join(f'/* ---- src/{m} ---- */\n' + open(os.path.join(SRC_DIR, m), encoding='utf-8').read() for m in MODS)
 if '</script>' in mods_code: raise SystemExit('src contains </script>')
 must("\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
@@ -212,6 +212,16 @@ must('<script type="importmap">', '<script src="config.js"></script>\n<script ty
 # firma din profil pe oferte și desene
 must('copy(`Atelia Build — Ofertă: ${S.name}', 'copy(`${atFirm()} — Ofertă: ${S.name}${atContact()?"\\n"+atContact():""}', count=1)
 must('fillText(`Atelia Build · ${S.name}', 'fillText(`${atFirm()} · ${S.name}', count=1)
+
+# ---------- PWA (instalabil, offline) + politică de securitate a conținutului ----------
+CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+       "connect-src 'self' https://*.workers.dev https://*.supabase.co https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+       "img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; worker-src 'self' blob:; "
+       "object-src 'none'; base-uri 'self'; form-action 'none'")
+must('<meta name="theme-color" content="#0b0b0b">', f'<meta http-equiv="Content-Security-Policy" content="{CSP}">\n<meta name="theme-color" content="#0b0b0b">\n<link rel="manifest" href="manifest.webmanifest">', count=1)
+s = re.sub(r'(<link rel="apple-touch-icon" href=")[^"]+', r'\g<1>icons/apple-touch-icon.png', s, count=1)
+must("\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
+     "\nif('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);", count=1)
 
 # leftover personal text must be gone
 for bad in ('GIMMOB', 'gimmob', '100 de lei', "'gmob."):
