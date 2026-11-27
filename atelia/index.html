@@ -7,12 +7,15 @@
 <meta name="description" content="Atelia Build — proiectare 3D, ofertă și producție CNC într-un singur loc.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Atelia Build</title>
+<style>
+@font-face{font-family:Inter;src:local('Inter'),local('Segoe UI'),local('Roboto'),local('Helvetica Neue'),local('Arial');}
+@font-face{font-family:'Cormorant Garamond';src:local('Cormorant Garamond'),local('Georgia'),local('Times New Roman');}
+</style>
+
 <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjNkY2EyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjM4NDNmIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiByeD0iMzYiIGZpbGw9IiMwZDBkMGQiLz4KPHBhdGggZD0iTTEwMCAzNCBMMTU2IDE2NiBIMTMwIEwxMTkgMTM4IEg4MSBMNzAgMTY2IEg0NCBaIE0xMDAgNzggTDg4IDExNCBIMTEyIFoiIGZpbGw9InVybCgjZykiLz4KPHJlY3QgeD0iNDAiIHk9IjE3MiIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI1IiByeD0iMi41IiBmaWxsPSJ1cmwoI2cpIiBvcGFjaXR5PSIuNyIvPgo8L3N2Zz4=">
 <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMjAwIj4KPGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZjNkY2EyIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjYjM4NDNmIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiByeD0iMzYiIGZpbGw9IiMwZDBkMGQiLz4KPHBhdGggZD0iTTEwMCAzNCBMMTU2IDE2NiBIMTMwIEwxMTkgMTM4IEg4MSBMNzAgMTY2IEg0NCBaIE0xMDAgNzggTDg4IDExNCBIMTEyIFoiIGZpbGw9InVybCgjZykiLz4KPHJlY3QgeD0iNDAiIHk9IjE3MiIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI1IiByeD0iMi41IiBmaWxsPSJ1cmwoI2cpIiBvcGFjaXR5PSIuNyIvPgo8L3N2Zz4=">
 <meta name="application-name" content="Atelia Build">
 <meta name="apple-mobile-web-app-title" content="Atelia Build">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0d0d0d;--panel:#141414;--panel2:#1c1c1c;--line:#2a2a2a;--gold:#d8b46e;--gold2:#a77d3c;--txt:#ece8e1;--mut:#9a948a;--blue:#2f55ff}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -1594,7 +1597,7 @@ function buildCNC(P){
   files.push({name:`DXF/${base}.dxf`,data:dxf(ents)},{name:`GCODE/${base}.nc`,data:gc.join('\n')});});});
  files.push({name:'piese.csv',data:'﻿ID;Piesa;Corp;Lungime;Latime;Grosime;Material;Cant L1;Cant L2;Cant W1;Cant W2;Gauri\n'+P.parts.map(p=>[p.pid,p.name,p.cab,p.L,p.W,p.th,p.dec.n,p.edges.L1,p.edges.L2,p.edges.W1,p.edges.W2,p.holes.length].join(';')).join('\n')});
  files.push({name:'gauri.csv',data:'﻿ID piesa;Tip;Fata/Cant;X (pe lungime);Y (pe latime);Diametru;Adancime\n'+P.parts.flatMap(p=>p.holes.map(h=>[p.pid,h.k,h.side,String(h.u).replace('.',','),String(h.v).replace('.',','),h.d,Math.round(h.dep)].join(';'))).join('\n')});
- files.push({name:'CITESTE.txt',data:`Atelia Build - export CNC\nProiect: ${S.name}\nData: ${new Date().toLocaleString('ro-RO')}\n\nDXF/  - cate un fisier pe foaie: straturi FOAIE, CONTUR_<grosime>, GAURA_D<diametru>_A<adancime>, TEXT. Unitati: mm, origine colt stanga-jos.\nGCODE/ - program generic (gaurire + conturare). Verifica si adapteaza la postprocesorul masinii tale inainte de rulare!\npiese.csv - lista piese cu cant (1 = are cant).\ngauri.csv - toate gaurile: fata A/B = gauri pe fata, L1/L2/W1/W2 = gauri in cant (orizontale).\nImbinari: ${JOINS[S.std.join]}\n`});
+ files.push({name:'CITESTE.txt',data:`Atelia Build - export CNC\nATENTIE: fisiere generate automat. Verificati cotele, postprocesorul si setarile masinii si rulati o simulare inainte de debitare. Responsabilitatea utilizarii revine utilizatorului (vezi Termenii, pct. 4).\nProiect: ${S.name}\nData: ${new Date().toLocaleString('ro-RO')}\n\nDXF/  - cate un fisier pe foaie: straturi FOAIE, CONTUR_<grosime>, GAURA_D<diametru>_A<adancime>, TEXT. Unitati: mm, origine colt stanga-jos.\nGCODE/ - program generic (gaurire + conturare). Verifica si adapteaza la postprocesorul masinii tale inainte de rulare!\npiese.csv - lista piese cu cant (1 = are cant).\ngauri.csv - toate gaurile: fata A/B = gauri pe fata, L1/L2/W1/W2 = gauri in cant (orizontale).\nImbinari: ${JOINS[S.std.join]}\n`});
  return makeZip(files);
 }
 
@@ -1746,7 +1749,7 @@ function openDomains(){
  modalState={domains:1};const left=trialLeft();
  openModal(`${mhead('Alege domeniul','Același motor 3D — proiectare, ofertă și producție')}
  <div class="dgrid">${DOMAINS.map(x=>`<button class="dcard${x.on?' on':''}" data-d="${x.id}"><span class="dic">${x.ic}</span><b>${x.n}</b><small>${x.d}</small>${x.on?'<em>Activ</em>':'<em class="soon">În curând</em>'}</button>`).join('')}</div>
- <div class="trialbox">${left>0?`Ai <b>${left} ${left===1?'zi':'zile'}</b> de test gratuit, cu toate funcțiile.`:'Perioada de test s-a încheiat. Abonamentele vin în curând.'}<br><small>Personal ~5 €/lună · Firmă ~39 €/lună (oferte, debitare, CNC, logo propriu)</small></div>`);
+ <div class="trialbox">${left>0?`Ai <b>${left} ${left===1?'zi':'zile'}</b> de test gratuit, cu toate funcțiile.`:'Perioada de test s-a încheiat. Abonamentele vin în curând.'}<br><small>Personal ~5 €/lună · Firmă ~39 €/lună (oferte, debitare, CNC, logo propriu)</small></div>${LEGAL_LINKS}`);
  $$('.dcard').forEach(b=>b.onclick=()=>{const d=DOMAINS.find(x=>x.id===b.dataset.d);
   if(d.on){LS.set('atelia.welcome','1');closeModal(true);if(LS.get('atelia.help')!=='2')setTimeout(openHelp,400);}
   else toast(`${d.n} — modul în lucru, vine în curând`);});
@@ -1765,7 +1768,96 @@ function openWelcome(){openDomains();}
 .trialbox small{color:var(--mut)}`;document.head.appendChild(st);})();
 setTimeout(()=>{trialChip();const br=$('.brand');if(br){br.style.cursor='pointer';br.title='Alege domeniul';br.onclick=openDomains;}},800);
 
-setTimeout(()=>{$('#splash').classList.add('off');if(!LS.get('atelia.welcome'))setTimeout(openWelcome,400);else if(LS.get('atelia.help')!=='2')setTimeout(openHelp,500);},700);
+
+/* ================== CADRU LEGAL ================== */
+const TERMS_V='1.0';
+const LEGAL_LINKS=`<div class="legal-links"><a href="termeni.html" target="_blank">Termeni</a> · <a href="confidentialitate.html" target="_blank">Confidențialitate</a> · <a href="cookies.html" target="_blank">Cookies</a> · <a href="https://reclamatiisal.anpc.ro" target="_blank" rel="noopener">ANPC – SAL</a> · <button class="linkbtn" id="ckSet">Setări cookies</button></div>`;
+function termsOk(){try{return JSON.parse(LS.get('atelia.terms')||'{}').v===TERMS_V;}catch(e){return false;}}
+function openTerms(next){
+ modalState={welcome:1,terms:1};
+ openModal(`<div class="mh"><div><h2>Înainte să începi</h2><div class="sub">Atelia Build · Termeni și condiții v${TERMS_V}</div></div></div>
+ <div class="legalbox"><p><b>Atelia Build este un instrument de proiectare și calcul.</b> Cotele, listele de debitare, fișierele CNC și prețurile generate trebuie verificate de tine sau de un specialist înainte de producție, construcție sau ofertare.</p>
+ <p>Aplicația nu înlocuiește proiectul semnat de un arhitect sau inginer autorizat acolo unde legea îl cere și nu face calcule de rezistență.</p>
+ <p>Proiectele tale sunt salvate doar în browserul tău. Nu folosim cookie-uri de analiză sau publicitate.</p></div>
+ <label class="chk"><input type="checkbox" id="tA"><span>Am citit și accept <a href="termeni.html" target="_blank">Termenii și condițiile</a> și am luat la cunoștință <a href="confidentialitate.html" target="_blank">Politica de confidențialitate</a>.</span></label>
+ <label class="chk"><input type="checkbox" id="tB"><span>Înțeleg că sunt responsabil să verific rezultatele înainte de a le folosi în producție sau pe șantier.</span></label>
+ <button class="btn gold wide" id="tOk" disabled style="margin-top:12px;padding:13px">Accept și continui</button>`);
+ const upd=()=>{$('#tOk').disabled=!($('#tA').checked&&$('#tB').checked);};
+ $('#tA').onchange=upd;$('#tB').onchange=upd;
+ $('#tOk').onclick=()=>{LS.set('atelia.terms',JSON.stringify({v:TERMS_V,at:new Date().toISOString()}));closeModal(true);next&&next();};
+}
+function consentFresh(){try{const c=JSON.parse(LS.get('atelia.consent')||'null');return c&&(Date.now()-new Date(c.at).getTime())<365*864e5;}catch(e){return false;}}
+function saveConsent(analytics,marketing){LS.set('atelia.consent',JSON.stringify({necessary:true,analytics:!!analytics,marketing:!!marketing,at:new Date().toISOString(),v:1}));const b=$('#ckBar');b&&b.remove();}
+window.ateliaConsent=()=>{try{return JSON.parse(LS.get('atelia.consent')||'null');}catch(e){return null;}};
+function cookieBar(){
+ if(consentFresh()||$('#ckBar'))return;
+ const d=document.createElement('div');d.id='ckBar';
+ d.innerHTML=`<div class="cktxt"><b>Cookies și stocare locală.</b> Folosim doar stocarea strict necesară ca aplicația să funcționeze (proiectele tale rămân în browser). Nu folosim analiză sau publicitate. <a href="cookies.html" target="_blank">Detalii</a></div>
+ <div class="ckbtns"><button class="ckb" id="ckNo">Doar necesare</button><button class="ckb" id="ckCfg">Setări</button><button class="ckb" id="ckYes">Accept toate</button></div>`;
+ document.body.appendChild(d);
+ $('#ckNo').onclick=()=>saveConsent(false,false);$('#ckYes').onclick=()=>saveConsent(true,true);$('#ckCfg').onclick=openCookieSettings;
+}
+function openCookieSettings(){
+ const c=window.ateliaConsent()||{};modalState={cookies:1};
+ openModal(`${mhead('Setări cookies','Alegerile tale se pot schimba oricând')}
+ <div class="ckrow"><div><b>Strict necesare</b><small>Proiecte, setări, acceptarea termenilor, perioada de test. Fără ele aplicația nu funcționează.</small></div><input type="checkbox" checked disabled></div>
+ <div class="ckrow"><div><b>Analiză</b><small>Nefolosite în prezent. Dacă le vom introduce, pornesc doar cu acordul tău.</small></div><input type="checkbox" id="ckA" ${c.analytics?'checked':''}></div>
+ <div class="ckrow"><div><b>Marketing</b><small>Nefolosite în prezent.</small></div><input type="checkbox" id="ckM" ${c.marketing?'checked':''}></div>
+ <div class="ckbtns" style="margin-top:12px"><button class="ckb" id="ckSNo">Refuz opționale</button><button class="ckb" id="ckSSave">Salvează alegerile</button><button class="ckb" id="ckSYes">Accept toate</button></div>`);
+ $('#ckSNo').onclick=()=>{saveConsent(false,false);closeModal(true);toast('Salvat: doar necesare');};
+ $('#ckSYes').onclick=()=>{saveConsent(true,true);closeModal(true);toast('Salvat');};
+ $('#ckSSave').onclick=()=>{saveConsent($('#ckA').checked,$('#ckM').checked);closeModal(true);toast('Alegeri salvate');};
+}
+/* confirmare înainte de exporturile pentru producție (o dată pe sesiune) */
+let prodAck=false;
+const PROD_RE=/debitare|CNC|optimizare|desene|etichete/i;
+function confirmProd(){
+ if(prodAck)return Promise.resolve(true);
+ return new Promise(res=>{
+  const ov=document.createElement('div');ov.id='prodOv';
+  ov.innerHTML=`<div class="card"><div class="mh"><div><h2>Verificare înainte de producție</h2><div class="sub">Fișierele sunt generate automat</div></div></div>
+  <div class="legalbox"><p>Înainte să tai materiale sau să rulezi CNC, verifică: <b>cotele</b>, <b>grosimile plăcilor</b>, <b>decorurile și cantul</b>, <b>postprocesorul și setările mașinii</b>. Rulează întâi o simulare sau o probă.</p></div>
+  <label class="chk"><input type="checkbox" id="pA"><span>Am verificat proiectul și îmi asum folosirea fișierelor (Termeni, pct. 4).</span></label>
+  <div class="ckbtns" style="margin-top:12px"><button class="ckb" id="pNo">Renunț</button><button class="btn gold" id="pOk" disabled>Generează fișierele</button></div></div>`;
+  document.body.appendChild(ov);
+  const done=v=>{ov.remove();res(v);};
+  $('#pA').onchange=()=>{$('#pOk').disabled=!$('#pA').checked;};
+  $('#pNo').onclick=()=>done(false);
+  $('#pOk').onclick=()=>{prodAck=true;let log=[];try{log=JSON.parse(LS.get('atelia.prodAck')||'[]');}catch(e){}
+   log.push({at:new Date().toISOString(),p:S.name});LS.set('atelia.prodAck',JSON.stringify(log.slice(-20)));done(true);};
+ });
+}
+{const _sf=saveFile,_pdf=pagesToPDF;
+ saveFile=async(fn,d)=>{if(PROD_RE.test(fn)&&!(await confirmProd()))return;return _sf(fn,d);};
+ pagesToPDF=async(p,fn)=>{if(PROD_RE.test(fn)&&!(await confirmProd()))return;return _pdf(p,fn);};}
+function startFlow(){
+ const go=()=>{setTimeout(cookieBar,1200);if(!LS.get('atelia.welcome'))setTimeout(openWelcome,300);else if(LS.get('atelia.help')!=='2')setTimeout(openHelp,400);};
+ if(!termsOk())setTimeout(()=>openTerms(go),300);else go();
+}
+document.addEventListener('click',e=>{if(e.target&&e.target.id==='ckSet'){e.preventDefault();openCookieSettings();}});
+(()=>{const st=document.createElement('style');st.textContent=`
+.legalbox{background:#141414;border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55}
+.legalbox p{margin:0 0 8px}.legalbox p:last-child{margin:0}
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:14px;line-height:1.45;cursor:pointer}
+.chk input{width:20px;height:20px;flex:none;margin-top:1px;accent-color:#d8b46e}
+.chk a,.legal-links a,#ckBar a{color:var(--gold)}
+.legal-links{margin-top:12px;font-size:12px;color:var(--mut);text-align:center}
+.linkbtn{background:none;border:0;color:var(--gold);font:inherit;text-decoration:underline;cursor:pointer;padding:0}
+#ckBar{position:fixed;left:12px;right:12px;bottom:12px;z-index:150;background:#141414;border:1px solid #5a4a28;border-radius:14px;padding:14px 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;box-shadow:0 10px 40px #000a;font:14px/1.45 Inter,Arial;color:var(--txt)}
+.cktxt{flex:1 1 320px}
+.ckbtns{display:flex;gap:8px;flex-wrap:wrap}
+.ckb{flex:1 0 auto;background:#1f1f1f;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:10px 14px;font:600 13px Inter,Arial;cursor:pointer}
+.ckb:hover{border-color:var(--gold)}
+.ckrow{display:flex;justify-content:space-between;gap:12px;align-items:center;background:#141414;border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:8px}
+.ckrow b{display:block;font-size:14px}.ckrow small{color:var(--mut);font-size:12px}
+.ckrow input{width:20px;height:20px;accent-color:#d8b46e}
+button:disabled{opacity:.45;cursor:not-allowed}
+#prodOv{position:fixed;inset:0;z-index:160;background:#000b;display:flex;align-items:center;justify-content:center;padding:16px}
+#prodOv .card{max-width:560px;width:100%;background:#111;border:1px solid #5a4a28;border-radius:18px;padding:20px;color:var(--txt);font-family:Inter,Arial}
+#prodOv h2{margin:0;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:24px}
+#prodOv .sub{color:var(--mut);font-size:13px;margin-bottom:12px}`;document.head.appendChild(st);})();
+
+setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);
 </script>
 </body>
 </html>
