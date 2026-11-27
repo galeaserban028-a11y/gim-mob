@@ -1,0 +1,10 @@
+name = "atelia-ai"
+main = "ai-worker.js"
+compatibility_date = "2026-11-01"
+
+[ai]
+binding = "AI"
+
+[vars]
+ALLOWED_ORIGINS = "https://galeaserban028-a11y.github.io"
+MODELS = "@cf/google/gemma-4-26b-a4b-it,@cf/zai-org/glm-4.7-flash"

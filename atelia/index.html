@@ -247,6 +247,7 @@ table.cl{width:100%;border-collapse:collapse;font-size:12.5px}
  .rcenter span{font-size:9.5px}
 }
 </style>
+<script src="config.js"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
 <body>
@@ -1515,7 +1516,7 @@ async function labelPages(parts){
 }
 function drawingPages(){
  const pages=[],R=S.room,cabs=S.items.filter(i=>i.kind==='cab'&&!i.hidden);
- const title=(pg,t)=>{const x=pg.x,m=pg.mm;x.fillStyle='#111';x.font=`700 ${m(6)}px Inter,Arial`;x.fillText(t,m(12),m(14));x.font=`500 ${m(3.2)}px Inter,Arial`;x.fillStyle='#555';x.fillText(`Atelia Build · ${S.name} · ${new Date().toLocaleDateString('ro-RO')} · cote în mm`,m(12),m(20));x.strokeStyle='#111';x.lineWidth=2;x.strokeRect(m(8),m(6),pg.c.width-m(16),pg.c.height-m(12));};
+ const title=(pg,t)=>{const x=pg.x,m=pg.mm;x.fillStyle='#111';x.font=`700 ${m(6)}px Inter,Arial`;x.fillText(t,m(12),m(14));x.font=`500 ${m(3.2)}px Inter,Arial`;x.fillStyle='#555';x.fillText(`${atFirm()} · ${S.name} · ${new Date().toLocaleDateString('ro-RO')} · cote în mm`,m(12),m(20));x.strokeStyle='#111';x.lineWidth=2;x.strokeRect(m(8),m(6),pg.c.width-m(16),pg.c.height-m(12));};
  const dimH=(x,m,a,b,y,txt)=>{x.strokeStyle='#333';x.lineWidth=1;x.beginPath();x.moveTo(a,y);x.lineTo(b,y);x.moveTo(a,y-m(1.5));x.lineTo(a,y+m(1.5));x.moveTo(b,y-m(1.5));x.lineTo(b,y+m(1.5));x.stroke();x.fillStyle='#111';x.font=`600 ${m(2.8)}px Inter,Arial`;x.textAlign='center';x.fillText(txt,(a+b)/2,y-m(1.2));x.textAlign='left';};
  const dimV=(x,m,a,b,X,txt)=>{x.strokeStyle='#333';x.lineWidth=1;x.beginPath();x.moveTo(X,a);x.lineTo(X,b);x.moveTo(X-m(1.5),a);x.lineTo(X+m(1.5),a);x.moveTo(X-m(1.5),b);x.lineTo(X+m(1.5),b);x.stroke();x.save();x.translate(X-m(1.2),(a+b)/2);x.rotate(-Math.PI/2);x.fillStyle='#111';x.font=`600 ${m(2.8)}px Inter,Arial`;x.textAlign='center';x.fillText(txt,0,0);x.restore();};
  // 1. plan
@@ -1663,7 +1664,7 @@ function drawProd(){
  if(prodTab==='labels'){labelPages(P.parts).then(pages=>{const pv=$('#lblPrev');if(!pv)return;pv.innerHTML='';const im=new Image();im.src=pages[0]?pages[0].c.toDataURL('image/jpeg',.8):'';im.style.cssText='width:100%;max-width:420px;border-radius:8px;background:#fff;display:block';pv.appendChild(im);pv.insertAdjacentHTML('beforeend',`<div class="note" style="margin-top:6px">${P.parts.length} etichete · ${pages.length} pagini A4</div>`);
   $('#dlLbl').onclick=()=>{toast('Generez PDF…');pagesToPDF(pages,`Atelia_${safe}_etichete.pdf`);};$('#dlLblPng').onclick=async()=>{const b=await new Promise(r=>pages[0].c.toBlob(r,'image/png'));saveFile(`Atelia_${safe}_etichete_1.png`,b);};});}
  $('#cpOffer')&&($('#cpOffer').onclick=()=>{const corp={};S.items.filter(i=>i.kind==='cab').forEach(i=>{const k=`${TYPES[i.type].n} ${Math.round(i.w)}×${Math.round(i.h)}×${Math.round(i.d)}`;corp[k]=(corp[k]||0)+1;});
-  copy(`Atelia Build — Ofertă: ${S.name}\n\n${Object.entries(corp).map(([k,v])=>`• ${v} × ${k}`).join('\n')}\n\nFronturi: ${DEC[S.mat.front].n} · Corp: ${DEC[S.mat.body].n} · Blat: ${DEC[S.mat.counter].n}\nTOTAL estimat: ${lei(P.total)}`,'Oferta a fost copiată');});
+  copy(`${atFirm()} — Ofertă: ${S.name}${atContact()?"\n"+atContact():""}\n\n${Object.entries(corp).map(([k,v])=>`• ${v} × ${k}`).join('\n')}\n\nFronturi: ${DEC[S.mat.front].n} · Corp: ${DEC[S.mat.body].n} · Blat: ${DEC[S.mat.counter].n}\nTOTAL estimat: ${lei(P.total)}`,'Oferta a fost copiată');});
 }
 async function copy(txt,msg){try{await navigator.clipboard.writeText(txt);toast(msg);}catch(e){openModal(`${mhead('Copiază manual')}<textarea class="inp" style="height:260px;padding:10px" readonly>${esc(txt)}</textarea>`);const ta=$('#modal textarea');ta.focus();ta.select();}}
 
@@ -1770,7 +1771,7 @@ setTimeout(()=>{trialChip();const br=$('.brand');if(br){br.style.cursor='pointer
 
 
 /* ================== CADRU LEGAL ================== */
-const TERMS_V='1.0';
+const TERMS_V='1.1';
 const LEGAL_LINKS=`<div class="legal-links"><a href="termeni.html" target="_blank">Termeni</a> · <a href="confidentialitate.html" target="_blank">Confidențialitate</a> · <a href="cookies.html" target="_blank">Cookies</a> · <a href="https://reclamatiisal.anpc.ro" target="_blank" rel="noopener">ANPC – SAL</a> · <button class="linkbtn" id="ckSet">Setări cookies</button></div>`;
 function termsOk(){try{return JSON.parse(LS.get('atelia.terms')||'{}').v===TERMS_V;}catch(e){return false;}}
 function openTerms(next){
@@ -1856,6 +1857,415 @@ button:disabled{opacity:.45;cursor:not-allowed}
 #prodOv .card{max-width:560px;width:100%;background:#111;border:1px solid #5a4a28;border-radius:18px;padding:20px;color:var(--txt);font-family:Inter,Arial}
 #prodOv h2{margin:0;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:24px}
 #prodOv .sub{color:var(--mut);font-size:13px;margin-bottom:12px}`;document.head.appendChild(st);})();
+
+/* ---- src/profile.js ---- */
+/* ================== PROFIL + 7. MOD SIMPLU / PRO (Atelia) ================== */
+const ROLES = {
+ client:     {n: 'Persoană fizică',        d: 'Îmi proiectez casa sau mobila',            ic: '🏠', mode: 'simple'},
+ mobila:     {n: 'Producător mobilă',      d: 'Debitare, CNC, oferte',                    ic: '🪵', mode: 'pro'},
+ arhitect:   {n: 'Arhitect',               d: 'Planuri, export pentru CAD',               ic: '📐', mode: 'pro'},
+ designer:   {n: 'Designer interior',      d: 'Prezentări pentru clienți, materiale',     ic: '🎨', mode: 'pro'},
+ constructor:{n: 'Constructor / renovări', d: 'Cantități și liste de materiale',          ic: '🧱', mode: 'pro'}
+};
+function getProfile() { try { return JSON.parse(LS.get('atelia.profile') || 'null'); } catch (e) { return null; } }
+function setProfile(p) {
+ p.updated = new Date().toISOString();
+ LS.set('atelia.profile', JSON.stringify(p));
+ applyMode();
+ if (typeof cloudPushProfile === 'function') cloudPushProfile(p).catch(() => {});
+}
+window.atFirm = () => { const p = getProfile(); return (p && p.company) || 'Atelia Build'; };
+window.atContact = () => { const p = getProfile(); if (!p) return ''; return [p.company || p.name, p.cui && ('CUI ' + p.cui), p.phone, p.email, p.city].filter(Boolean).join(' · '); };
+function curMode() { const p = getProfile(); return (p && p.mode) || 'pro'; }
+function applyMode() {
+ const simple = curMode() === 'simple';
+ document.body.classList.toggle('at-simple', simple);
+ const b = $('#modeChip'); if (b) b.innerHTML = simple ? 'Mod <b>Simplu</b>' : 'Mod <b>Pro</b>';
+ const pb = $('#bProfile'); const p = getProfile();
+ if (pb) pb.title = p ? `Profil: ${p.name || ROLES[p.role]?.n || ''}` : 'Profilul meu';
+}
+function toggleMode() {
+ const p = getProfile() || {role: 'client'}; p.mode = curMode() === 'simple' ? 'pro' : 'simple'; setProfile(p);
+ toast(p.mode === 'simple' ? 'Mod Simplu: doar proiectare și preț' : 'Mod Pro: toate uneltele de producție');
+}
+function resizeLogo(file) {
+ return new Promise((res, rej) => {
+  if (!/^image\//.test(file.type)) return rej(new Error('Alege o imagine'));
+  const img = new Image(), url = URL.createObjectURL(file);
+  img.onload = () => { const k = Math.min(1, 400 / Math.max(img.width, img.height)); const c = document.createElement('canvas');
+   c.width = Math.round(img.width * k); c.height = Math.round(img.height * k); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+   URL.revokeObjectURL(url); res(c.toDataURL('image/png')); };
+  img.onerror = () => rej(new Error('Imagine invalidă')); img.src = url;
+ });
+}
+function openProfile(opt = {}) {
+ const p = Object.assign({role: '', name: '', company: '', cui: '', phone: '', email: '', city: '', logo: '', mode: ''}, getProfile() || {});
+ modalState = opt.first ? {welcome: 1, profile: 1} : {profile: 1};
+ const fld = (k, l, ph, type = 'text') => `<label class="pf"><span>${l}</span><input class="inp" id="pf_${k}" type="${type}" value="${esc(p[k] || '')}" placeholder="${ph}" autocomplete="off"></label>`;
+ const head = opt.first ? `<div class="mh"><div><h2>Cine ești?</h2><div class="sub">Adaptăm uneltele după meseria ta. Poți schimba oricând.</div></div></div>` : mhead('Profilul meu', 'Datele apar pe oferte și pe documentele de producție');
+ openModal(`${head}
+ <div class="rgrid">${Object.entries(ROLES).map(([k, r]) => `<button class="rcard${p.role === k ? ' on' : ''}" data-role="${k}"><span>${r.ic}</span><b>${r.n}</b><small>${r.d}</small></button>`).join('')}</div>
+ <div class="pfgrid">${fld('name', 'Nume', 'ex: Ion Popescu')}${fld('company', 'Firmă (opțional)', 'ex: Mobila Popescu SRL')}${fld('cui', 'CUI (opțional)', 'ex: RO12345678')}${fld('phone', 'Telefon', 'ex: 07xx xxx xxx', 'tel')}${fld('email', 'E-mail', 'ex: nume@firma.ro', 'email')}${fld('city', 'Oraș', 'ex: Cluj-Napoca')}</div>
+ <div class="pflogo"><div id="pfLogoPrev">${p.logo ? `<img src="${p.logo}" alt="logo">` : '<span>Fără logo</span>'}</div><label class="ckb" style="text-align:center">Încarcă logo<input type="file" id="pfLogo" accept="image/*" hidden></label>${p.logo ? '<button class="ckb" id="pfLogoDel">Șterge logo</button>' : ''}</div>
+ <div class="pfmode"><span>Interfață:</span><button class="ckb${(p.mode || ROLES[p.role]?.mode) === 'simple' ? ' on' : ''}" data-mode="simple">Simplu</button><button class="ckb${(p.mode || ROLES[p.role]?.mode || 'pro') === 'pro' ? ' on' : ''}" data-mode="pro">Pro</button></div>
+ <div id="cloudBox"></div>
+ <button class="btn gold wide" id="pfSave" style="margin-top:12px;padding:13px">${opt.first ? 'Continuă' : 'Salvează profilul'}</button>
+ <div class="legal-links">Datele profilului stau în browserul tău${typeof cloudOn === 'function' && cloudOn() ? ' și, dacă ești conectat, în contul tău' : ''}. <a href="confidentialitate.html" target="_blank">Confidențialitate</a></div>`, true);
+ let role = p.role, mode = p.mode, logo = p.logo;
+ $$('.rcard').forEach(b => b.onclick = () => { role = b.dataset.role; $$('.rcard').forEach(x => x.classList.toggle('on', x === b));
+  if (!p.mode) { mode = ROLES[role].mode; $$('[data-mode]').forEach(x => x.classList.toggle('on', x.dataset.mode === mode)); } });
+ $$('[data-mode]').forEach(b => b.onclick = () => { mode = b.dataset.mode; $$('[data-mode]').forEach(x => x.classList.toggle('on', x === b)); });
+ $('#pfLogo').onchange = async e => { try { logo = await resizeLogo(e.target.files[0]); $('#pfLogoPrev').innerHTML = `<img src="${logo}" alt="logo">`; } catch (er) { toast(er.message); } };
+ $('#pfLogoDel') && ($('#pfLogoDel').onclick = () => { logo = ''; $('#pfLogoPrev').innerHTML = '<span>Fără logo</span>'; });
+ $('#pfSave').onclick = () => {
+  if (!role) { toast('Alege ce fel de utilizator ești'); return; }
+  const np = {role, mode: mode || ROLES[role].mode, logo};
+  for (const k of ['name', 'company', 'cui', 'phone', 'email', 'city']) np[k] = $('#pf_' + k).value.trim().slice(0, 120);
+  if (np.email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(np.email)) { toast('E-mail invalid'); return; }
+  setProfile(np); closeModal(true); toast('Profil salvat');
+  opt.next && setTimeout(opt.next, 250);
+ };
+ if (typeof renderCloudBox === 'function') renderCloudBox();
+}
+/* buton profil + comutator mod în bara de sus; prima pornire întreabă rolul */
+(() => {
+ const tb = $('#top .tb'), help = $('#bHelp');
+ const chip = document.createElement('button'); chip.id = 'modeChip'; chip.className = 'modechip'; chip.title = 'Comută Simplu / Pro'; chip.onclick = toggleMode;
+ const pb = document.createElement('button'); pb.id = 'bProfile'; pb.className = 'ib'; pb.title = 'Profilul meu'; pb.onclick = () => openProfile();
+ pb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+ if (tb && help) { tb.insertBefore(chip, tb.firstChild); tb.insertBefore(pb, help); }
+ const st = document.createElement('style'); st.textContent = `
+.modechip{background:#1c1810;border:1px solid #5a4a28;color:var(--txt);border-radius:999px;padding:6px 12px;font:500 12px Inter,Arial;cursor:pointer;white-space:nowrap;margin-right:4px}
+.modechip b{color:var(--gold)}
+body.at-simple #tProd,body.at-simple #bHoles,body.at-simple [data-v="holes"],body.at-simple .pro-only{display:none!important}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:4px 0 12px}
+.rcard{background:#181818;border:1px solid var(--line);border-radius:12px;padding:10px 12px;color:var(--txt);text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;font-family:Inter,Arial}
+.rcard span{font-size:20px}.rcard b{font-size:13px}.rcard small{color:var(--mut);font-size:11px;line-height:1.3}
+.rcard.on{border-color:var(--gold);background:#1c1810}
+.pfgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.pf{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mut)}
+.pf .inp{width:100%}
+.pflogo{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+#pfLogoPrev{width:120px;height:56px;border:1px dashed var(--line);border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--mut);font-size:12px;background:#fff1}
+#pfLogoPrev img{max-width:100%;max-height:100%}
+.pfmode{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px;color:var(--mut)}
+.pfmode .ckb{flex:0 0 auto}.ckb.on{border-color:var(--gold);color:var(--gold)}
+@media(max-width:860px){.modechip{display:none}}`;
+ document.head.appendChild(st);
+ applyMode();
+})();
+openWelcome = () => { if (!getProfile()) openProfile({first: true, next: openDomains}); else openDomains(); };
+
+/* ---- src/cloud.js ---- */
+/* ================== CONTURI ONLINE (Supabase, opțional) ==================
+   Pornește doar când atelia/config.js are supabase.url + supabase.anon.
+   Folosește direct API-ul REST (fără bibliotecă externă). */
+const CLOUD_CFG = (window.ATELIA_CONFIG || {}).supabase || null;
+const cloudOn = () => !!(CLOUD_CFG && CLOUD_CFG.url && CLOUD_CFG.anon);
+let atSession = null;
+try { atSession = JSON.parse(LS.get('atelia.session') || 'null'); } catch (e) { atSession = null; }
+function saveSession(s) { atSession = s; if (s) LS.set('atelia.session', JSON.stringify(s)); else { try { localStorage.removeItem('atelia.session'); } catch (e) {} } }
+async function sbFetch(path, opt = {}, retry = true) {
+ if (!cloudOn()) throw new Error('Conturile online nu sunt încă activate');
+ if (atSession && atSession.expires_at && atSession.expires_at * 1000 < Date.now() + 60000 && retry && !/grant_type=refresh_token/.test(path)) await sbRefresh();
+ const h = Object.assign({apikey: CLOUD_CFG.anon, 'Content-Type': 'application/json'}, opt.headers || {});
+ if (atSession && atSession.access_token) h.Authorization = 'Bearer ' + atSession.access_token;
+ const r = await fetch(CLOUD_CFG.url.replace(/\/$/, '') + path, Object.assign({}, opt, {headers: h}));
+ const txt = await r.text(); let j = null; try { j = txt ? JSON.parse(txt) : null; } catch (e) {}
+ if (r.status === 401 && retry && atSession && atSession.refresh_token) { await sbRefresh(); return sbFetch(path, opt, false); }
+ if (!r.ok) throw new Error((j && (j.msg || j.message || j.error_description || j.error)) || ('Eroare server ' + r.status));
+ return j;
+}
+async function sbRefresh() {
+ try { const j = await sbFetch('/auth/v1/token?grant_type=refresh_token', {method: 'POST', body: JSON.stringify({refresh_token: atSession.refresh_token})}, false); saveSession(j); }
+ catch (e) { saveSession(null); }
+}
+const cloudUser = () => atSession && atSession.user;
+async function cloudSignUp(email, password) {
+ const j = await sbFetch('/auth/v1/signup', {method: 'POST', body: JSON.stringify({email, password})});
+ if (j && j.access_token) { saveSession(j); return 'in'; }
+ return 'confirm';
+}
+async function cloudSignIn(email, password) {
+ const j = await sbFetch('/auth/v1/token?grant_type=password', {method: 'POST', body: JSON.stringify({email, password})});
+ saveSession(j); await cloudPullProfile(); return j;
+}
+async function cloudSignOut() { try { await sbFetch('/auth/v1/logout', {method: 'POST'}); } catch (e) {} saveSession(null); }
+async function cloudPushProfile(p) {
+ if (!cloudOn() || !cloudUser()) return;
+ const row = {id: cloudUser().id, role: p.role, name: p.name, company: p.company, cui: p.cui, phone: p.phone, email: p.email, city: p.city, logo: p.logo, mode: p.mode, updated_at: new Date().toISOString()};
+ await sbFetch('/rest/v1/profiles', {method: 'POST', headers: {Prefer: 'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(row)});
+}
+async function cloudPullProfile() {
+ if (!cloudUser()) return;
+ const rows = await sbFetch(`/rest/v1/profiles?id=eq.${encodeURIComponent(cloudUser().id)}&select=*`);
+ if (rows && rows[0]) { const r = rows[0]; const p = {role: r.role, name: r.name, company: r.company, cui: r.cui, phone: r.phone, email: r.email, city: r.city, logo: r.logo, mode: r.mode};
+  LS.set('atelia.profile', JSON.stringify(p)); applyMode(); }
+ else { const p = getProfile(); if (p) await cloudPushProfile(p); }
+}
+async function cloudSaveProject() {
+ const row = {id: S.pid, owner: cloudUser().id, name: S.name, data: ser(), updated_at: new Date().toISOString()};
+ await sbFetch('/rest/v1/projects', {method: 'POST', headers: {Prefer: 'resolution=merge-duplicates,return=minimal'}, body: JSON.stringify(row)});
+}
+async function cloudListProjects() { return sbFetch('/rest/v1/projects?select=id,name,updated_at&order=updated_at.desc&limit=100'); }
+async function cloudOpenProject(id) {
+ const rows = await sbFetch(`/rest/v1/projects?id=eq.${encodeURIComponent(id)}&select=data`);
+ if (!rows || !rows[0]) throw new Error('Proiectul nu mai există');
+ undoS.push(ser()); load(typeof rows[0].data === 'string' ? rows[0].data : JSON.stringify(rows[0].data)); setCam('3d');
+}
+async function cloudDeleteProject(id) { await sbFetch(`/rest/v1/projects?id=eq.${encodeURIComponent(id)}`, {method: 'DELETE'}); }
+async function cloudDeleteAccount() { await sbFetch('/rest/v1/rpc/delete_my_account', {method: 'POST', body: '{}'}); saveSession(null); }
+
+function renderCloudBox() {
+ const box = $('#cloudBox'); if (!box) return;
+ if (!cloudOn()) { box.innerHTML = `<div class="cloudbox"><b>Cont online</b><small>În curând: cont cu e-mail, proiecte salvate online și acces de pe orice dispozitiv. Până atunci, totul rămâne în acest browser.</small></div>`; return; }
+ const u = cloudUser();
+ if (!u) {
+  box.innerHTML = `<div class="cloudbox"><b>Cont online</b><small>Salvează proiectele online și deschide-le de pe orice dispozitiv.</small>
+  <div class="pfgrid" style="margin-top:8px"><input class="inp" id="cbEmail" type="email" placeholder="E-mail" autocomplete="email"><input class="inp" id="cbPass" type="password" placeholder="Parolă (minim 8 caractere)" autocomplete="current-password"></div>
+  <label class="chk"><input type="checkbox" id="cbAge"><span>Am cel puțin 16 ani și accept <a href="termeni.html" target="_blank">Termenii</a> pentru contul online.</span></label>
+  <div class="ckbtns" style="margin-top:8px"><button class="ckb" id="cbIn">Intră în cont</button><button class="ckb" id="cbUp">Creează cont</button></div></div>`;
+  const cred = () => { const e = $('#cbEmail').value.trim(), p = $('#cbPass').value; if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) throw new Error('E-mail invalid'); if (p.length < 8) throw new Error('Parola trebuie să aibă minim 8 caractere'); return [e, p]; };
+  $('#cbIn').onclick = async () => { try { const [e, p] = cred(); await cloudSignIn(e, p); toast('Ești conectat'); openProfile(); } catch (er) { toast(er.message); } };
+  $('#cbUp').onclick = async () => { try { if (!$('#cbAge').checked) throw new Error('Confirmă vârsta și termenii'); const [e, p] = cred(); const r = await cloudSignUp(e, p);
+   if (r === 'in') { const pr = getProfile(); if (pr) await cloudPushProfile(pr); toast('Cont creat'); openProfile(); } else toast('Ți-am trimis un e-mail de confirmare. Confirmă și apoi intră în cont.'); } catch (er) { toast(er.message); } };
+  return;
+ }
+ box.innerHTML = `<div class="cloudbox"><b>Conectat: ${esc(u.email || '')}</b>
+ <div class="ckbtns" style="margin-top:8px"><button class="ckb" id="cbSave">Salvează proiectul online</button><button class="ckb" id="cbList">Proiectele mele online</button><button class="ckb" id="cbOut">Ieși din cont</button></div>
+ <div id="cbProj"></div><button class="linkbtn" id="cbDel" style="margin-top:10px;font-size:12px">Șterge contul și toate datele online</button></div>`;
+ $('#cbSave').onclick = async () => { try { await cloudSaveProject(); toast('Salvat online: ' + S.name); } catch (er) { toast(er.message); } };
+ $('#cbOut').onclick = async () => { await cloudSignOut(); toast('Ai ieșit din cont'); renderCloudBox(); };
+ $('#cbList').onclick = async () => { try { const list = await cloudListProjects(); const el = $('#cbProj');
+  el.innerHTML = list && list.length ? `<div class="plist" style="margin-top:8px">${list.map(p => `<div class="pitem"><span style="flex:1">${esc(p.name || p.id)}<small style="display:block;color:var(--mut)">${new Date(p.updated_at).toLocaleString('ro-RO')}</small></span><button class="ckb" data-cbo="${esc(p.id)}">Deschide</button><button class="ckb" data-cbd="${esc(p.id)}">Șterge</button></div>`).join('')}</div>` : '<small>Nu ai proiecte online încă.</small>';
+  $$('[data-cbo]').forEach(b => b.onclick = async () => { try { await cloudOpenProject(b.dataset.cbo); closeModal(true); toast('Deschis: ' + S.name); } catch (er) { toast(er.message); } });
+  $$('[data-cbd]').forEach(b => b.onclick = async () => { try { await cloudDeleteProject(b.dataset.cbd); b.closest('.pitem').remove(); toast('Proiect șters online'); } catch (er) { toast(er.message); } });
+ } catch (er) { toast(er.message); } };
+ $('#cbDel').onclick = () => { const c = $('#cbDel'); if (c.dataset.sure) { cloudDeleteAccount().then(() => { toast('Cont șters'); renderCloudBox(); }).catch(er => toast(er.message)); } else { c.dataset.sure = 1; c.textContent = 'Apasă din nou ca să confirmi ștergerea definitivă'; } };
+}
+(() => { const st = document.createElement('style'); st.textContent = `.cloudbox{margin-top:12px;background:#141414;border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-size:13px}.cloudbox small{color:var(--mut)}`; document.head.appendChild(st); })();
+
+/* ---- src/checks.js ---- */
+/* ================== 1. VERIFICĂRI EXTINSE (Atelia) ==================
+   Se adaugă peste verificările existente din runChecks(). */
+{
+ const _baseChecks = runChecks;
+ const catOf = c => (TYPES[c.type] || {}).cat;
+ const nameOf = c => (typeof cabCode === 'function' ? cabCode(c) : (TYPES[c.type] || {}).n || c.type);
+ const near = (a, b, tol = 6) => a.wall === b.wall && (a.off || 0) === (b.off || 0) &&
+   Math.abs(a.s - b.s) <= (a.w + b.w) / 2 + tol;
+ runChecks = function () {
+  const out = _baseChecks();
+  const R = S.room, cabs = S.items.filter(i => i.kind === 'cab' && !i.hidden);
+  const base = cabs.filter(c => catOf(c) === 'base');
+  const counters = cabs.filter(c => c.type === 'counter');
+  for (const c of cabs) {
+   const t = TYPES[c.type] || {}, cat = t.cat, nm = nameOf(c);
+   // a) corpul înalt trebuie să poată fi ridicat la montaj (diagonala laterală)
+   if ((cat === 'tall' || cat === 'ward') && (c.e || 0) < 50 && c.h > 1500) {
+    const diag = Math.sqrt(c.h * c.h + c.d * c.d), free = R.h - (c.e || 0);
+    if (diag > free - 10) out.push({lvl: 'err', id: c.id, msg: `${nm}: nu poate fi ridicat la montaj — diagonala laterală are ${Math.round(diag)} mm, iar până la tavan sunt ${Math.round(free)} mm. Micșorează înălțimea sau montează-l din bucăți.`});
+    else if (R.h - (c.e + c.h) < 30) out.push({lvl: 'warn', id: c.id, msg: `${nm}: rămân sub 30 mm până la tavan — verifică planeitatea tavanului înainte de debitare.`});
+   }
+   // b) siguranță: corpurile înalte se prind de perete
+   if ((cat === 'tall' || cat === 'ward') && c.h >= 1500)
+    out.push({lvl: 'info', id: c.id, msg: `${nm}: corp înalt — prinde-l de perete cu feronerie anti-răsturnare.`});
+   // c) blatul trebuie să acopere frontul
+   if (cat === 'base' && (c.e || 0) < 50) {
+    const top = c.e + c.h;
+    const cov = counters.find(o => o.wall === c.wall && Math.abs(o.e - top) < 15 && Math.abs(o.s - c.s) <= (o.w - c.w) / 2 + 5);
+    const need = c.d + (S.std.FT || 18);
+    if (cov && cov.d < need) out.push({lvl: 'warn', id: cov.id, msg: `${nameOf(cov)}: adâncime ${cov.d} mm — nu acoperă frontul corpului ${nm} (minim ${need} mm).`});
+   }
+   // d) deasupra plitei: corp de hotă
+   if (c.type === 'base_hob' || c.type === 'base_oven') {
+    const above = cabs.filter(o => catOf(o) === 'wall' && o.wall === c.wall && Math.abs(o.s - c.s) < (o.w + c.w) / 2 - 20);
+    if (above.length && !above.some(o => o.type === 'wall_hood'))
+     out.push({lvl: 'warn', id: c.id, msg: `${nm}: deasupra plitei e un corp obișnuit — folosește corp de hotă și respectă distanța minimă din manualul hotei și al plitei.`});
+    const fr = cabs.find(o => o.type === 'tall_fridge' && near(o, c, 2));
+    if (fr) out.push({lvl: 'warn', id: c.id, msg: `${nm}: plita e lipită de coloana frigider — lasă un corp între ele.`});
+   }
+   // e) mașina de vase lângă chiuvetă
+   if (c.type === 'base_dish' && !base.some(o => o.type === 'base_sink' && near(o, c)))
+    out.push({lvl: 'info', id: c.id, msg: `${nm}: mașina de vase nu e lângă chiuvetă — verifică traseul scurgerii și alimentării.`});
+   // f) chiuvetă fără blat
+   if (c.type === 'base_sink' && !counters.some(o => o.wall === c.wall && Math.abs(o.e - (c.e + c.h)) < 15 && Math.abs(o.s - c.s) <= (o.w - c.w) / 2 + 5))
+    out.push({lvl: 'err', id: c.id, msg: `${nm}: chiuvetă fără blat deasupra.`});
+   // g) blat mai lung decât placa standard
+   if (c.type === 'counter' && c.w > (S.std.blatL || 4100))
+    out.push({lvl: 'warn', id: c.id, msg: `${nm}: blat de ${Math.round(c.w)} mm — mai lung decât placa (${S.std.blatL} mm), trebuie îmbinat.`});
+  }
+  // h) corp de colț: două șiruri care se întâlnesc fără corp de colț sau lată
+  for (const w of ['left', 'right']) {
+   const side = base.filter(c => c.wall === w), back = base.filter(c => c.wall === 'back');
+   if (!side.length || !back.length) continue;
+   const first = side.reduce((a, b) => (a.s - a.w / 2 < b.s - b.w / 2 ? a : b));
+   const gap = first.s - first.w / 2 - 600;
+   if (gap > 60) out.push({lvl: 'info', id: first.id, msg: `Colțul ${w === 'left' ? 'stânga' : 'dreapta'}: gol de ${Math.round(gap)} mm între șiruri — pune o lată de completare sau un corp de colț.`});
+  }
+  return out;
+ };
+}
+
+/* ---- src/ai.js ---- */
+/* ================== 6. PROIECT GENERAT DIN DESCRIERE (Atelia) ==================
+   1) Dacă config.js are aiUrl → textul merge la serverul nostru (Cloudflare Workers AI, plan gratuit).
+   2) Altfel sau dacă AI-ul nu răspunde → interpretor local (fără internet, fără cost).
+   Rezultatul e un „spec” validat, din care construim proiectul cu corpurile din catalog. */
+const AI_URL = ((window.ATELIA_CONFIG || {}).aiUrl || '').trim();
+const eggBy = (re, fb) => { const e = EGGER.find(x => re.test(x[1])); return e ? e[0] : fb; };
+const COLOR_WORDS = [
+ [/\b(alb\w*|white)\b/i, () => 'W1000'], [/\b(negr\w*|neagr\w*|black)\b/i, () => eggBy(/^Black$/, 'U999')],
+ [/\b(antracit\w*|grafit\w*|graphite|anthracite)\b/i, () => eggBy(/Graphite/, 'U961')], [/\b(gri|grey|gray)\b/i, () => eggBy(/^Light Grey$/, 'U708')],
+ [/\b(nuc|walnut)\b/i, () => eggBy(/Walnut/, 'H1714')], [/\b(stejar\w*|oak|lemn\w*)\b/i, () => 'H1145'],
+ [/\b(beton\w*|concrete)\b/i, () => 'F186'], [/\b(marmur\w*|marble)\b/i, () => eggBy(/Marble/, 'F812')],
+ [/\b(bej|beige|crem)\b/i, () => eggBy(/Beige/, 'U156')]];
+/* culorile găsite în text, în ordinea în care apar */
+const colorsIn = s => COLOR_WORDS.map(([re, f]) => { const m = String(s).match(re); return m ? [m.index, f()] : null; }).filter(Boolean).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+function colorFrom(txt) {
+ if (!txt) return null; const s = String(txt);
+ const code = s.toUpperCase().match(/\b[WUHF]\d{3,4}\b/); if (code && EGGER.some(e => e[0] === code[0])) return code[0];
+ return colorsIn(s)[0] || null;
+}
+const toMM = (n, u) => { n = parseFloat(String(n).replace(',', '.')); if (!isFinite(n)) return null;
+ if (u === 'mm') return n; if (u === 'cm') return n * 10; if (u === 'm') return n * 1000; return n < 20 ? n * 1000 : (n < 1000 ? n * 10 : n); };
+const clampN = (v, a, b, d) => { v = Math.round(+v); return isFinite(v) && v > 0 ? Math.min(b, Math.max(a, v)) : d; };
+
+function parseBrief(txt) {
+ const t = ' ' + String(txt || '').toLowerCase() + ' ', notes = [];
+ const kind = /dulap|dressing|șifonier|sifonier|garderob/.test(t) ? 'dulap' : 'bucatarie';
+ const hm = t.match(/(?:înălțime|inaltime|tavan)\D{0,12}(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/);
+ const height = hm ? toMM(hm[1], hm[2]) : null;
+ const nums = [...t.replace(hm ? hm[0] : '§', ' ').matchAll(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?(?![\wăâîșț])/g)].map(m => toMM(m[1], m[2])).filter(v => v && v >= 300 && v <= 9000);
+ let layout = 'I'; const W = '[a-zăâîșț0-9]';
+ const letter = c => new RegExp(`(?<!${W})${c}(?!${W})`);
+ if (kind === 'bucatarie') { if (letter('u').test(t)) layout = 'U'; else if (letter('l').test(t) || /colț|colt/.test(t)) layout = 'L'; }
+ if (/paralel|două rânduri|doua randuri/.test(t)) notes.push('Bucătăria pe două rânduri paralele nu e încă suportată — am făcut un singur rând.');
+ if (/insul/.test(t)) notes.push('Insula nu e încă suportată — o poți adăuga manual cu unealta Spațiu.');
+ const tall = [];
+ if (/frigider|combin/.test(t) && !/fără frigider|fara frigider/.test(t)) tall.push('fridge');
+ const ovenTall = /cuptor\D{0,25}(coloan|sus|înalt|inalt)|coloan\D{0,15}cuptor/.test(t);
+ if (ovenTall) tall.push('oven');
+ if (/cămar|camar/.test(t)) tall.push('pantry');
+ const colors = {}; const fm = t.match(/front\w*\s+([a-zăâîșț ]{2,25})/); const bm = t.match(/blat\w*\s+(?:din\s+)?([a-zăâîșț0-9 ]{2,25})/); const cm = t.match(/corp\w*\s+([a-zăâîșț ]{2,20})/);
+ if (fm) colors.front = colorFrom(fm[1]); if (bm) colors.counter = colorFrom(bm[1]); if (cm) colors.body = colorFrom(cm[1]);
+ const loose = colorsIn(t).filter(c => c !== colors.front && c !== colors.counter);
+ if (!colors.front && loose[0]) colors.front = loose[0];
+ if (!colors.counter && loose[1]) colors.counter = loose[1];
+ return {
+  kind, name: '', layout,
+  runs: {back: nums[0] || (kind === 'dulap' ? 2000 : 3000), left: layout !== 'I' ? (nums[1] || 2000) : 0, right: layout === 'U' ? (nums[2] || nums[1] || 2000) : 0},
+  height: height || null, tall, ovenUnder: /cuptor/.test(t) && !ovenTall,
+  sink: !/fără chiuvet|fara chiuvet/.test(t), hob: !/fără plit|fara plit/.test(t),
+  dishwasher: /(mașin|masin)[a-zăâîșț]*\s+de\s+(spălat\s+|spalat\s+)?vase|dishwasher/.test(t),
+  upper: !/fără corpuri sus|fara corpuri sus|fără sus|fara sus|fără suspendate|fara suspendate/.test(t),
+  colors, notes
+ };
+}
+function normSpec(sp, src) {
+ const s = Object.assign({}, sp || {}); s.kind = s.kind === 'dulap' ? 'dulap' : 'bucatarie';
+ s.layout = ['I', 'L', 'U'].includes(String(s.layout).toUpperCase()) ? String(s.layout).toUpperCase() : 'I';
+ const r = s.runs || {};
+ s.runs = {back: clampN(r.back, 1200, 8000, 3000), left: s.layout !== 'I' ? clampN(r.left, 1200, 6000, 2000) : 0, right: s.layout === 'U' ? clampN(r.right, 1200, 6000, 2000) : 0};
+ s.height = clampN(s.height, 2200, 3600, 2600);
+ s.tall = (Array.isArray(s.tall) ? s.tall : []).filter(x => ['fridge', 'oven', 'pantry'].includes(x)).slice(0, 3);
+ for (const k of ['sink', 'hob', 'upper']) s[k] = s[k] !== false; s.dishwasher = !!s.dishwasher; s.ovenUnder = !!s.ovenUnder;
+ const c = s.colors || {}; s.colors = {body: colorFrom(c.body) || 'W1000', front: colorFrom(c.front) || 'H1145', counter: colorFrom(c.counter) || 'F186'};
+ s.notes = Array.isArray(s.notes) ? s.notes.slice(0, 5).map(String) : [];
+ s.name = String(s.name || '').slice(0, 60) || (s.kind === 'dulap' ? 'Dulap generat' : `Bucătărie ${s.layout === 'I' ? 'liniară' : 'în ' + s.layout}`);
+ s.src = src; return s;
+}
+/* împarte o lungime în module de ~600 mm */
+function modules(len, target = 600) { let n = Math.max(1, Math.round(len / target)); let w = Math.floor(len / n); while (n > 1 && w < 300) { n--; w = Math.floor(len / n); } const a = Array(n).fill(w); a[n - 1] = len - w * (n - 1); return a; }
+function kitchenRun(items, wall, start, len, sp, opts) {
+ if (len < 300) return;
+ const ws = modules(len), n = ws.length, types = Array(n).fill(null);
+ if (opts.sink && n >= 2) types[Math.min(1, n - 1)] = 'base_sink';
+ if (opts.sink && opts.dishwasher && n >= 3) types[2] = 'base_dish';
+ if (opts.hob && n >= 3) { let h = n >= 5 ? n - 2 : n - 1; if (types[h]) h = types.findIndex((x, i) => !x && i > 0);
+  if (h === n - 1 && opts.tallAfter) { if (opts.canDefer) h = -1; /* nu lipi plita de coloană — o mutăm pe latură */
+   else { const alt = types.findIndex((x, i) => !x && i > 0 && i < n - 1); if (alt >= 0) h = alt; } }
+  if (h >= 0) types[h] = sp.ovenUnder ? 'base_oven' : 'base_hob'; }
+ let x = start;
+ ws.forEach((w, i) => { const tp = types[i] || (i === 0 ? 'base_drawer3' : (w > 600 ? (i % 2 ? 'base_drawer2' : 'base_door2') : (i % 2 ? 'base_drawer2' : 'base_door1')));
+  items.push(makeCab(tp, {wall, w, s: x + w / 2})); x += w; });
+ items.push(makeCab('counter', {wall, w: len, s: start + len / 2, h: 38, d: 600, e: 820}));
+ if (sp.upper) { let xu = start; ws.forEach((w, i) => { const tp = types[i] === 'base_hob' || types[i] === 'base_oven' ? 'wall_hood' : (w > 600 ? 'wall_door2' : 'wall_door1');
+  items.push(makeCab(tp, {wall, w, s: xu + w / 2})); xu += w; }); }
+ return types;
+}
+function buildFromSpec(sp) {
+ const items = [], R = sp.runs;
+ const room = {w: Math.max(R.back, 1500), d: Math.max(R.left, R.right, 2500), h: sp.height, left: sp.layout !== 'I', right: sp.layout === 'U'};
+ if (sp.kind === 'dulap') {
+  const h = Math.min(2400, room.h - 80);
+  const space = makeSpace({wall: 'back', s: R.back / 2, w: R.back, h, d: 600, e: 0});
+  items.push(...fillPlan(space));
+ } else {
+  const tallMap = {fridge: 'tall_fridge', oven: 'tall_oven', pantry: 'tall_pantry'};
+  let tallN = sp.tall.length; while (tallN && R.back - tallN * 600 < 1200) tallN--;
+  const baseLen = R.back - tallN * 600;
+  const opts = {sink: sp.sink, hob: sp.hob, dishwasher: sp.dishwasher, tallAfter: tallN > 0, canDefer: sp.layout !== 'I'};
+  const tb = kitchenRun(items, 'back', 0, baseLen, sp, opts);
+  sp.tall.slice(0, tallN).forEach((k, i) => items.push(makeCab(tallMap[k], {wall: 'back', s: baseLen + 600 * i + 300})));
+  if (tallN < sp.tall.length) sp.notes.push('Peretele e prea scurt pentru toate coloanele — am pus doar ' + tallN + '.');
+  const hasHob = tb && tb.some(x => x === 'base_hob' || x === 'base_oven');
+  const side = {sink: false, hob: sp.hob && !hasHob, dishwasher: false};
+  if (sp.layout !== 'I') kitchenRun(items, 'left', 600, R.left - 600, sp, side);
+  if (sp.layout === 'U') kitchenRun(items, 'right', 600, R.right - 600, sp, {sink: false, hob: false, dishwasher: false});
+ }
+ return {v: 3, pid: nid(), name: sp.name, room, mat: {...sp.colors}, custom: {}, rates: {...DEFAULT_RATES}, std: {...STD_DEF}, items};
+}
+async function aiSpec(text) {
+ const ctl = new AbortController(); const tm = setTimeout(() => ctl.abort(), 20000);
+ try {
+  const r = await fetch(AI_URL, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text}), signal: ctl.signal});
+  const j = await r.json(); if (!r.ok || !j.spec) throw new Error(j.error || 'AI indisponibil'); return j.spec;
+ } finally { clearTimeout(tm); }
+}
+const AI_EX = ['Bucătărie în L, 3,2 m pe 2,4 m, cu frigider în coloană, mașină de vase, fronturi albe și blat stejar',
+ 'Bucătărie liniară 2800 mm, fără corpuri sus, fronturi gri, blat beton', 'Bucătărie în U 3 m x 2,5 m x 2,5 m, cuptor în coloană și cămară, fronturi nuc',
+ 'Dulap dormitor 2400 mm lățime, înălțime tavan 2,6 m'];
+function openAI() {
+ modalState = {ai: 1};
+ openModal(`${mhead('Proiect din descriere', AI_URL ? 'AI + reguli de proiectare' : 'Interpretor local — funcționează fără internet')}
+ <textarea class="inp" id="aiTxt" rows="4" maxlength="600" style="width:100%;resize:vertical;font:15px/1.45 Inter,Arial" placeholder="Descrie ce vrei, cu dimensiuni. Ex: bucătărie în L, 3,2 m pe 2,4 m, frigider în coloană, fronturi albe, blat stejar"></textarea>
+ <div class="aiex">${AI_EX.map((e, i) => `<button class="ckb" data-ex="${i}">${esc(e)}</button>`).join('')}</div>
+ <div id="aiOut"></div>
+ <button class="btn gold wide" id="aiGo" style="margin-top:10px;padding:13px">Interpretează</button>
+ <div class="legal-links">Nu scrie date personale în descriere. Rezultatul e un punct de plecare — verifică-l înainte de ofertă sau producție.</div>`, true);
+ $$('[data-ex]').forEach(b => b.onclick = () => { $('#aiTxt').value = AI_EX[+b.dataset.ex]; });
+ $('#aiGo').onclick = async () => {
+  const text = $('#aiTxt').value.trim(); if (text.length < 8) { toast('Scrie o descriere mai detaliată'); return; }
+  const go = $('#aiGo'); go.disabled = true; go.textContent = 'Mă gândesc…';
+  let spec, src = 'local', warn = '';
+  if (AI_URL) { try { spec = await aiSpec(text); src = 'ai'; } catch (e) { warn = 'AI-ul nu a răspuns, am folosit interpretorul local.'; } }
+  if (!spec) spec = parseBrief(text);
+  spec = normSpec(spec, src);
+  const proj = buildFromSpec(spec);
+  const L = {I: 'liniară', L: 'în L', U: 'în U'}, T = {fridge: 'frigider', oven: 'cuptor', pantry: 'cămară'};
+  const nCab = proj.items.filter(i => i.kind === 'cab' && i.type !== 'counter').length;
+  $('#aiOut').innerHTML = `<div class="legalbox" style="margin-top:10px"><b>Am înțeles:</b><ul style="margin:6px 0 0;padding-left:18px;line-height:1.6">
+   <li>${spec.kind === 'dulap' ? 'Dulap' : 'Bucătărie ' + L[spec.layout]} · perete principal ${spec.runs.back} mm${spec.runs.left ? ` · stânga ${spec.runs.left} mm` : ''}${spec.runs.right ? ` · dreapta ${spec.runs.right} mm` : ''} · tavan ${spec.height} mm</li>
+   ${spec.kind === 'dulap' ? '' : `<li>Coloane: ${spec.tall.map(x => T[x]).join(', ') || 'niciuna'} · ${spec.dishwasher ? 'cu' : 'fără'} mașină de vase · ${spec.upper ? 'cu' : 'fără'} corpuri sus${spec.ovenUnder ? ' · cuptor sub plită' : ''}</li>`}
+   <li>Fronturi ${esc(DEC[spec.colors.front].n)} · corp ${esc(DEC[spec.colors.body].n)} · blat ${esc(DEC[spec.colors.counter].n)}</li>
+   <li>${nCab} corpuri generate</li></ul>
+   ${[warn, ...spec.notes].filter(Boolean).map(n => `<div style="color:#f59e0b;margin-top:6px">⚠ ${esc(n)}</div>`).join('')}
+   <div style="color:var(--mut);font-size:12px;margin-top:6px">Sursă: ${src === 'ai' ? 'AI (Cloudflare Workers AI)' : 'interpretor local'}</div></div>`;
+  go.disabled = false; go.textContent = 'Creează proiectul';
+  go.onclick = () => { undoS.push(ser()); load(JSON.stringify(proj)); setCam('3d'); closeModal(true);
+   const res = runChecks(); const ne = res.filter(r => r.lvl === 'err').length, nw = res.filter(r => r.lvl === 'warn').length;
+   toast(`Proiect creat · ${ne} erori · ${nw} atenționări — apasă Verifică`); };
+ };
+ setTimeout(() => $('#aiTxt') && $('#aiTxt').focus(), 50);
+}
+(() => {
+ const nav = $('#tools'), ref = $('#tRoom'); if (!nav) return;
+ const b = document.createElement('button'); b.id = 'tAI';
+ b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg><span>Generează</span>';
+ b.onclick = openAI; nav.insertBefore(b, nav.firstChild ? nav.children[2] || null : null);
+ const st = document.createElement('style'); st.textContent = `.aiex{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.aiex .ckb{flex:1 1 220px;text-align:left;font-weight:500;font-size:12px;line-height:1.35}`; document.head.appendChild(st);
+})();
 
 setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);
 </script>

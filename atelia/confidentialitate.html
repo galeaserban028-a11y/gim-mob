@@ -11,7 +11,7 @@
 <header><b>ATELIA BUILD</b><nav><a href="./">Aplicația</a><a href="termeni.html">Termeni</a><a href="confidentialitate.html">Confidențialitate</a><a href="cookies.html">Cookies</a></nav></header>
 
 <h1>Politica de confidențialitate</h1>
-<p class="meta">Versiunea 1.0 · în vigoare din 27 noiembrie 2026 · conform Regulamentului (UE) 2016/679 (GDPR)</p>
+<p class="meta">Versiunea 1.1 · în vigoare din 27 noiembrie 2026 · conform Regulamentului (UE) 2016/679 (GDPR)</p>
 
 <div class="note"><b>Pe scurt:</b> în versiunea actuală nu avem conturi, nu colectăm date de contact și nu folosim analiză sau publicitate. Proiectele tale rămân în browserul tău.</div>
 
@@ -23,6 +23,9 @@
 <tr><th>Date</th><th>Unde stau</th><th>Scop</th><th>Temei</th></tr>
 <tr><td>Proiectele tale (dimensiuni, nume proiect sau client, decoruri, prețuri introduse)</td><td>Doar în browserul tău (localStorage). Nu ajung la noi.</td><td>Ca să-ți poți salva și redeschide lucrul</td><td>Executarea serviciului cerut de tine (art. 6 alin. 1 lit. b GDPR)</td></tr>
 <tr><td>Setări: acceptarea termenilor, alegerile privind cookie-urile, începutul perioadei de test</td><td>Doar în browserul tău</td><td>Funcționarea Aplicației și dovada alegerilor tale</td><td>Executarea serviciului / obligație legală</td></tr>
+<tr><td>Profilul tău (rol, nume, firmă, CUI, telefon, e-mail, oraș, logo, mod Simplu/Pro)</td><td>În browserul tău. Dacă ai cont online: și în baza noastră de date (Supabase, servere în UE)</td><td>Adaptarea uneltelor, datele de pe oferte, sincronizare între dispozitive</td><td>Executarea serviciului cerut de tine (art. 6 alin. 1 lit. b)</td></tr>
+<tr><td>Cont online: e-mail, parolă (stocată criptat de furnizor), proiectele salvate online</td><td>Supabase (UE), numai dacă îți creezi cont</td><td>Autentificare, salvarea proiectelor online</td><td>Executarea contractului (art. 6 alin. 1 lit. b)</td></tr>
+<tr><td>Textul scris în „Generează” (descrierea proiectului)</td><td>Trimis la serverul nostru AI (Cloudflare Workers AI) doar când funcția AI e activă; nu îl stocăm</td><td>Transformarea descrierii în proiect</td><td>Executarea serviciului cerut de tine</td></tr>
 <tr><td>Adresa IP și date tehnice ale browserului</td><td>Furnizorii tehnici de mai jos, la încărcarea paginii</td><td>Livrarea paginii și a bibliotecilor necesare</td><td>Interes legitim: funcționarea și securitatea serviciului</td></tr>
 </table>
 <p>Dacă treci în proiect numele sau adresa unui client, aceste date rămân pe dispozitivul tău. Pentru ele ești tu răspunzător față de clientul tău.</p>
@@ -31,6 +34,8 @@
 <ul>
 <li><b>GitHub Pages</b> (GitHub, Inc.): găzduiește Aplicația.</li>
 <li><b>jsDelivr</b> și <b>cdnjs (Cloudflare)</b>: livrează bibliotecile pentru 3D, PDF și coduri QR.</li>
+<li><b>Supabase</b> (proiect găzduit în UE): conturi și proiecte online — doar dacă îți creezi cont.</li>
+<li><b>Cloudflare Workers AI</b>: interpretarea descrierilor în funcția „Generează” — doar când funcția AI e activă. Fără AI activ, descrierea e interpretată local, în browserul tău.</li>
 </ul>
 <p>Acești furnizori primesc, tehnic, adresa IP a dispozitivului tău când pagina se încarcă. Unii pot prelucra date și în afara Spațiului Economic European, pe baza mecanismelor de transfer prevăzute de GDPR. Lucrăm la găzduirea acestor biblioteci direct pe serverul Aplicației, ca să reducem aceste transferuri. Fonturile nu se mai încarcă de la Google.</p>
 
@@ -40,8 +45,11 @@
 <h2>5. Drepturile tale</h2>
 <p>Ai dreptul de acces, rectificare, ștergere, restricționare, portabilitate și opoziție, precum și dreptul de a-ți retrage consimțământul oricând. Scrie-ne la <b>[EMAIL CONTACT]</b>. Ai și dreptul să depui plângere la Autoritatea Națională de Supraveghere a Prelucrării Datelor cu Caracter Personal (ANSPDCP): <a href="https://www.dataprotection.ro" target="_blank" rel="noopener">dataprotection.ro</a>.</p>
 
-<h2>6. Ce se schimbă când apar conturile și plățile</h2>
-<p>Când vom introduce conturi, salvare în cloud, partajarea proiectelor, funcții AI și plăți, vom actualiza această politică <b>înainte</b> ca ele să fie disponibile. Vom spune exact ce date colectăm, cine le prelucrează (de exemplu procesatorul de plăți) și cât timp le păstrăm, iar unde e nevoie îți vom cere consimțământul.</p>
+<h2>6. Ștergerea contului</h2>
+<p>Din „Profilul meu” → „Șterge contul și toate datele online” se șterg definitiv contul, profilul și proiectele online. Datele din browser le ștergi din setările browserului.</p>
+
+<h2>7. Ce se schimbă când apar plățile</h2>
+<p>Când vom introduce plățile și partajarea proiectelor cu alte persoane, vom actualiza această politică <b>înainte</b> ca ele să fie disponibile. Vom spune exact ce date colectăm, cine le prelucrează (de exemplu procesatorul de plăți) și cât timp le păstrăm, iar unde e nevoie îți vom cere consimțământul.</p>
 
 <footer>Atelia Build · [DENUMIRE FIRMĂ] · [EMAIL CONTACT]</footer>
 </main>
