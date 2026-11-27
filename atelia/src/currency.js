@@ -37,6 +37,9 @@ setTimeout(scaleDefaults, 0);
   const w = document.createElement('label'); w.className = 'pf';
   w.innerHTML = `<span>${LANG === 'en' ? 'Currency' : 'Monedă'}</span><select class="inp" id="pf_cur"><option value="RON"${cur === 'RON' ? ' selected' : ''}>${LANG === 'en' ? 'Romanian leu (RON)' : 'Lei (RON)'}</option><option value="EUR"${cur === 'EUR' ? ' selected' : ''}>Euro (EUR)</option></select>`;
   grid.appendChild(w);
+  const lw = document.createElement('label'); lw.className = 'pf';
+  lw.innerHTML = `<span>${LANG === 'en' ? 'Language' : 'Limbă'}</span><select class="inp" id="pf_lang"><option value="ro"${LANG === 'ro' ? ' selected' : ''}>Română</option><option value="en"${LANG === 'en' ? ' selected' : ''}>English</option></select>`;
+  grid.appendChild(lw); $('#pf_lang').onchange = e => setLang(e.target.value);
   const box = document.createElement('div'); box.id = 'curConv'; box.style.display = 'none'; box.className = 'legalbox'; box.style.marginTop = '8px';
   box.innerHTML = `<div>${LANG === 'en' ? 'Convert the prices you have already saved?' : 'Convertești prețurile deja salvate?'}</div>
   <label class="pf" style="max-width:240px;margin-top:6px"><span>${LANG === 'en' ? '1 EUR = … RON (use the current official rate)' : '1 EUR = … lei (folosește cursul oficial BNR al zilei)'}</span><input class="inp" type="number" step="0.0001" id="pf_fx" placeholder="ex: 5.0"></label>

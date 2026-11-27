@@ -10,6 +10,12 @@
 | Piață | Nu se putea instala ca aplicație și nu mergea fără internet | PWA: „Adaugă pe ecranul principal”, iconițe, funcționare offline |
 | Legal | Cache-ul offline nu era menționat | Adăugat în Politica de cookies |
 
+## Funcții unice (nu le are niciun concurent)
+1. **Instrucțiuni de montaj automate** — PDF pas cu pas pe fiecare corp, cu codurile de pe etichetele QR, feronerie, ordinea în cameră, siguranță.
+2. **Comandă debitare + comparare centre** — listă standard pentru orice centru, cost și termen calculate pentru fiecare centru salvat, trimitere e-mail/WhatsApp.
+3. **Proiect partajat între meserii + aprobare client** — link fără server, note pe meserii, aprobare cu amprentă SHA-256 care detectează orice modificare după aprobare.
+4. **Obstacole pe perete** — prize, apă, gaz, calorifere, ferestre, tablou electric; afișate în 3D și verificate față de corpuri; poza peretelui ca referință.
+
 ## Comparație cu piața
 | Funcție | Cabinet Vision / imos / Mozaik | Polyboard | Planner 5D / Coohom | **Atelia Build** |
 |---|---|---|---|---|

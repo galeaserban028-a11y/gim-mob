@@ -144,3 +144,6 @@ function setLang(l) { LS.set('atelia.lang', l); location.reload(); }
  b.textContent = LANG === 'en' ? 'RO' : 'EN'; b.style.font = '700 12px Inter,Arial';
  b.onclick = () => setLang(LANG === 'en' ? 'ro' : 'en'); tb.insertBefore(b, help);
 })();
+
+/* pe telefon: antet compact (refă / captură / limbă ascunse; limba se alege din profil) */
+(() => { const st = document.createElement('style'); st.textContent = '@media(max-width:860px){#bRedo,#bShot,#bLang{display:none!important}}'; document.head.appendChild(st); })();
