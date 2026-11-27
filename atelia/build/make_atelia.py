@@ -203,7 +203,7 @@ must("setTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
 
 # ---------- module Atelia (src/*.js) ----------
 SRC_DIR = os.path.join(os.path.dirname(os.path.abspath(dst)), 'src')
-MODS = ['i18n.js', 'profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js', 'hardening.js']
+MODS = ['i18n.js', 'profile.js', 'cloud.js', 'checks.js', 'ai.js', 'exports.js', 'underlay.js', 'prices.js', 'hardening.js', 'windows.js']
 mods_code = '\n'.join(f'/* ---- src/{m} ---- */\n' + open(os.path.join(SRC_DIR, m), encoding='utf-8').read() for m in MODS)
 if '</script>' in mods_code: raise SystemExit('src contains </script>')
 must("\nsetTimeout(()=>{$('#splash').classList.add('off');startFlow();},700);",
