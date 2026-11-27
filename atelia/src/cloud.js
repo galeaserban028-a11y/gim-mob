@@ -23,7 +23,8 @@ async function sbRefresh() {
 }
 const cloudUser = () => atSession && atSession.user;
 async function cloudSignUp(email, password) {
- const j = await sbFetch('/auth/v1/signup', {method: 'POST', body: JSON.stringify({email, password})});
+ const back = encodeURIComponent(location.origin + location.pathname);
+ const j = await sbFetch('/auth/v1/signup?redirect_to=' + back, {method: 'POST', body: JSON.stringify({email, password})});
  if (j && j.access_token) { saveSession(j); return 'in'; }
  return 'confirm';
 }
@@ -85,3 +86,24 @@ function renderCloudBox() {
  $('#cbDel').onclick = () => { const c = $('#cbDel'); if (c.dataset.sure) { cloudDeleteAccount().then(() => { toast('Cont șters'); renderCloudBox(); }).catch(er => toast(er.message)); } else { c.dataset.sure = 1; c.textContent = 'Apasă din nou ca să confirmi ștergerea definitivă'; } };
 }
 (() => { const st = document.createElement('style'); st.textContent = `.cloudbox{margin-top:12px;background:#141414;border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:4px;font-size:13px}.cloudbox small{color:var(--mut)}`; document.head.appendChild(st); })();
+
+/* întoarcere din emailul de confirmare: #access_token=…&refresh_token=…&type=signup → logare automată */
+(async () => {
+ const h = location.hash || '';
+ if (!cloudOn() || !/access_token=/.test(h)) {
+  const err = h.match(/error_description=([^&]+)/);
+  if (err) { history.replaceState(null, '', location.pathname + location.search); setTimeout(() => toast(WL('Linkul de confirmare a expirat sau a fost deja folosit. Încearcă să te loghezi.', 'The confirmation link has expired or was already used. Try signing in.')), 1500); }
+  return;
+ }
+ const q = new URLSearchParams(h.slice(1));
+ history.replaceState(null, '', location.pathname + location.search);
+ const tok = q.get('access_token');
+ if (!tok || !/^[\w.-]+$/.test(tok)) return;
+ try {
+  saveSession({access_token: tok, refresh_token: q.get('refresh_token') || '', expires_at: +q.get('expires_at') || Math.floor(Date.now() / 1000) + 3600, user: null});
+  const user = await sbFetch('/auth/v1/user');
+  saveSession(Object.assign({}, atSession, {user}));
+  try { await cloudPullProfile(); } catch (e) {}
+  setTimeout(() => toast(WL('Email confirmat — ești conectat în contul tău ✓', 'Email confirmed — you are signed in ✓')), 1500);
+ } catch (e) { saveSession(null); setTimeout(() => toast(WL('Email confirmat. Te poți loga din Profil.', 'Email confirmed. You can sign in from Profile.')), 1500); }
+})();
