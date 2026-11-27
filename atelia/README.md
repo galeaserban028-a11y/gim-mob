@@ -1,7 +1,8 @@
 # Atelia Build
 
 Proiectare 3D, ofertă și producție (debitare + CNC) într-o singură aplicație, pe mai multe domenii.
-Link: https://galeaserban028-a11y.github.io/gim-mob/atelia/
+Aplicația: https://galeaserban028-a11y.github.io/gim-mob/atelia/
+Site de prezentare: https://galeaserban028-a11y.github.io/gim-mob/atelia/site/
 
 ## Ce conține
 - Motorul GIMMOB Studio (tip ArchiWood), cu brand și date separate (`atelia.*` în browser).

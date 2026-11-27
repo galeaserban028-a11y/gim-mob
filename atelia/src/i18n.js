@@ -52,7 +52,7 @@ const EN = {
  'Alege domeniul': 'Choose your field', 'Același motor 3D — proiectare, ofertă și producție': 'One 3D engine — design, quote and production', 'Activ': 'Active', 'În curând': 'Coming soon', 'Mobilă la comandă': 'Custom furniture', 'Bucătării, dressinguri, dormitoare · debitare + CNC': 'Kitchens, walk-ins, bedrooms · cut list + CNC', 'Ferestre & uși': 'Windows & doors', 'PVC și aluminiu · ofertă instant': 'PVC and aluminium · instant quote',
  'Design interior': 'Interior design', 'Canapele, decor, lumini, culori': 'Sofas, decor, lighting, colours', 'Renovări & construcții': 'Renovation & construction', 'Pereți, gips-carton, gresie, materiale': 'Walls, drywall, tiles, materials', 'Amenajări exterioare': 'Outdoor spaces', 'Terase, pergole, garduri, foișoare': 'Decks, pergolas, fences, gazebos', 'Mobilier comercial': 'Commercial fit-out', 'Magazine, baruri, recepții, standuri': 'Shops, bars, receptions, stands', 'Confecții metalice': 'Metalwork', 'Scări, balustrade, porți': 'Stairs, railings, gates',
  'Ai': 'You have', '7 zile': '7 days', 'de test gratuit, cu toate funcțiile.': 'of free trial, with every feature.', 'Personal ~5 €/lună · Firmă ~39 €/lună (oferte, debitare, CNC, logo propriu)': 'Personal ~€5/month · Business ~€39/month (quotes, cut lists, CNC, your logo)',
- 'Termeni': 'Terms', 'Confidențialitate': 'Privacy', 'Cookies': 'Cookies', 'ANPC – SAL': 'ANPC – ADR (RO)', 'Setări cookies': 'Cookie settings', 'Înainte să începi': 'Before you start',
+ 'Termeni': 'Terms', 'Abonamente': 'Subscriptions', 'Despre Atelia': 'About Atelia', 'Confidențialitate': 'Privacy', 'Cookies': 'Cookies', 'ANPC – SAL': 'ANPC – ADR (RO)', 'Setări cookies': 'Cookie settings', 'Înainte să începi': 'Before you start',
  'Atelia Build este un instrument de proiectare și calcul.': 'Atelia Build is a design and calculation tool.', 'Cotele, listele de debitare, fișierele CNC și prețurile generate trebuie verificate de tine sau de un specialist înainte de producție, construcție sau ofertare.': 'Generated dimensions, cut lists, CNC files and prices must be checked by you or a specialist before production, construction or quoting.',
  'Aplicația nu înlocuiește proiectul semnat de un arhitect sau inginer autorizat acolo unde legea îl cere și nu face calcule de rezistență.': 'The app does not replace drawings signed by a licensed architect or engineer where the law requires them, and it does not perform structural calculations.', 'Proiectele tale sunt salvate doar în browserul tău. Nu folosim cookie-uri de analiză sau publicitate.': 'Your projects are saved only in your browser. We use no analytics or advertising cookies.',
  'Am citit și accept': 'I have read and accept the', 'Termenii și condițiile': 'Terms and conditions', 'și am luat la cunoștință': 'and I acknowledge the', 'Politica de confidențialitate': 'Privacy policy', 'Înțeleg că sunt responsabil să verific rezultatele înainte de a le folosi în producție sau pe șantier.': 'I understand I am responsible for checking the results before using them in production or on site.', 'Accept și continui': 'Accept and continue',
@@ -114,7 +114,7 @@ function tr(s) {
  return s;
 }
 const T = tr;
-const LEGAL_EN = {'termeni.html': 'en/terms.html', 'confidentialitate.html': 'en/privacy.html', 'cookies.html': 'en/cookies.html'};
+const LEGAL_EN = {'termeni.html': 'en/terms.html', 'confidentialitate.html': 'en/privacy.html', 'cookies.html': 'en/cookies.html', 'rambursare.html': 'en/refunds.html'};
 function trNode(root) {
  if (LANG === 'ro') return;
  if (root.nodeType === 3) { const v = tr(root.nodeValue); if (v !== root.nodeValue) root.nodeValue = v; return; }
@@ -146,4 +146,4 @@ function setLang(l) { LS.set('atelia.lang', l); location.reload(); }
 })();
 
 /* pe telefon: antet compact (refă / captură / limbă ascunse; limba se alege din profil) */
-(() => { const st = document.createElement('style'); st.textContent = '@media(max-width:860px){#bRedo,#bShot,#bLang{display:none!important}}'; document.head.appendChild(st); })();
+(() => { const st = document.createElement('style'); st.textContent = '@media(max-width:860px){#bRedo,#bShot,#bLang{display:none!important}#tools{justify-content:flex-start!important;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}#tools::-webkit-scrollbar{display:none}#tools button{flex:0 0 62px!important;min-width:62px!important;font-size:9.5px!important;scroll-snap-align:start}}'; document.head.appendChild(st); })();

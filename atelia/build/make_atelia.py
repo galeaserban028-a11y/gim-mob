@@ -109,7 +109,7 @@ must("setTimeout(()=>{$('#splash').classList.add('off');if(!LS.get('atelia.welco
 LEGAL = r'''
 /* ================== CADRU LEGAL ================== */
 const TERMS_V='1.1';
-const LEGAL_LINKS=`<div class="legal-links"><a href="termeni.html" target="_blank">Termeni</a> · <a href="confidentialitate.html" target="_blank">Confidențialitate</a> · <a href="cookies.html" target="_blank">Cookies</a> · <a href="https://reclamatiisal.anpc.ro" target="_blank" rel="noopener">ANPC – SAL</a> · <button class="linkbtn" id="ckSet">Setări cookies</button></div>`;
+const LEGAL_LINKS=`<div class="legal-links"><a href="termeni.html" target="_blank">Termeni</a> · <a href="confidentialitate.html" target="_blank">Confidențialitate</a> · <a href="cookies.html" target="_blank">Cookies</a> · <a href="rambursare.html" target="_blank">Abonamente</a> · <a href="site/" target="_blank">Despre Atelia</a> · <a href="https://reclamatiisal.anpc.ro" target="_blank" rel="noopener">ANPC – SAL</a> · <button class="linkbtn" id="ckSet">Setări cookies</button></div>`;
 function termsOk(){try{return JSON.parse(LS.get('atelia.terms')||'{}').v===TERMS_V;}catch(e){return false;}}
 function openTerms(next){
  modalState={welcome:1,terms:1};

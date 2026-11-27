@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<title>Atelia Build — proiectezi, ofertezi și produci dintr-o singură aplicație</title>
+<meta name="description" content="Aplicație de proiectare 3D pentru mobilă la comandă și tâmplărie PVC/aluminiu: ofertă PDF, debitare, optimizare, CNC, instrucțiuni de montaj. În browser, pe telefon și offline. Test gratuit 7 zile.">
+<meta property="og:title" content="Atelia Build — de la schiță la CNC">
+<meta property="og:description" content="Proiectare 3D, ofertă, debitare, CNC și montaj — pentru ateliere, arhitecți, designeri, constructori și clienți.">
+<meta property="og:image" content="https://galeaserban028-a11y.github.io/gim-mob/atelia/site/img/app_kitchen.jpg">
+<meta name="theme-color" content="#0b0b0b">
+<link rel="icon" href="../icons/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<style>
+:root{--bg:#0b0b0b;--bg2:#111;--card:#151515;--line:#262626;--gold:#d8b46e;--gold2:#b3873f;--txt:#ece8e1;--mut:#9a948a;--r:18px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:inherit}img{max-width:100%;height:auto;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+.serif{font-family:Georgia,"Times New Roman",serif;letter-spacing:.02em}
+.gold{color:var(--gold)}
+nav.top{position:sticky;top:0;z-index:20;background:rgba(11,11,11,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:22px;height:64px}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none}.logo img{width:34px;height:34px;border-radius:8px}
+.logo b{font-family:Georgia,serif;letter-spacing:.16em;font-size:18px;background:linear-gradient(180deg,#f3dca2,#b3843f);-webkit-background-clip:text;background-clip:text;color:transparent}
+.links{display:flex;gap:20px;margin-left:auto;font-size:14px;color:var(--mut)}.links a{text-decoration:none}.links a:hover{color:var(--txt)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;padding:12px 18px;font-weight:600;font-size:15px;text-decoration:none;border:1px solid #333;background:#1b1b1b;color:var(--txt);cursor:pointer}
+.btn.gold{background:linear-gradient(180deg,#e7c784,#b3873f);color:#171108;border-color:#c59c55}.btn:hover{filter:brightness(1.08)}
+.lang{background:none;border:1px solid var(--line);color:var(--mut);border-radius:10px;padding:7px 10px;font-weight:700;font-size:12px;cursor:pointer}
+header.hero{padding:70px 0 40px;background:radial-gradient(1200px 500px at 70% -10%,#2a2112 0,transparent 60%)}
+.hero h1{font-size:clamp(34px,5.2vw,62px);line-height:1.08;margin:0 0 18px;font-weight:700}
+.hero p.lead{font-size:clamp(17px,2vw,21px);color:#cfc9bf;max-width:720px;margin:0 0 26px}
+.trust{display:flex;gap:18px;flex-wrap:wrap;color:var(--mut);font-size:14px;margin-top:18px}.trust span:before{content:"✓ ";color:var(--gold)}
+.shot{border-radius:var(--r);border:1px solid #2c2c2c;box-shadow:0 30px 80px #000c,0 0 0 1px #000;overflow:hidden;margin-top:44px;background:#000}
+section{padding:80px 0;border-top:1px solid #161616}
+.kicker{color:var(--gold);font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px}
+h2{font-size:clamp(28px,3.6vw,42px);line-height:1.15;margin:0 0 14px}
+.sub{color:var(--mut);max-width:760px;font-size:18px;margin:0 0 40px}
+.grid{display:grid;gap:18px}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}.g5{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px}
+.card h3{margin:0 0 8px;font-size:19px}.card p{margin:0;color:#bdb7ad;font-size:15px}
+.ic{font-size:28px;margin-bottom:10px}
+.step{counter-increment:s;position:relative;padding-top:56px}.step:before{content:counter(s);position:absolute;top:20px;left:24px;width:28px;height:28px;border-radius:50%;background:linear-gradient(180deg,#e7c784,#b3873f);color:#171108;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px}
+.steps{counter-reset:s}
+.uq{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;margin-bottom:60px}.uq:nth-child(even) .uqimg{order:-1}
+.uq h3{font-size:26px;margin:0 0 10px}.uq p{color:#c9c3b8;margin:0 0 12px}.uq ul{margin:0;padding-left:20px;color:#bdb7ad}.uqimg{border-radius:var(--r);overflow:hidden;border:1px solid #2c2c2c;background:#000;box-shadow:0 20px 50px #000a}
+.badge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;background:#2a2112;color:var(--gold);border:1px solid #5a4a28;margin-bottom:10px}
+.dom{display:flex;gap:10px;align-items:flex-start}.dom .ic{margin:0}.soon{opacity:.6}
+table.cmp{width:100%;border-collapse:collapse;font-size:15px}table.cmp th,table.cmp td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:center}table.cmp th:first-child,table.cmp td:first-child{text-align:left;color:#cfc9bf}
+table.cmp th{color:var(--mut);font-weight:600;font-size:13px}table.cmp td.us{background:#1c1810;color:var(--gold);font-weight:700}
+.price{display:flex;flex-direction:column}.price .amt{font-size:40px;font-weight:800;margin:6px 0}.price .amt small{font-size:15px;color:var(--mut);font-weight:500}
+.price ul{list-style:none;padding:0;margin:16px 0 22px;color:#c9c3b8;font-size:15px}.price li{padding:5px 0}.price li:before{content:"✓  ";color:var(--gold)}
+.price.best{border-color:#8a6c34;background:linear-gradient(180deg,#1c1810,#141414)}.price .btn{margin-top:auto}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:10px}summary{cursor:pointer;font-weight:600;font-size:16px}details p{color:#bdb7ad;margin:10px 0 0}
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}.gallery figure{margin:0}.gallery img{border-radius:14px;border:1px solid #2a2a2a}.gallery figcaption{color:var(--mut);font-size:13px;margin-top:8px}
+.cta{text-align:center;background:radial-gradient(800px 300px at 50% 0,#2a2112 0,transparent 70%)}
+footer{border-top:1px solid var(--line);padding:40px 0;color:var(--mut);font-size:14px}footer .cols{display:flex;gap:40px;flex-wrap:wrap;justify-content:space-between}footer a{text-decoration:none;display:block;padding:3px 0}footer a:hover{color:var(--txt)}
+.phone{max-width:260px;border-radius:30px;border:8px solid #1b1b1b;box-shadow:0 20px 60px #000c;overflow:hidden;margin:0 auto}
+@media(max-width:900px){.g3{grid-template-columns:1fr}.links{display:none}.uq{grid-template-columns:1fr}.uq:nth-child(even) .uqimg{order:0}.g2{grid-template-columns:1fr}section{padding:60px 0}table.cmp{font-size:13px}table.cmp th,table.cmp td{padding:9px 5px}}
+</style>
+</head>
+<body>
+<nav class="top"><div class="wrap">
+ <a class="logo" href="#"><img src="../icons/icon-192.png" alt=""><b>ATELIA</b></a>
+ <div class="links"><a href="#functii" data-en="Features">Funcții</a><a href="#unic" data-en="Only here">Doar la noi</a><a href="#cine" data-en="Who it's for">Pentru cine</a><a href="#preturi" data-en="Pricing">Prețuri</a><a href="#intrebari" data-en="FAQ">Întrebări</a></div>
+ <button class="lang" id="lang">EN</button>
+ <a class="btn gold" href="../" data-en="Open the app">Deschide aplicația</a>
+</div></nav>
+
+<header class="hero"><div class="wrap">
+ <div class="kicker" data-en="Design · Quote · Production">Proiectare · Ofertă · Producție</div>
+ <h1 class="serif"><span data-en="From sketch to CNC.">De la schiță la CNC.</span><br><span class="gold" data-en="One app for the whole job.">O singură aplicație pentru toată lucrarea.</span></h1>
+ <p class="lead" data-en="Custom furniture and PVC/aluminium windows: 3D design, client quote, cut list, nesting, CNC files and assembly instructions — in your browser, on your phone, even offline.">Mobilă la comandă și tâmplărie PVC/aluminiu: proiectare 3D, ofertă pentru client, debitare, optimizare, fișiere CNC și instrucțiuni de montaj — în browser, pe telefon, chiar și fără internet.</p>
+ <a class="btn gold" href="../" data-en="Try it free for 7 days">Încearcă gratuit 7 zile</a> <a class="btn" href="#cum" data-en="See how it works">Vezi cum funcționează</a>
+ <div class="trust"><span data-en="No card needed">Fără card</span><span data-en="No install">Fără instalare</span><span data-en="Your data stays in your browser">Datele rămân în browserul tău</span><span data-en="Romanian and English">Română și engleză</span></div>
+ <div class="shot"><img src="img/app_kitchen.jpg" alt="Atelia Build — bucătărie în L proiectată în 3D" width="1600" height="1000"></div>
+</div></header>
+
+<section id="cum"><div class="wrap">
+ <div class="kicker" data-en="How it works">Cum funcționează</div>
+ <h2 class="serif" data-en="Three steps from idea to workshop">Trei pași de la idee la atelier</h2>
+ <p class="sub" data-en="No more drawing in one program, pricing in Excel and sending photos on WhatsApp.">Nu mai desenezi într-un program, calculezi în Excel și trimiți poze pe WhatsApp.</p>
+ <div class="grid g3 steps">
+  <div class="card step"><h3 data-en="Describe or draw">Descrie sau desenează</h3><p data-en="Type “L-shaped kitchen, 3.2 by 2.4 m, oak fronts” and the project builds itself — or draw spaces on the floor and fill them with modules.">Scrii „bucătărie în L, 3,2 pe 2,4 m, fronturi stejar” și proiectul se face singur — sau desenezi spațiile pe podea și le umpli cu module.</p></div>
+  <div class="card step"><h3 data-en="Automatic checks">Verificare automată</h3><p data-en="Overlaps, wide doors, sagging shelves, tall units that can't be tilted up, sockets and radiators behind cabinets — caught before cutting.">Suprapuneri, uși prea late, polițe care se curbează, coloane care nu se pot ridica la montaj, prize și calorifere acoperite — prinse înainte de debitare.</p></div>
+  <div class="card step"><h3 data-en="Quote and produce">Ofertă și producție</h3><p data-en="Branded client quote with VAT, cut list, sheet nesting, QR labels, DXF + G-code, assembly instructions. One click each.">Ofertă cu logo și TVA, listă de debitare, optimizare pe foi, etichete QR, DXF + G-code, instrucțiuni de montaj. Câte un click.</p></div>
+ </div>
+</div></section>
+
+<section id="functii"><div class="wrap">
+ <div class="kicker" data-en="Features">Funcții</div>
+ <h2 class="serif" data-en="Everything a professional needs">Tot ce îi trebuie unui profesionist</h2>
+ <p class="sub" data-en="Built with a furniture workshop, for real production — not a toy planner.">Construită împreună cu un atelier de mobilă, pentru producție reală — nu un simulator de jucărie.</p>
+ <div class="grid g3">
+  <div class="card"><div class="ic">🪵</div><h3 data-en="Parametric 3D cabinets">Corpuri parametrice 3D</h3><p data-en="50+ cabinet types, Egger decors, real board thicknesses, joints, plinths and hardware.">50+ tipuri de corpuri, decoruri Egger, grosimi reale, îmbinări, socluri și feronerie.</p></div>
+  <div class="card"><div class="ic">✂️</div><h3 data-en="Cut list & nesting">Debitare și optimizare</h3><p data-en="Grouped parts with edging per side and grain direction, optimised on your sheet size.">Piese grupate, cu cant pe fiecare latură și fibră, optimizate pe foaia ta.</p></div>
+  <div class="card"><div class="ic">⚙️</div><h3 data-en="CNC ready">Gata pentru CNC</h3><p data-en="DXF per sheet with drilling layers, generic G-code and QR labels for every part.">DXF pe foaie cu straturi de găurire, G-code generic și etichete QR pe fiecare piesă.</p></div>
+  <div class="card"><div class="ic">🧾</div><h3 data-en="Client quotes">Oferte pentru clienți</h3><p data-en="PDF with 3D image, materials, price, VAT and signature line, with your logo. RON or EUR.">PDF cu imagine 3D, materiale, preț, TVA și loc de semnătură, cu logo-ul tău. Lei sau euro.</p></div>
+  <div class="card"><div class="ic">🪟</div><h3 data-en="Windows & doors">Ferestre și uși</h3><p data-en="PVC and aluminium configurator, opening symbols, Uw estimate, quote, profile cutting on bars, glass list.">Configurator PVC și aluminiu, simboluri de deschidere, Uw estimat, ofertă, debitare profile pe bare, listă geamuri.</p></div>
+  <div class="card"><div class="ic">📐</div><h3 data-en="For architects & builders">Pentru arhitecți și constructori</h3><p data-en="Plan + elevations in DXF (AutoCAD, ArchiCAD, Revit), services plan, material quantities, DXF plan import.">Plan + elevații DXF (AutoCAD, ArchiCAD, Revit), plan instalații, cantități de materiale, import plan DXF.</p></div>
+ </div>
+</div></section>
+
+<section id="unic"><div class="wrap">
+ <div class="kicker" data-en="Only in Atelia">Doar în Atelia</div>
+ <h2 class="serif" data-en="Four things no other program does">Patru lucruri pe care nu le face niciun alt program</h2>
+ <p class="sub" data-en="Not even the ones that cost thousands of euros a year.">Nici cele care costă mii de euro pe an.</p>
+ <div class="uq"><div><span class="badge" data-en="UNIQUE">UNIC</span><h3 data-en="Assembly instructions, generated">Instrucțiuni de montaj, generate automat</h3><p data-en="IKEA-style step-by-step PDF for every cabinet, using the same codes printed on the QR labels.">PDF pas cu pas, ca la IKEA, pentru fiecare corp — cu aceleași coduri ca pe etichetele QR.</p><ul><li data-en="Tools, room order and safety on page one">Scule, ordinea în cameră și siguranță pe prima pagină</li><li data-en="Parts table, hardware and numbered steps per cabinet">Tabel de piese, feronerie și pași numerotați pe corp</li><li data-en="For the workshop, the installer or the DIY client">Pentru atelier, montator sau clientul care montează singur</li></ul></div><div class="uqimg"><img src="img/assembly.jpg" alt="" loading="lazy"></div></div>
+ <div class="uq"><div><span class="badge" data-en="UNIQUE">UNIC</span><h3 data-en="Wall check: sockets, pipes, windows">Verificarea peretelui: prize, țevi, ferestre</h3><p data-en="Add what is on the wall and Atelia tells you what the cabinets cover — before the client calls you from site.">Pui ce există pe perete, iar Atelia îți spune ce acoperă mobila — înainte să te sune clientul de pe șantier.</p><ul><li data-en="Sockets, water, drain, gas, radiators, windows, electrical panel, vents">Prize, apă, scurgere, gaz, calorifere, ferestre, tablou electric, aerisire</li><li data-en="Shown in 3D, with the wall photo as reference">Afișate în 3D, cu poza peretelui ca referință</li></ul></div><div class="uqimg"><img src="img/app_checks.jpg" alt="" loading="lazy"></div></div>
+ <div class="uq"><div><span class="badge" data-en="UNIQUE">UNIC</span><h3 data-en="One project between trades, approved by the client">Un proiect între meserii, aprobat de client</h3><p data-en="Send the project by link — no server, no account. Architect, workshop, installer and client work on the same thing, with notes.">Trimiți proiectul printr-un link — fără server, fără cont. Arhitect, atelier, instalator și client lucrează pe același proiect, cu note.</p><ul><li data-en="The client approves from the phone and sends back a code">Clientul aprobă de pe telefon și trimite înapoi un cod</li><li data-en="If anything changes after approval, Atelia tells you">Dacă se schimbă ceva după aprobare, Atelia îți spune</li></ul></div><div class="uqimg" style="max-width:300px;margin:0 auto"><img src="img/mobile_demo.jpg" alt="" loading="lazy"></div></div>
+ <div class="uq"><div><span class="badge" data-en="UNIQUE">UNIC</span><h3 data-en="Order cutting, compare centres">Comandă debitarea, compară centrele</h3><p data-en="One list any cutting centre accepts. Save your centres and their prices: Atelia shows the cheapest and fastest for every project.">O listă pe care o acceptă orice centru de debitare. Îți salvezi centrele și prețurile: Atelia îți arată cel mai ieftin și cel mai rapid pentru fiecare proiect.</p><ul><li data-en="Sheets, cutting and edging costed per centre">Foi, tăiere și cant calculate pe fiecare centru</li><li data-en="Request sent by email or WhatsApp">Cererea pleacă pe e-mail sau WhatsApp</li></ul></div><div class="uqimg"><img src="img/app_nesting.jpg" alt="" loading="lazy"></div></div>
+</div></section>
+
+<section id="cine"><div class="wrap">
+ <div class="kicker" data-en="Who it's for">Pentru cine</div>
+ <h2 class="serif" data-en="Same project, the tools each trade needs">Același proiect, uneltele de care are nevoie fiecare</h2>
+ <p class="sub" data-en="Pick your profile at the start — the app adapts. Simple mode for clients, Pro mode for professionals.">Alegi profilul la început — aplicația se adaptează. Mod Simplu pentru clienți, mod Pro pentru profesioniști.</p>
+ <div class="grid g5">
+  <div class="card"><div class="ic">🪵</div><h3 data-en="Furniture makers">Producători de mobilă</h3><p data-en="Cut lists, CNC, labels, quotes, assembly.">Debitare, CNC, etichete, oferte, montaj.</p></div>
+  <div class="card"><div class="ic">📐</div><h3 data-en="Architects">Arhitecți</h3><p data-en="DXF plans and elevations, services plan.">Planuri și elevații DXF, plan instalații.</p></div>
+  <div class="card"><div class="ic">🎨</div><h3 data-en="Interior designers">Designeri de interior</h3><p data-en="Fast 3D proposals and branded quotes.">Propuneri 3D rapide și oferte cu logo.</p></div>
+  <div class="card"><div class="ic">🧱</div><h3 data-en="Builders">Constructori</h3><p data-en="Quantities, services points, wall checks.">Cantități, puncte de instalații, verificarea pereților.</p></div>
+  <div class="card"><div class="ic">🏠</div><h3 data-en="Homeowners">Persoane fizice</h3><p data-en="Design your kitchen, see the price, approve online.">Îți proiectezi bucătăria, vezi prețul, aprobi online.</p></div>
+ </div>
+</div></section>
+
+<section><div class="wrap">
+ <div class="kicker" data-en="See it">Vezi aplicația</div>
+ <h2 class="serif" data-en="Real screens, real projects">Ecrane reale, proiecte reale</h2>
+ <div class="gallery" style="margin-top:30px">
+  <figure><img src="img/app_ai.jpg" alt="" loading="lazy"><figcaption data-en="Project from a written description">Proiect din descriere scrisă</figcaption></figure>
+  <figure><img src="img/app_cutlist.jpg" alt="" loading="lazy"><figcaption data-en="Cut list with edging and grain">Listă de debitare cu cant și fibră</figcaption></figure>
+  <figure><img src="img/app_windows.jpg" alt="" loading="lazy"><figcaption data-en="Windows & doors configurator">Configurator ferestre și uși</figcaption></figure>
+  <figure><img src="img/offer_windows.jpg" alt="" loading="lazy" style="max-height:440px;object-fit:cover;object-position:top"><figcaption data-en="Windows quote PDF with drawings">Ofertă tâmplărie PDF cu desene</figcaption></figure>
+ </div>
+</div></section>
+
+<section><div class="wrap">
+ <div class="kicker" data-en="Compare">Comparație</div>
+ <h2 class="serif" data-en="Why Atelia">De ce Atelia</h2>
+ <div style="overflow-x:auto;margin-top:30px"><table class="cmp">
+  <tr><th></th><th data-en="Pro cabinet software">Programe profesionale de mobilă</th><th data-en="Online planners">Planificatoare online</th><th class="us">Atelia Build</th></tr>
+  <tr><td data-en="Cut list + CNC">Debitare + CNC</td><td>✓</td><td>—</td><td class="us">✓</td></tr>
+  <tr><td data-en="Client quote with price">Ofertă client cu preț</td><td data-en="partly">parțial</td><td>—</td><td class="us">✓</td></tr>
+  <tr><td data-en="Browser, phone, offline">Browser, telefon, offline</td><td data-en="Windows only">doar Windows</td><td data-en="online only">doar online</td><td class="us">✓</td></tr>
+  <tr><td data-en="Assembly instructions">Instrucțiuni de montaj</td><td>—</td><td>—</td><td class="us">✓</td></tr>
+  <tr><td data-en="Wall / services check">Verificare perete / instalații</td><td>—</td><td>—</td><td class="us">✓</td></tr>
+  <tr><td data-en="Client approval by link">Aprobare client prin link</td><td>—</td><td>—</td><td class="us">✓</td></tr>
+  <tr><td data-en="Windows & doors">Ferestre și uși</td><td data-en="separate program">alt program</td><td>—</td><td class="us">✓</td></tr>
+  <tr><td data-en="Price">Preț</td><td data-en="hundreds–thousands € / year">sute–mii € / an</td><td data-en="subscription">abonament</td><td class="us" data-en="from €5 / month">de la 5 € / lună</td></tr>
+ </table></div>
+</div></section>
+
+<section id="preturi"><div class="wrap">
+ <div class="kicker" data-en="Pricing">Prețuri</div>
+ <h2 class="serif" data-en="Simple pricing. Cancel any time.">Prețuri simple. Anulezi oricând.</h2>
+ <p class="sub" data-en="The free trial is open now. Paid plans launch soon; the final price including VAT is always shown before payment.">Testul gratuit e deschis acum. Abonamentele plătite se lansează în curând; prețul final, cu TVA, e afișat mereu înainte de plată.</p>
+ <div class="grid g3">
+  <div class="card price"><h3 data-en="Free trial">Test gratuit</h3><div class="amt">0 €<small data-en=" · 7 days"> · 7 zile</small></div><ul><li data-en="Every feature">Toate funcțiile</li><li data-en="No card">Fără card</li><li data-en="Your projects stay yours">Proiectele rămân ale tale</li></ul><a class="btn" href="../" data-en="Start now">Începe acum</a></div>
+  <div class="card price"><h3>Personal</h3><div class="amt">5 €<small data-en=" / month"> / lună</small></div><ul><li data-en="3D design and price">Proiectare 3D și preț</li><li data-en="Project from description">Proiect din descriere</li><li data-en="Assembly instructions">Instrucțiuni de montaj</li><li data-en="Send to your workshop">Trimitere la atelier</li></ul><a class="btn" href="../" data-en="Try free first">Încearcă întâi gratuit</a></div>
+  <div class="card price best"><span class="badge" data-en="FOR BUSINESSES">PENTRU FIRME</span><h3 data-en="Business">Firmă</h3><div class="amt">39 €<small data-en=" / month + VAT"> / lună + TVA</small></div><ul><li data-en="Everything in Personal">Tot din Personal</li><li data-en="Branded quotes with VAT">Oferte cu logo și TVA</li><li data-en="Cut list, nesting, labels, CNC">Debitare, optimizare, etichete, CNC</li><li data-en="Windows & doors module">Modul ferestre și uși</li><li data-en="Supplier prices, cutting centres">Prețuri furnizori, centre de debitare</li><li data-en="DXF for architects">DXF pentru arhitecți</li></ul><a class="btn gold" href="../" data-en="Try free for 7 days">Încearcă gratuit 7 zile</a></div>
+ </div>
+ <p style="color:var(--mut);font-size:14px;margin-top:16px"><a href="../rambursare.html" data-en="Subscriptions, cancellation and refunds">Abonamente, anulare și rambursare</a></p>
+</div></section>
+
+<section id="intrebari"><div class="wrap" style="max-width:860px">
+ <div class="kicker" data-en="FAQ">Întrebări frecvente</div>
+ <h2 class="serif" data-en="Good to know">Bine de știut</h2>
+ <details><summary data-en="Do I need to install anything?">Trebuie să instalez ceva?</summary><p data-en="No. It runs in the browser on computer, tablet and phone. You can add it to your home screen and it also works offline.">Nu. Rulează în browser pe calculator, tabletă și telefon. O poți adăuga pe ecranul principal și merge și fără internet.</p></details>
+ <details><summary data-en="Where are my projects stored?">Unde sunt salvate proiectele mele?</summary><p data-en="In your own browser, on your device. We don't receive them. Use project export for backups; online accounts are coming.">În browserul tău, pe dispozitivul tău. Nu ajung la noi. Pentru copii de siguranță folosești exportul proiectului; conturile online vin în curând.</p></details>
+ <details><summary data-en="Can I send the files straight to production?">Pot trimite fișierele direct în producție?</summary><p data-en="Atelia checks a lot automatically, but you (or a specialist) must always verify dimensions, board thicknesses and machine settings before cutting. The app asks you to confirm this before production exports.">Atelia verifică automat foarte multe, dar cotele, grosimile și setările mașinii le verifici mereu tu sau un specialist înainte de debitare. Aplicația îți cere această confirmare înainte de exporturile pentru producție.</p></details>
+ <details><summary data-en="Which machines and programs does it work with?">Cu ce mașini și programe merge?</summary><p data-en="Cut lists as CSV/Excel, cutting plans as PDF, DXF per sheet with drilling layers, generic G-code (check your post-processor), DXF plans for AutoCAD, ArchiCAD and Revit.">Liste de debitare CSV/Excel, planuri de debitare PDF, DXF pe foaie cu straturi de găurire, G-code generic (verifici postprocesorul), planuri DXF pentru AutoCAD, ArchiCAD și Revit.</p></details>
+ <details><summary data-en="Does it work outside Romania?">Merge și în afara României?</summary><p data-en="Yes: English interface, prices in RON or EUR, VAT settings and English legal documents.">Da: interfață în engleză, prețuri în lei sau euro, setare TVA și documente legale în engleză.</p></details>
+ <details><summary data-en="Can I cancel?">Pot anula?</summary><p data-en="Any time, from your account, with no penalty. Access stays active until the end of the paid month.">Oricând, din cont, fără penalități. Accesul rămâne activ până la sfârșitul lunii plătite.</p></details>
+</div></section>
+
+<section class="cta"><div class="wrap">
+ <h2 class="serif" data-en="Design your next project in Atelia">Proiectează următoarea lucrare în Atelia</h2>
+ <p class="sub" style="margin:0 auto 26px" data-en="7 days free, every feature, no card.">7 zile gratuit, toate funcțiile, fără card.</p>
+ <a class="btn gold" href="../" data-en="Open Atelia Build">Deschide Atelia Build</a>
+</div></section>
+
+<footer><div class="wrap cols">
+ <div style="max-width:340px"><a class="logo" href="#"><img src="../icons/icon-192.png" alt=""><b>ATELIA</b></a><p data-en="Design, quote and production software for furniture, windows and doors.">Software de proiectare, ofertare și producție pentru mobilă, ferestre și uși.</p><p>[DENUMIRE FIRMĂ] · CUI [CUI]<br>[ADRESĂ]<br>[EMAIL CONTACT] · [TELEFON]</p></div>
+ <div><b data-en="Product">Produs</b><a href="../" data-en="Open the app">Deschide aplicația</a><a href="#functii" data-en="Features">Funcții</a><a href="#preturi" data-en="Pricing">Prețuri</a><a href="#intrebari" data-en="FAQ">Întrebări</a></div>
+ <div><b data-en="Legal">Legal</b><a href="../termeni.html" data-href-en="../en/terms.html" data-en="Terms and conditions">Termeni și condiții</a><a href="../confidentialitate.html" data-href-en="../en/privacy.html" data-en="Privacy policy">Politica de confidențialitate</a><a href="../cookies.html" data-href-en="../en/cookies.html" data-en="Cookie policy">Politica de cookies</a><a href="../rambursare.html" data-href-en="../en/refunds.html" data-en="Subscriptions & refunds">Abonamente și rambursare</a><a href="https://reclamatiisal.anpc.ro" target="_blank" rel="noopener">ANPC – SAL</a><a href="../vendor/LICENSES.txt" data-en="Third-party licences">Licențe terțe</a></div>
+</div><div class="wrap" style="margin-top:20px">© 2026 Atelia Build</div></footer>
+
+<script>
+(() => {
+ const saved = (() => { try { return localStorage.getItem('atelia.lang'); } catch (e) { return null; } })();
+ let lang = saved || (/^ro\b/i.test(navigator.language || '') ? 'ro' : 'en');
+ const els = [...document.querySelectorAll('[data-en]')]; els.forEach(e => e.dataset.ro = e.textContent);
+ const links = [...document.querySelectorAll('[data-href-en]')]; links.forEach(a => a.dataset.hrefRo = a.getAttribute('href'));
+ const ro = {title: document.title};
+ function apply() {
+  document.documentElement.lang = lang;
+  els.forEach(e => e.textContent = lang === 'en' ? e.dataset.en : e.dataset.ro);
+  links.forEach(a => a.setAttribute('href', lang === 'en' ? a.dataset.hrefEn : a.dataset.hrefRo));
+  document.title = lang === 'en' ? 'Atelia Build — design, quote and produce in one app' : ro.title;
+  document.getElementById('lang').textContent = lang === 'en' ? 'RO' : 'EN';
+ }
+ document.getElementById('lang').onclick = () => { lang = lang === 'en' ? 'ro' : 'en'; try { localStorage.setItem('atelia.lang', lang); } catch (e) {} apply(); };
+ apply();
+})();
+</script>
+</body>
+</html>
