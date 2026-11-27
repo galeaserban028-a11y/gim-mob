@@ -85,33 +85,33 @@ async function exportClientPDF() {
  x.fillStyle = '#111'; x.font = `700 ${m(7)}px Inter,Arial`; x.textAlign = 'right'; x.fillText(firm, W - m(15), y + m(3));
  x.font = `400 ${m(3.2)}px Inter,Arial`; x.fillStyle = '#555'; x.fillText([pf.company && pf.name, pf.cui && ('CUI ' + pf.cui), pf.phone, pf.email, pf.city].filter(Boolean).join(' · '), W - m(15), y + m(9)); x.textAlign = 'left';
  y += m(22); x.fillStyle = gold; x.fillRect(m(15), y, W - m(30), m(0.6)); y += m(12);
- x.fillStyle = '#111'; x.font = `700 ${m(8)}px Inter,Arial`; x.fillText('Ofertă și prezentare proiect', m(15), y);
+ x.fillStyle = '#111'; x.font = `700 ${m(8)}px Inter,Arial`; x.fillText(T('Ofertă și prezentare proiect'), m(15), y);
  y += m(7); x.font = `400 ${m(4)}px Inter,Arial`; x.fillStyle = '#444';
- x.fillText(`${S.name} · ${new Date().toLocaleDateString('ro-RO')} · valabilă 30 de zile`, m(15), y); y += m(6);
+ x.fillText(`${S.name} · ${new Date().toLocaleDateString(LANG === 'en' ? 'en-GB' : 'ro-RO')} · ${T('valabilă 30 de zile')}`, m(15), y); y += m(6);
  try { const sel = selId; selId = null; refreshOverlay(); renderer.render(scene, camera); const url = renderer.domElement.toDataURL('image/jpeg', .9); selId = sel; refreshOverlay();
   const im = new Image(); im.src = url; await im.decode(); const w = W - m(30), h = Math.min(m(110), w * im.height / im.width); x.drawImage(im, m(15), y, w, h); x.strokeStyle = '#ddd'; x.strokeRect(m(15), y, w, h); y += h + m(10);
  } catch (e) { y += m(4); }
- x.fillStyle = '#111'; x.font = `700 ${m(4.6)}px Inter,Arial`; x.fillText('Ce conține', m(15), y); y += m(7);
- const corp = {}; cabsAll().filter(c => c.type !== 'counter').forEach(c => { const k = TYPES[c.type].n; corp[k] = (corp[k] || 0) + 1; });
+ x.fillStyle = '#111'; x.font = `700 ${m(4.6)}px Inter,Arial`; x.fillText(T('Ce conține'), m(15), y); y += m(7);
+ const corp = {}; cabsAll().filter(c => c.type !== 'counter').forEach(c => { const k = T(TYPES[c.type].n); corp[k] = (corp[k] || 0) + 1; });
  x.font = `400 ${m(3.6)}px Inter,Arial`; x.fillStyle = '#333';
  const items = Object.entries(corp); const half = Math.ceil(items.length / 2);
  items.forEach(([k, v], i) => x.fillText(`• ${v} × ${k}`, m(i < half ? 15 : 108), y + m(5.2) * (i < half ? i : i - half)));
  y += m(5.2) * half + m(6);
- x.fillStyle = '#111'; x.font = `700 ${m(4.6)}px Inter,Arial`; x.fillText('Materiale', m(15), y); y += m(7);
+ x.fillStyle = '#111'; x.font = `700 ${m(4.6)}px Inter,Arial`; x.fillText(T('Materiale'), m(15), y); y += m(7);
  x.font = `400 ${m(3.6)}px Inter,Arial`; x.fillStyle = '#333';
- [['Fronturi', S.mat.front], ['Corp', S.mat.body], ['Blat', S.mat.counter]].forEach(([l, c]) => { const d = DEC[c]; x.fillStyle = d.c || '#ccc'; x.fillRect(m(15), y - m(3.4), m(5), m(5)); x.strokeStyle = '#999'; x.strokeRect(m(15), y - m(3.4), m(5), m(5)); x.fillStyle = '#333'; x.fillText(`${l}: ${d.n}`, m(23), y); y += m(6.5); });
- y += m(4); const V = vatInfo(P.total), rowsV = V.payer ? [['Preț estimat fără TVA', V.net, 0], [`TVA ${VAT_RATE}%`, V.vat, 0], ['Total estimat cu TVA', V.gross, 1]] : [['Preț estimat (neplătitor de TVA)', V.gross, 1]];
+ [['Fronturi', S.mat.front], ['Corp', S.mat.body], ['Blat', S.mat.counter]].forEach(([l, c]) => { const d = DEC[c]; x.fillStyle = d.c || '#ccc'; x.fillRect(m(15), y - m(3.4), m(5), m(5)); x.strokeStyle = '#999'; x.strokeRect(m(15), y - m(3.4), m(5), m(5)); x.fillStyle = '#333'; x.fillText(`${T(l)}: ${d.n}`, m(23), y); y += m(6.5); });
+ y += m(4); const V = vatInfo(P.total), rowsV = V.payer ? [[T('Preț estimat fără TVA'), V.net, 0], [`${T('TVA')} ${VAT_RATE}%`, V.vat, 0], [T('Total estimat cu TVA'), V.gross, 1]] : [[T('Preț estimat (neplătitor de TVA)'), V.gross, 1]];
  x.fillStyle = '#f6f1e6'; x.fillRect(m(15), y, W - m(30), m(8 + 8 * rowsV.length));
  rowsV.forEach(([l, v, big], i) => { x.fillStyle = big ? '#111' : '#444'; x.font = `${big ? 700 : 400} ${m(big ? 5.5 : 4.2)}px Inter,Arial`; const yy = y + m(10 + 8 * i);
   x.textAlign = 'left'; x.fillText(l, m(20), yy); x.textAlign = 'right'; x.fillText(lei(v), W - m(20), yy); });
  x.textAlign = 'left'; y += m(16 + 8 * rowsV.length);
  x.font = `400 ${m(3)}px Inter,Arial`; x.fillStyle = '#666';
- ['Prețul este estimativ și se confirmă după măsurătorile la fața locului. Culorile pot diferi față de mostrele fizice.', 'Montajul, transportul și instalațiile se ofertează separat, dacă nu sunt menționate.'].forEach(t => { x.fillText(t, m(15), y); y += m(4.6); });
+ ['Prețul este estimativ și se confirmă după măsurătorile la fața locului. Culorile pot diferi față de mostrele fizice.', 'Montajul, transportul și instalațiile se ofertează separat, dacă nu sunt menționate.'].forEach(t => { x.fillText(T(t), m(15), y); y += m(4.6); });
  y = Math.max(y + m(10), pg.c.height - m(40));
  x.strokeStyle = '#999'; x.beginPath(); x.moveTo(m(15), y); x.lineTo(m(85), y); x.moveTo(W - m(85), y); x.lineTo(W - m(15), y); x.stroke();
- x.fillStyle = '#555'; x.font = `400 ${m(3.2)}px Inter,Arial`; x.fillText(`Ofertant: ${firm}`, m(15), y + m(5)); x.fillText('Client — semnătură și dată (accept oferta)', W - m(85), y + m(5));
- x.fillStyle = '#aaa'; x.font = `400 ${m(2.6)}px Inter,Arial`; x.fillText('Generat cu Atelia Build', m(15), pg.c.height - m(10));
- await pagesToPDF([pg], `Atelia_${fileSafe()}_oferta_client.pdf`);
+ x.fillStyle = '#555'; x.font = `400 ${m(3.2)}px Inter,Arial`; x.fillText(`${T('Ofertant')}: ${firm}`, m(15), y + m(5)); x.fillText(T('Client — semnătură și dată (accept oferta)'), W - m(85), y + m(5));
+ x.fillStyle = '#aaa'; x.font = `400 ${m(2.6)}px Inter,Arial`; x.fillText(T('Generat cu Atelia Build'), m(15), pg.c.height - m(10));
+ await pagesToPDF([pg], `Atelia_${fileSafe()}_${LANG === 'en' ? 'client_quote' : 'oferta_client'}.pdf`);
 }
 
 const EXPORTS = [

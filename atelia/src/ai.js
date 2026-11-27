@@ -23,32 +23,34 @@ const clampN = (v, a, b, d) => { v = Math.round(+v); return isFinite(v) && v > 0
 
 function parseBrief(txt) {
  const t = ' ' + String(txt || '').toLowerCase() + ' ', notes = [];
- const kind = /dulap|dressing|șifonier|sifonier|garderob/.test(t) ? 'dulap' : 'bucatarie';
- const hm = t.match(/(?:înălțime|inaltime|tavan)\D{0,12}(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/);
+ const kind = /dulap|dressing|șifonier|sifonier|garderob|wardrobe|closet/.test(t) ? 'dulap' : 'bucatarie';
+ const hm = t.match(/(?:înălțime|inaltime|tavan|height|ceiling)\D{0,12}(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?/);
  const height = hm ? toMM(hm[1], hm[2]) : null;
  const nums = [...t.replace(hm ? hm[0] : '§', ' ').matchAll(/(\d+(?:[.,]\d+)?)\s*(mm|cm|m)?(?![\wăâîșț])/g)].map(m => toMM(m[1], m[2])).filter(v => v && v >= 300 && v <= 9000);
  let layout = 'I'; const W = '[a-zăâîșț0-9]';
  const letter = c => new RegExp(`(?<!${W})${c}(?!${W})`);
  if (kind === 'bucatarie') { if (letter('u').test(t)) layout = 'U'; else if (letter('l').test(t) || /colț|colt/.test(t)) layout = 'L'; }
- if (/paralel|două rânduri|doua randuri/.test(t)) notes.push('Bucătăria pe două rânduri paralele nu e încă suportată — am făcut un singur rând.');
- if (/insul/.test(t)) notes.push('Insula nu e încă suportată — o poți adăuga manual cu unealta Spațiu.');
+ if (/paralel|două rânduri|doua randuri|parallel|galley/.test(t)) notes.push('Bucătăria pe două rânduri paralele nu e încă suportată — am făcut un singur rând.');
+ if (/insul|island/.test(t)) notes.push('Insula nu e încă suportată — o poți adăuga manual cu unealta Spațiu.');
  const tall = [];
- if (/frigider|combin/.test(t) && !/fără frigider|fara frigider/.test(t)) tall.push('fridge');
- const ovenTall = /cuptor\D{0,25}(coloan|sus|înalt|inalt)|coloan\D{0,15}cuptor/.test(t);
+ if (/frigider|combin|fridge|refrigerator/.test(t) && !/fără frigider|fara frigider|no fridge/.test(t)) tall.push('fridge');
+ const ovenTall = /cuptor\D{0,25}(coloan|sus|înalt|inalt)|coloan\D{0,15}cuptor|oven\D{0,25}(tall|column|housing)|(tall|column)\D{0,15}oven/.test(t);
  if (ovenTall) tall.push('oven');
- if (/cămar|camar/.test(t)) tall.push('pantry');
+ if (/cămar|camar|pantry|larder/.test(t)) tall.push('pantry');
  const colors = {}; const fm = t.match(/front\w*\s+([a-zăâîșț ]{2,25})/); const bm = t.match(/blat\w*\s+(?:din\s+)?([a-zăâîșț0-9 ]{2,25})/); const cm = t.match(/corp\w*\s+([a-zăâîșț ]{2,20})/);
- if (fm) colors.front = colorFrom(fm[1]); if (bm) colors.counter = colorFrom(bm[1]); if (cm) colors.body = colorFrom(cm[1]);
+ const fe = t.match(/([a-z]+)\s+(?:matt?e?\s+)?fronts?\b/), be = t.match(/([a-z]+)\s+(?:worktop|countertop|counter)\b/);
+ if (fe && colorFrom(fe[1])) colors.front = colorFrom(fe[1]); if (be && colorFrom(be[1])) colors.counter = colorFrom(be[1]);
+ if (fm && !colors.front) colors.front = colorFrom(fm[1]); if (bm && !colors.counter) colors.counter = colorFrom(bm[1]); if (cm) colors.body = colorFrom(cm[1]);
  const loose = colorsIn(t).filter(c => c !== colors.front && c !== colors.counter);
  if (!colors.front && loose[0]) colors.front = loose[0];
  if (!colors.counter && loose[1]) colors.counter = loose[1];
  return {
   kind, name: '', layout,
   runs: {back: nums[0] || (kind === 'dulap' ? 2000 : 3000), left: layout !== 'I' ? (nums[1] || 2000) : 0, right: layout === 'U' ? (nums[2] || nums[1] || 2000) : 0},
-  height: height || null, tall, ovenUnder: /cuptor/.test(t) && !ovenTall,
-  sink: !/fără chiuvet|fara chiuvet/.test(t), hob: !/fără plit|fara plit/.test(t),
+  height: height || null, tall, ovenUnder: /cuptor|oven/.test(t) && !ovenTall,
+  sink: !/fără chiuvet|fara chiuvet|no sink/.test(t), hob: !/fără plit|fara plit|no hob/.test(t),
   dishwasher: /(mașin|masin)[a-zăâîșț]*\s+de\s+(spălat\s+|spalat\s+)?vase|dishwasher/.test(t),
-  upper: !/fără corpuri sus|fara corpuri sus|fără sus|fara sus|fără suspendate|fara suspendate/.test(t),
+  upper: !/fără corpuri sus|fara corpuri sus|fără sus|fara sus|fără suspendate|fara suspendate|no wall (cabinets|units)|without wall (cabinets|units)/.test(t),
   colors, notes
  };
 }
@@ -62,7 +64,7 @@ function normSpec(sp, src) {
  for (const k of ['sink', 'hob', 'upper']) s[k] = s[k] !== false; s.dishwasher = !!s.dishwasher; s.ovenUnder = !!s.ovenUnder;
  const c = s.colors || {}; s.colors = {body: colorFrom(c.body) || 'W1000', front: colorFrom(c.front) || 'H1145', counter: colorFrom(c.counter) || 'F186'};
  s.notes = Array.isArray(s.notes) ? s.notes.slice(0, 5).map(String) : [];
- s.name = String(s.name || '').slice(0, 60) || (s.kind === 'dulap' ? 'Dulap generat' : `Bucătărie ${s.layout === 'I' ? 'liniară' : 'în ' + s.layout}`);
+ s.name = String(s.name || '').slice(0, 60) || (LANG === 'en' ? (s.kind === 'dulap' ? 'Generated wardrobe' : ({I: 'Straight', L: 'L-shaped', U: 'U-shaped'})[s.layout] + ' kitchen') : (s.kind === 'dulap' ? 'Dulap generat' : `Bucătărie ${s.layout === 'I' ? 'liniară' : 'în ' + s.layout}`));
  s.src = src; return s;
 }
 /* împarte o lungime în module de ~600 mm */
@@ -113,7 +115,9 @@ async function aiSpec(text) {
   const j = await r.json(); if (!r.ok || !j.spec) throw new Error(j.error || 'AI indisponibil'); return j.spec;
  } finally { clearTimeout(tm); }
 }
-const AI_EX = ['Bucătărie în L, 3,2 m pe 2,4 m, cu frigider în coloană, mașină de vase, fronturi albe și blat stejar',
+const AI_EX = LANG === 'en' ? ['L-shaped kitchen, 3.2 m by 2.4 m, fridge in a tall unit, dishwasher, white fronts and oak worktop',
+ 'Straight kitchen 2800 mm, no wall cabinets, grey fronts, concrete worktop', 'U-shaped kitchen 3 m x 2.5 m x 2.5 m, oven in tall unit and pantry, walnut fronts',
+ 'Bedroom wardrobe 2400 mm wide, ceiling height 2.6 m'] : ['Bucătărie în L, 3,2 m pe 2,4 m, cu frigider în coloană, mașină de vase, fronturi albe și blat stejar',
  'Bucătărie liniară 2800 mm, fără corpuri sus, fronturi gri, blat beton', 'Bucătărie în U 3 m x 2,5 m x 2,5 m, cuptor în coloană și cămară, fronturi nuc',
  'Dulap dormitor 2400 mm lățime, înălțime tavan 2,6 m'];
 function openAI() {
@@ -133,13 +137,16 @@ function openAI() {
   if (!spec) spec = parseBrief(text);
   spec = normSpec(spec, src);
   const proj = buildFromSpec(spec);
-  const L = {I: 'liniară', L: 'în L', U: 'în U'}, T = {fridge: 'frigider', oven: 'cuptor', pantry: 'cămară'};
+  const EN_ = LANG === 'en';
+  const L = EN_ ? {I: 'Straight kitchen', L: 'L-shaped kitchen', U: 'U-shaped kitchen'} : {I: 'Bucătărie liniară', L: 'Bucătărie în L', U: 'Bucătărie în U'};
+  const TT = EN_ ? {fridge: 'fridge', oven: 'oven', pantry: 'pantry'} : {fridge: 'frigider', oven: 'cuptor', pantry: 'cămară'};
+  const w = (ro, en) => EN_ ? en : ro;
   const nCab = proj.items.filter(i => i.kind === 'cab' && i.type !== 'counter').length;
-  $('#aiOut').innerHTML = `<div class="legalbox" style="margin-top:10px"><b>Am înțeles:</b><ul style="margin:6px 0 0;padding-left:18px;line-height:1.6">
-   <li>${spec.kind === 'dulap' ? 'Dulap' : 'Bucătărie ' + L[spec.layout]} · perete principal ${spec.runs.back} mm${spec.runs.left ? ` · stânga ${spec.runs.left} mm` : ''}${spec.runs.right ? ` · dreapta ${spec.runs.right} mm` : ''} · tavan ${spec.height} mm</li>
-   ${spec.kind === 'dulap' ? '' : `<li>Coloane: ${spec.tall.map(x => T[x]).join(', ') || 'niciuna'} · ${spec.dishwasher ? 'cu' : 'fără'} mașină de vase · ${spec.upper ? 'cu' : 'fără'} corpuri sus${spec.ovenUnder ? ' · cuptor sub plită' : ''}</li>`}
-   <li>Fronturi ${esc(DEC[spec.colors.front].n)} · corp ${esc(DEC[spec.colors.body].n)} · blat ${esc(DEC[spec.colors.counter].n)}</li>
-   <li>${nCab} corpuri generate</li></ul>
+  $('#aiOut').innerHTML = `<div class="legalbox" style="margin-top:10px"><b>${w('Am înțeles:', 'Understood:')}</b><ul style="margin:6px 0 0;padding-left:18px;line-height:1.6">
+   <li>${spec.kind === 'dulap' ? w('Dulap', 'Wardrobe') : L[spec.layout]} · ${w('perete principal', 'main wall')} ${spec.runs.back} mm${spec.runs.left ? ` · ${w('stânga', 'left')} ${spec.runs.left} mm` : ''}${spec.runs.right ? ` · ${w('dreapta', 'right')} ${spec.runs.right} mm` : ''} · ${w('tavan', 'ceiling')} ${spec.height} mm</li>
+   ${spec.kind === 'dulap' ? '' : `<li>${w('Coloane', 'Tall units')}: ${spec.tall.map(x => TT[x]).join(', ') || w('niciuna', 'none')} · ${spec.dishwasher ? w('cu', 'with') : w('fără', 'no')} ${w('mașină de vase', 'dishwasher')} · ${spec.upper ? w('cu', 'with') : w('fără', 'no')} ${w('corpuri sus', 'wall cabinets')}${spec.ovenUnder ? w(' · cuptor sub plită', ' · oven under hob') : ''}</li>`}
+   <li>${w('Fronturi', 'Fronts')} ${esc(DEC[spec.colors.front].n)} · ${w('corp', 'carcass')} ${esc(DEC[spec.colors.body].n)} · ${w('blat', 'worktop')} ${esc(DEC[spec.colors.counter].n)}</li>
+   <li>${nCab} ${w('corpuri generate', 'cabinets generated')}</li></ul>
    ${[warn, ...spec.notes].filter(Boolean).map(n => `<div style="color:#f59e0b;margin-top:6px">⚠ ${esc(n)}</div>`).join('')}
    <div style="color:var(--mut);font-size:12px;margin-top:6px">Sursă: ${src === 'ai' ? 'AI (Cloudflare Workers AI)' : 'interpretor local'}</div></div>`;
   go.disabled = false; go.textContent = 'Creează proiectul';

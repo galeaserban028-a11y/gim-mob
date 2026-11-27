@@ -2,8 +2,8 @@
    - Paginile aplicației: întâi rețeaua (ca să primești mereu ultima versiune), cache doar dacă nu ai internet.
    - Bibliotecile (3D, PDF, QR) de pe CDN: din cache, actualizate în fundal.
    - Cererile către AI și conturi NU se pun niciodată în cache. */
-const V = 'atelia-v1';
-const SHELL = ['./', './index.html', './config.js', './termeni.html', './confidentialitate.html', './cookies.html', './legal.css', './manifest.webmanifest', './icons/icon-192.png'];
+const V = 'atelia-v2';
+const SHELL = ['./', './index.html', './config.js', './termeni.html', './confidentialitate.html', './cookies.html', './legal.css', './manifest.webmanifest', './icons/icon-192.png', './en/terms.html', './en/privacy.html', './en/cookies.html'];
 const CDN = /^https:\/\/(cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com)\//;
 
 self.addEventListener('install', e => {
