@@ -169,7 +169,7 @@ function confirmProd(){
  saveFile=async(fn,d)=>{if(PROD_RE.test(fn)&&!(await confirmProd()))return;return _sf(fn,d);};
  pagesToPDF=async(p,fn)=>{if(PROD_RE.test(fn)&&!(await confirmProd()))return;return _pdf(p,fn);};}
 function startFlow(){
- const go=()=>{setTimeout(cookieBar,1200);if(!LS.get('atelia.welcome'))setTimeout(openWelcome,300);else if(LS.get('atelia.help')!=='2')setTimeout(openHelp,400);};
+ const go=()=>{const idle=()=>{const m=$('#modal');if(m&&!m.hidden){setTimeout(idle,700);return;}cookieBar();};setTimeout(idle,1200);if(!LS.get('atelia.welcome'))setTimeout(openWelcome,300);else if(LS.get('atelia.help')!=='2')setTimeout(openHelp,400);};
  if(!termsOk())setTimeout(()=>openTerms(go),300);else go();
 }
 document.addEventListener('click',e=>{if(e.target&&e.target.id==='ckSet'){e.preventDefault();openCookieSettings();}});
@@ -214,8 +214,11 @@ must('copy(`Atelia Build — Ofertă: ${S.name}', 'copy(`${atFirm()} — Ofertă
 must('fillText(`Atelia Build · ${S.name}', 'fillText(`${atFirm()} · ${S.name}', count=1)
 
 # ---------- PWA (instalabil, offline) + politică de securitate a conținutului ----------
-CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
-       "connect-src 'self' https://*.workers.dev https://*.supabase.co https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
+# biblioteci găzduite local (vendor/) — nicio cerere către CDN-uri externe
+must('"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"', '"three":"./vendor/three.module.min.js","three/addons/":"./vendor/addons/"', count=1)
+must("const JSPDF='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',QRLIB='https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js'", "const JSPDF='./vendor/jspdf.umd.min.js',QRLIB='./vendor/qrcode.js'", count=1)
+CSP = ("default-src 'self'; script-src 'self' 'unsafe-inline'; "
+       "connect-src 'self' https://*.workers.dev https://*.supabase.co; "
        "img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; font-src 'self' data:; worker-src 'self' blob:; "
        "object-src 'none'; base-uri 'self'; form-action 'none'")
 must('<meta name="theme-color" content="#0b0b0b">', f'<meta http-equiv="Content-Security-Policy" content="{CSP}">\n<meta name="theme-color" content="#0b0b0b">\n<link rel="manifest" href="manifest.webmanifest">', count=1)
